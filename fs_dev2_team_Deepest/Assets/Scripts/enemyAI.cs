@@ -16,6 +16,9 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] float shootRate;
     [SerializeField] Transform shootPos;
 
+    [SerializeField] Transform aimTarget;
+    [SerializeField] float projectileSpeed = 10f;
+
     Color colorOrig;
 
     float shootTimer;
@@ -47,6 +50,7 @@ public class enemyAI : MonoBehaviour, IDamage
     {
         playerDir = GameManager.instance.player.transform.position - transform.position;
         angleToPlayer = Vector3.Angle(transform.forward, playerDir);
+
 
         RaycastHit hit;
         if (Physics.Raycast(transform.position, playerDir, out hit))
@@ -97,7 +101,27 @@ public class enemyAI : MonoBehaviour, IDamage
     void shoot()
     {
         shootTimer = 0;
-        Instantiate(bullet, shootPos.position, transform.rotation);
+
+        GameObject proj = Instantiate(bullet, shootPos.position, Quaternion.identity);
+
+        Vector3 targetPos;
+
+        if (aimTarget != null)
+        {
+            targetPos = aimTarget.position;
+        }
+        else
+        {
+            targetPos = GameManager.instance.player.transform.position;
+        }
+
+        Vector3 dir = (targetPos - shootPos.position).normalized;
+
+        Rigidbody rb = proj.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.linearVelocity = dir * projectileSpeed;
+        }
     }
 
     public void takeDamage(int amount)

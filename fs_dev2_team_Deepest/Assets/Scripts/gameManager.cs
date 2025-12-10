@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     public Image playerStaminaBar;
     public GameObject playerDamageScreen;
     public GameObject inventoryScreen;
+    public Transform rightHandTransform;
 
     public AudioSource bgmSource;
 

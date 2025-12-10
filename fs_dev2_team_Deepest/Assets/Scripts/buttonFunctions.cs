@@ -23,4 +23,9 @@ public class NewMonoBehaviourScript : MonoBehaviour
         Application.Quit();
 #endif
     }
+
+    public void UseItemFromInventory()
+    {
+        
+    }
 }

@@ -6,7 +6,7 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] CharacterController controller;
     [SerializeField] LayerMask ignoreLayer;
 
-    [Range(1, 10)][SerializeField] int HP;
+    [Range(1, 10)]public int HP;
     [Range(1, 5)][SerializeField] int speed;
     [Range(2, 5)][SerializeField] int sprintMod;
     [Range(5, 20)][SerializeField] int JumpSpeed;

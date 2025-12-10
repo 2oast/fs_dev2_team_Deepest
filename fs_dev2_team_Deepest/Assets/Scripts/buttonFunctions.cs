@@ -7,7 +7,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
     public void resume()
     {
         GameManager.instance.StateUnpause();
-    }
+    } 
 
     public void restart()
     {

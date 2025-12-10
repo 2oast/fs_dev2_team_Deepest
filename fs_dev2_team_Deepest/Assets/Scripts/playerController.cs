@@ -17,11 +17,15 @@ public class playerController : MonoBehaviour
     [SerializeField] int shootDist;
     [SerializeField] float shootRate;
 
+    [SerializeField] int interactDistance;
+
     Vector3 moveDir;
     Vector3 playerVel;
 
     int jumpCount;
     int HPOrig;
+
+    bool weaponEquipped;
 
     float shootTimer;
 
@@ -42,6 +46,7 @@ public class playerController : MonoBehaviour
             movement();
 
         sprint();
+        OnInteract();
     }
     void movement()
     {
@@ -127,5 +132,24 @@ public class playerController : MonoBehaviour
         GameManager.instance.playerDamageScreen.SetActive(true);
         yield return new WaitForSeconds(0.1f);
         GameManager.instance.playerDamageScreen.SetActive(false);
+    }
+
+    void OnInteract()
+    {
+        if(Input.GetKeyDown(KeyCode.E))
+        {
+            RaycastHit hit;
+            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, interactDistance))
+            {
+                Debug.Log(hit.collider.name);
+
+                IInteractable interactable = hit.collider.GetComponent<IInteractable>();
+                if (interactable != null)
+                {
+                    interactable.Interact();
+                }
+            }
+        }
+        
     }
 }

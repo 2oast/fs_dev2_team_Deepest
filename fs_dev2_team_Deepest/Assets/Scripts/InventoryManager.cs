@@ -55,4 +55,9 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
+    public void UseItemFromInventory()
+    {
+        
+    }
+
 }

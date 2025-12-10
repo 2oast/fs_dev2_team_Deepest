@@ -11,23 +11,18 @@ public class Item : MonoBehaviour, IInteractable
 
     private bool isFloating = false;
     private bool isReadyToCollect = false;
+    private bool isInspecting = false;
     private Vector3 targetPos;
-
-    
 
     void Update()
     {
-        if (GameManager.instance.isInteracting)
-        {
+        if (isInspecting)
             transform.Rotate(Vector3.up * spinSpeed * Time.deltaTime);
-            Camera.main.transform.LookAt(this.transform.position);
-        }
-       
     }
 
     public void Interact()
     {
-        if (!GameManager.instance.isInteracting && !isReadyToCollect)
+        if (!isInspecting && !isReadyToCollect)
         {
             StartCoroutine(FloatToCenter());
         }
@@ -39,15 +34,17 @@ public class Item : MonoBehaviour, IInteractable
 
     private void CollectItem()
     {
-        GameManager.instance.isInteracting = false;
+        isInspecting = false;
+
         InventoryManager.instance.AddItemToInventory(itemData);
+
         Destroy(gameObject);
     }
 
     IEnumerator FloatToCenter()
     {
         isFloating = true;
-        GameManager.instance.isInteracting = true;
+        isInspecting = true;
         targetPos = GameManager.instance.playerGrabPosition.position;
 
         Vector3 startPos = transform.position;

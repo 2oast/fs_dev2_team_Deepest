@@ -14,9 +14,11 @@ public class GameManager : MonoBehaviour
 
     public GameObject player;
     public playerController playerScript;
+    public cameraController cameraController;
     public Image playerHPBar;
     public Image playerStaminaBar;
     public GameObject playerDamageScreen;
+    public GameObject inventoryScreen;
 
     public AudioSource bgmSource;
 
@@ -26,11 +28,13 @@ public class GameManager : MonoBehaviour
 
     int gameGoalCount;
 
+    public Transform playerGrabPosition;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
         instance = this;
-
+        inventoryScreen.SetActive(false);
         timeScaleOrig = Time.timeScale;
 
         player = GameObject.FindWithTag("Player");
@@ -49,6 +53,20 @@ public class GameManager : MonoBehaviour
                 menuActive.SetActive(true);
             }
             else if (menuActive == menuPause)
+            {
+                StateUnpause();
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            if (menuActive == null)
+            {
+                StatePause();
+                menuActive = inventoryScreen;
+                menuActive.SetActive(true);
+            }
+            else if (menuActive == inventoryScreen)
             {
                 StateUnpause();
             }

@@ -29,6 +29,8 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] int shootDist;
     [SerializeField] float shootRate;
 
+    [SerializeField] int interactDistance;
+
     Vector3 moveDir;
     Vector3 playerVel;
 
@@ -40,6 +42,7 @@ public class playerController : MonoBehaviour, IDamage
 
     bool isBlocking;
     Vector3 shieldDefaultLocalPos;
+    bool weaponEquipped;
 
     float shootTimer;
 
@@ -104,6 +107,7 @@ public class playerController : MonoBehaviour, IDamage
         float blockCost = maxStamina * (blockStaminaCost / 100f);
         if (stamina < blockCost && isBlocking)
             isBlocking = false;
+        OnInteract();
     }
     void movement()
     {
@@ -250,4 +254,22 @@ public class playerController : MonoBehaviour, IDamage
             Vector3.Lerp(shieldTransform.localPosition, target, Time.deltaTime * shieldMoveSpeed);
     }
 
+    void OnInteract()
+    {
+        if(Input.GetKeyDown(KeyCode.E))
+        {
+            RaycastHit hit;
+            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, interactDistance))
+            {
+                Debug.Log(hit.collider.name);
+
+                IInteractable interactable = hit.collider.GetComponent<IInteractable>();
+                if (interactable != null)
+                {
+                    interactable.Interact();
+                }
+            }
+        }
+        
+    }
 }

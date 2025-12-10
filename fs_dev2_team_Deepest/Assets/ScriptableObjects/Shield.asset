@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f74b2c48c1ad5ae4f8eed08b6b65e1ff, type: 3}
   m_Name: Shield
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemName: 
+  itemName: Shield
   inventoryIcon: {fileID: 0}
   isStackable: 0
   isHealingItem: 0

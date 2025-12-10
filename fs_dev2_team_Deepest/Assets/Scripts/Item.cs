@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Item : MonoBehaviour, IInteractable
 {
-    public ItemData itemData; // reference to the data asset
+    public ItemData itemData;
 
     [Header("---Stylish Floating---")]
     public float floatSpeed = 2f;
@@ -36,7 +36,6 @@ public class Item : MonoBehaviour, IInteractable
     {
         isInspecting = false;
 
-        // pass the data, not the MonoBehaviour
         InventoryManager.instance.AddItemToInventory(itemData);
 
         Destroy(gameObject);

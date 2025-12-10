@@ -15,7 +15,10 @@ public class GameManager : MonoBehaviour
     public GameObject player;
     public playerController playerScript;
     public Image playerHPBar;
+    public Image playerStaminaBar;
     public GameObject playerDamageScreen;
+
+    public AudioSource bgmSource;
 
     public bool isPaused;
 
@@ -58,6 +61,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+        bgmSource.Pause();
     }
 
     public void StateUnpause()
@@ -68,6 +72,7 @@ public class GameManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         menuActive.SetActive(false);
         menuActive = null;
+        bgmSource.UnPause();
     }
 
     public void UpdateGameGoal(int amount)

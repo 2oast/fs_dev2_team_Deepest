@@ -10,6 +10,5 @@ public class ItemData : ScriptableObject
     public bool isWeapon;
     public int damageAmount;
     public string inventoryDescription;
-    public GameObject modelPrefab;
 }
 

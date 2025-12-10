@@ -14,17 +14,14 @@ public class Damage : MonoBehaviour
 
     bool isDamaging;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [SerializeField] Transform target;
+    public Transform Target { get { return target; } set { target = value; } }
+
     void Start()
     {
         if (type == damageType.moving || type == damageType.homing)
         {
             Destroy(gameObject, destroyTime);
-
-            if (type == damageType.moving)
-            {
-                rb.linearVelocity = transform.forward * speed;
-            }
         }
     }
 

@@ -12,7 +12,10 @@ public class InventoryManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI descriptionTextBox;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-   
+    private void Awake()
+    {
+        inventorySlots = GetComponentsInChildren<InventorySlot>();
+    }
 
     void Start()
     {

@@ -24,6 +24,8 @@ public class GameManager : MonoBehaviour
 
     public bool isPaused;
 
+    public bool isInteracting = false;
+
     float timeScaleOrig;
 
     int gameGoalCount;
@@ -44,6 +46,15 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(isInteracting)
+        {
+            cameraController.enabled = false;
+        }
+        else
+        {
+            cameraController.enabled = true;
+        }
+
         if (Input.GetButtonDown("Cancel"))
         {
             if (menuActive == null)

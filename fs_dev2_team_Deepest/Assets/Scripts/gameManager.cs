@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
 
     public Transform playerGrabPosition;
 
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
         instance = this;
@@ -40,9 +41,9 @@ public class GameManager : MonoBehaviour
         playerScript = player.GetComponent<playerController>();
     }
 
+    // Update is called once per frame
     void Update()
     {
-
         if (Input.GetButtonDown("Cancel"))
         {
             if (menuActive == null)

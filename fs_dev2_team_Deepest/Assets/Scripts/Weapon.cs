@@ -2,15 +2,15 @@ using UnityEngine;
 
 public class Weapon : MonoBehaviour
 {
-    public void StartDamageWindow()
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
     {
-        GameManager.instance.isInteracting = true;
-        WeaponManager.instance.weaponCollider.enabled = true;
+        
     }
 
-    public void EndDamageWindow()
+    // Update is called once per frame
+    void Update()
     {
-        GameManager.instance.isInteracting = false;
-        WeaponManager.instance.weaponCollider.enabled = false;
+        
     }
 }

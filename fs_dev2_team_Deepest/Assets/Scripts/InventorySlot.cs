@@ -39,7 +39,12 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
             }
             else if(itemInSlot.isWeapon)
             {
-                Instantiate(itemInSlot.modelPrefab, GameManager.instance.rightHandTransform, false);
+                if(WeaponManager.instance.WeaponEquipped())
+                {
+                    Destroy(WeaponManager.instance.currentWeapon);
+                }
+                Instantiate(itemInSlot.modelPrefab, WeaponManager.instance.rightHandTransform, false);
+                WeaponManager.instance.currentWeapon = itemInSlot.modelPrefab;
             }
         }
         else

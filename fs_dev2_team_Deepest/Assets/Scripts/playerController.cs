@@ -71,9 +71,9 @@ public class playerController : MonoBehaviour, IDamage
             movement();
 
         sprint();
-
         Blocking();
         UpdateShieldPosition();
+        WeaponManager.instance.SwingSword();
 
         if (isSprinting)
         {
@@ -171,6 +171,11 @@ public class playerController : MonoBehaviour, IDamage
                 dmg.takeDamage(shootDamage);
             }
         }
+    }
+
+    void SwingSword()
+    {
+        
     }
 
     public void takeDamage(int amount)

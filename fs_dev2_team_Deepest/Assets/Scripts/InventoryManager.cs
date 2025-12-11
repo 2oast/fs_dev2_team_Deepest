@@ -11,19 +11,9 @@ public class InventoryManager : MonoBehaviour
     [SerializeField] InventorySlot[] inventorySlots;
     [SerializeField] TextMeshProUGUI descriptionTextBox;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-   
-
     void Start()
     {
         instance = this;
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-  
     }
 
     bool InventoryFull()
@@ -54,10 +44,4 @@ public class InventoryManager : MonoBehaviour
             }
         }
     }
-
-    public void UseItemFromInventory()
-    {
-        
-    }
-
 }

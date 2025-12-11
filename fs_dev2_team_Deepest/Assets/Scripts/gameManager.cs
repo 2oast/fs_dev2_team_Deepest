@@ -19,7 +19,6 @@ public class GameManager : MonoBehaviour
     public Image playerStaminaBar;
     public GameObject playerDamageScreen;
     public GameObject inventoryScreen;
-    public Transform rightHandTransform;
 
     public AudioSource bgmSource;
 
@@ -33,7 +32,6 @@ public class GameManager : MonoBehaviour
 
     public Transform playerGrabPosition;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
         instance = this;
@@ -44,17 +42,8 @@ public class GameManager : MonoBehaviour
         playerScript = player.GetComponent<playerController>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if(isInteracting)
-        {
-            cameraController.enabled = false;
-        }
-        else
-        {
-            cameraController.enabled = true;
-        }
 
         if (Input.GetButtonDown("Cancel"))
         {

@@ -17,12 +17,12 @@ public class Item : MonoBehaviour, IInteractable
 
     void Update()
     {
-        if (GameManager.instance.isInteracting)
+        if (isFloating || isReadyToCollect)
         {
             transform.Rotate(Vector3.up * spinSpeed * Time.deltaTime);
             Camera.main.transform.LookAt(this.transform.position);
+            GameManager.instance.cameraController.enabled = false;
         }
-       
     }
 
     public void Interact()
@@ -41,6 +41,7 @@ public class Item : MonoBehaviour, IInteractable
     {
         GameManager.instance.isInteracting = false;
         InventoryManager.instance.AddItemToInventory(itemData);
+        GameManager.instance.cameraController.enabled = true;
         Destroy(gameObject);
     }
 
@@ -62,5 +63,6 @@ public class Item : MonoBehaviour, IInteractable
 
         isFloating = false;
         isReadyToCollect = true;
+
     }
 }

@@ -7,6 +7,4 @@ public class AnimatorManager : MonoBehaviour
         animator.Play(animationName);
         animator.CrossFade(animationName, .05f);
     }
-
-
 }

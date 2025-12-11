@@ -333,7 +333,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4761028541649820101, guid: 203c76d8ed0d4d042b12a38b11f41491, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1260413479}
   m_SourcePrefab: {fileID: 100100000, guid: 203c76d8ed0d4d042b12a38b11f41491, type: 3}
 --- !u!1 &832575517
 GameObject:
@@ -389,6 +392,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1992425913942817192, guid: 203c76d8ed0d4d042b12a38b11f41491, type: 3}
   m_PrefabInstance: {fileID: 439260571}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1260413473 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4761028541649820101, guid: 203c76d8ed0d4d042b12a38b11f41491, type: 3}
+  m_PrefabInstance: {fileID: 439260571}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &1260413478 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 662320890638151795, guid: 203c76d8ed0d4d042b12a38b11f41491, type: 3}
+  m_PrefabInstance: {fileID: 439260571}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &1260413479
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1260413473}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 3
+  m_Size: {x: 0.36276865, y: 1.57, z: 0.115193345}
+  m_Center: {x: -0.0000003504818, y: 1.08, z: -0.00000002322471}
 --- !u!1 &1408993552
 GameObject:
   m_ObjectHideFlags: 0
@@ -566,6 +600,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 434487235521535656, guid: 499606a742e420642a036abe53a3a224, type: 3}
+      propertyPath: playerAnimator
+      value: 
+      objectReference: {fileID: 1260413478}
     - target: {fileID: 659076779079847001, guid: 499606a742e420642a036abe53a3a224, type: 3}
       propertyPath: m_Name
       value: ---UI Elements---
@@ -754,6 +792,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3748989030658560893, guid: 499606a742e420642a036abe53a3a224, type: 3}
+      propertyPath: rightHandTransform
+      value: 
+      objectReference: {fileID: 255237716}
     - target: {fileID: 3787097348558396903, guid: 499606a742e420642a036abe53a3a224, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -794,10 +836,6 @@ PrefabInstance:
       propertyPath: playerGrabPosition
       value: 
       objectReference: {fileID: 1018362385}
-    - target: {fileID: 4522572293054792364, guid: 499606a742e420642a036abe53a3a224, type: 3}
-      propertyPath: rightHandTransform
-      value: 
-      objectReference: {fileID: 255237716}
     - target: {fileID: 5027520110271471753, guid: 499606a742e420642a036abe53a3a224, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

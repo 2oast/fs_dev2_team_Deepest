@@ -19,7 +19,7 @@ MonoBehaviour:
   isHealingItem: 0
   isWeapon: 1
   isKeyItem: 0
-  damageAmount: 5
+  damageAmount: 1
   healAmount: 0
   inventoryDescription: 
   modelPrefab: {fileID: 919132149155446097, guid: 1af6c9d4792b975498541f34267aefc6, type: 3}

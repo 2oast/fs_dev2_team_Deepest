@@ -12,6 +12,5 @@ public class ItemData : ScriptableObject
     public int damageAmount;
     public int healAmount;
     public string inventoryDescription;
-    public GameObject modelPrefab;
 }
 

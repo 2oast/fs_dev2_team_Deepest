@@ -16,7 +16,6 @@ MonoBehaviour:
   inventoryIcon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
   isStackable: 0
   isHealingItem: 0
-  isWeapon: 1
+  isWeapon: 0
   damageAmount: 0
   inventoryDescription: 
-  modelPrefab: {fileID: 9183560261532742718, guid: e806f401e449c51409695b8a72de193f, type: 3}

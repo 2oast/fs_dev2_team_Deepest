@@ -8,7 +8,9 @@ public class ItemData : ScriptableObject
     public bool isStackable;
     public bool isHealingItem;
     public bool isWeapon;
+    public bool isKeyItem;
     public int damageAmount;
+    public int healAmount;
     public string inventoryDescription;
 }
 

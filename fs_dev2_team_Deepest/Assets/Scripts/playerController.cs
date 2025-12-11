@@ -20,6 +20,11 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] float staminaRegenRate = 5f;
     [SerializeField] float staminaRegenInterval = 0.5f;
 
+    [SerializeField] AudioSource footstepSource;
+    [SerializeField] AudioClip[] footstepClips;
+    [SerializeField] float walkStepInterval = 0.5f;
+    [SerializeField] float sprintStepInterval = 0.3f;
+
     [SerializeField] Transform shieldTransform;
     [SerializeField] Vector3 shieldBlockOffset = new Vector3(0.3f, 0.2f, 0f);
     [SerializeField] float shieldMoveSpeed = 10f;
@@ -46,6 +51,8 @@ public class playerController : MonoBehaviour, IDamage
 
     float shootTimer;
 
+    float nextStepTime;
+
     float baseSpeed;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -71,6 +78,8 @@ public class playerController : MonoBehaviour, IDamage
             movement();
 
         sprint();
+
+        Footsteps();
 
         Blocking();
         UpdateShieldPosition();
@@ -272,4 +281,44 @@ public class playerController : MonoBehaviour, IDamage
         }
         
     }
+
+    void Footsteps()
+    {
+        if (GameManager.instance != null && GameManager.instance.isPaused)
+            return;
+
+        if (footstepSource == null || footstepClips == null || footstepClips.Length == 0)
+            return;
+
+        if (!controller.isGrounded)
+            return;
+
+        float inputX = Input.GetAxis("Horizontal");
+        float inputZ = Input.GetAxis("Vertical");
+        float inputMag = Mathf.Abs(inputX) + Mathf.Abs(inputZ);
+
+        if (inputMag < 0.1f)
+            return;
+
+        float interval = isSprinting ? sprintStepInterval : walkStepInterval;
+
+        if (interval < 0.1f)
+            interval = 0.1f;
+
+        if (Time.time >= nextStepTime)
+        {
+            PlayFootstep();
+            nextStepTime = Time.time + interval;
+        }
+    }
+
+    void PlayFootstep()
+    {
+        int index = Random.Range(0, footstepClips.Length);
+        AudioClip clip = footstepClips[index];
+
+        footstepSource.pitch = Random.Range(0.95f, 1.05f);
+        footstepSource.PlayOneShot(clip);
+    }
+
 }

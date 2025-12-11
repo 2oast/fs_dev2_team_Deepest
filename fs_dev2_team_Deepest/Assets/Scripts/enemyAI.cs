@@ -19,6 +19,9 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] Transform aimTarget;
     [SerializeField] float projectileSpeed = 10f;
 
+    [SerializeField] AudioSource audioSource;
+    [SerializeField] AudioClip spitSound;
+
     Color colorOrig;
 
     float shootTimer;
@@ -67,6 +70,10 @@ public class enemyAI : MonoBehaviour, IDamage
                 if (shootTimer >= shootRate)
                 {
                     shoot();
+                    if (audioSource != null && spitSound != null)
+                    {
+                        audioSource.PlayOneShot(spitSound);
+                    }
                 }
                 return true;
             }

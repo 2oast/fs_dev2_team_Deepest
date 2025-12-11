@@ -34,7 +34,6 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         instance = this;
-        inventoryScreen.SetActive(false);
         timeScaleOrig = Time.timeScale;
 
         player = GameObject.FindWithTag("Player");

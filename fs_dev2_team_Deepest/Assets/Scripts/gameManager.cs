@@ -24,8 +24,6 @@ public class GameManager : MonoBehaviour
 
     public bool isPaused;
 
-    public bool isInteracting = false;
-
     float timeScaleOrig;
 
     int gameGoalCount;
@@ -44,7 +42,10 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2749fabcb7acc920fcdb7825b3ae917952e0d730
         if (Input.GetButtonDown("Cancel"))
         {
             if (menuActive == null)

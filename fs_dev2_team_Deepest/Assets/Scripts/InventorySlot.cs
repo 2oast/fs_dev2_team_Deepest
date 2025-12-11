@@ -1,19 +1,17 @@
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class InventorySlot : MonoBehaviour, IPointerClickHandler
+public class InventorySlot : MonoBehaviour
 {
-    public Image originalImage;
     public Image inventorySlotSprite;
     public ItemData itemInSlot;
-    public Button useItemButton;
     public bool isFilled;
 
     public void Awake()
     {
+<<<<<<< HEAD
         originalImage = GetComponent<Image>();
         inventorySlotSprite = GetComponent<Image>();
         useItemButton = GetComponent<Button>();
@@ -53,5 +51,8 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
         }
 
 
+=======
+        inventorySlotSprite = GetComponentInChildren<Image>();
+>>>>>>> 2749fabcb7acc920fcdb7825b3ae917952e0d730
     }
 }

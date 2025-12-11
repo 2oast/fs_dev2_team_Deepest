@@ -413,9 +413,8 @@ MonoBehaviour:
   m_DragThreshold: 10
 --- !u!4 &70355339
 Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 2758377556774091791, guid: 203c76d8ed0d4d042b12a38b11f41491, type: 3}
+  m_PrefabInstance: {fileID: 439260571}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 70355336}
   serializedVersion: 2

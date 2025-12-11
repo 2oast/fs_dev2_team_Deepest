@@ -5,6 +5,7 @@ public class ItemData : ScriptableObject
 {
     public string itemName;
     public Sprite inventoryIcon;
+    public Weapon weapon;
     public bool isStackable;
     public bool isHealingItem;
     public bool isWeapon;

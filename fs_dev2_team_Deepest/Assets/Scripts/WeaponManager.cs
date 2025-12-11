@@ -7,7 +7,7 @@ public class WeaponManager : MonoBehaviour
 
 
     public Transform rightHandTransform;
-    public GameObject currentWeapon;
+    public Weapon currentWeapon;
     public BoxCollider weaponCollider;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -19,7 +19,7 @@ public class WeaponManager : MonoBehaviour
             weaponCollider = currentWeapon.GetComponent<BoxCollider>();
             weaponCollider.enabled = false;
         }
-        currentWeapon = rightHandTransform.GetChild(0).gameObject;
+        currentWeapon = rightHandTransform.GetChild(0).gameObject.GetComponent<Weapon>();
     }
 
     public bool WeaponEquipped()

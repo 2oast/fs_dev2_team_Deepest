@@ -44,7 +44,7 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
                     Destroy(WeaponManager.instance.currentWeapon);
                 }
                 Instantiate(itemInSlot.modelPrefab, WeaponManager.instance.rightHandTransform, false);
-                WeaponManager.instance.currentWeapon = itemInSlot.modelPrefab;
+                WeaponManager.instance.currentWeapon = itemInSlot.GetComponent<Weapon>();
             }
         }
         else

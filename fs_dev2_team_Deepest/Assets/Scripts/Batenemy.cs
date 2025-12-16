@@ -11,6 +11,7 @@ public class batEnemyAI : MonoBehaviour, IDamage
 
     [SerializeField] Renderer model;
     [SerializeField] NavMeshAgent agent;
+    [SerializeField] Animator anim;
 
     [SerializeField] int faceTargetSpeed = 5;
     [SerializeField] int FOV = 90;
@@ -63,7 +64,7 @@ public class batEnemyAI : MonoBehaviour, IDamage
 
                 if (!isAttacking && attackTimer >= attackRate)
                 {
-                    StartCoroutine(MeleeAttack());
+                    StartCoroutine(Attack());
                 }
             }
         }
@@ -107,10 +108,13 @@ public class batEnemyAI : MonoBehaviour, IDamage
         transform.rotation = Quaternion.Lerp(transform.rotation, rot, Time.deltaTime * faceTargetSpeed);
     }
 
-    IEnumerator MeleeAttack()
+    IEnumerator Attack()
     {
         isAttacking = true;
         attackTimer = 0f;
+
+        if (anim != null)
+            anim.SetTrigger("attack");
 
         if (audioSource != null && biteSound != null)
         {

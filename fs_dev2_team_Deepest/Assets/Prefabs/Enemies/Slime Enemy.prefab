@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2100725705275824566}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: RightArrowControl
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -41,7 +41,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2137427890135422491}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SlimeControl1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -72,7 +72,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9034907416403211685}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SlimeBackTailJoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -103,7 +103,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6747827089096699940}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SlimeLeftTailJoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -134,7 +134,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3243626136326120769}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: LeftArrowControl
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -166,7 +166,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 76632286401802685}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: BackArrowControl
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -198,7 +198,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2640874227423676905}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SlimeFrontTailJoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -230,7 +230,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2505342197227191925}
   - component: {fileID: 3776034234933926513}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SlimeLevel1 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -328,7 +328,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3001279164557457498}
   - component: {fileID: 3116798429720932977}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ShootPos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -367,7 +367,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6010989606273538249}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: MESH
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -399,7 +399,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5784171312326307608}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SlimeControl
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -436,7 +436,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 482973465748604487}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SlimeRightJoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -467,7 +467,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2017456711490608498}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SlimeNeckJoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -499,7 +499,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7029525899642916523}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SlimeRootJoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -531,7 +531,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7688879021212229141}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: FrontArrowControl
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -563,7 +563,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2024607699844606169}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: RIG
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -599,9 +599,10 @@ GameObject:
   - component: {fileID: 8918523828580535918}
   - component: {fileID: 2423445424099201943}
   - component: {fileID: 3446193170021836999}
-  m_Layer: 0
+  - component: {fileID: 3195376820924939712}
+  m_Layer: 6
   m_Name: Slime Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -639,6 +640,7 @@ MonoBehaviour:
   HP: 3
   model: {fileID: 3776034234933926513}
   agent: {fileID: 2423445424099201943}
+  anim: {fileID: 8918523828580535918}
   faceTargetSpeed: 15
   FOV: 90
   bullet: {fileID: 18025331703054662, guid: 274c1faec0285474e8c8a10e09769a42, type: 3}
@@ -646,6 +648,10 @@ MonoBehaviour:
   shootPos: {fileID: 3001279164557457498}
   aimTarget: {fileID: 0}
   projectileSpeed: 10
+  audioSource: {fileID: 3195376820924939712}
+  spitSound: {fileID: 8300000, guid: 9ebe109be1d920142b2bda77856a5b53, type: 3}
+  wanderRadius: 8
+  wanderPause: 2
 --- !u!95 &8918523828580535918
 Animator:
   serializedVersion: 7
@@ -656,8 +662,8 @@ Animator:
   m_GameObject: {fileID: 8349067900450173218}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: e607f74860c67814e93c914b710142d5, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
+  m_Controller: {fileID: 9100000, guid: 70873553b8f2c6546bbd55320a638519, type: 2}
+  m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
@@ -677,16 +683,16 @@ NavMeshAgent:
   m_GameObject: {fileID: 8349067900450173218}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 0.01
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
-  m_StoppingDistance: 0
+  m_StoppingDistance: 5
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 2
+  m_Height: 0.02
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
@@ -713,6 +719,103 @@ CapsuleCollider:
   m_Height: 0.03
   m_Direction: 1
   m_Center: {x: 0, y: 0.003, z: 0}
+--- !u!82 &3195376820924939712
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8349067900450173218}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &8823831648343155313
 GameObject:
   m_ObjectHideFlags: 0
@@ -722,7 +825,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5573621364964471885}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SlimeHeadJoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -1,13 +1,13 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.AI;
-using Unity.Mathematics;
 
 public class enemyAI : MonoBehaviour, IDamage
 {
     [SerializeField] int HP;
     [SerializeField] Renderer model;
     [SerializeField] NavMeshAgent agent;
+    [SerializeField] Animator anim;
 
     [SerializeField] int faceTargetSpeed;
     [SerializeField] int FOV;
@@ -22,10 +22,17 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] AudioSource audioSource;
     [SerializeField] AudioClip spitSound;
 
+    [SerializeField] float wanderRadius = 8f;
+    [SerializeField] float wanderPause = 2f;
+
+
     Color colorOrig;
 
     float shootTimer;
     float angleToPlayer;
+
+    bool waitingToWander;
+    float wanderTimer;
 
     bool playerInRange;
 
@@ -43,9 +50,52 @@ public class enemyAI : MonoBehaviour, IDamage
     {
         shootTimer += Time.deltaTime;
 
-        if (!playerInRange && canSeePlayer())
-        {
+        if (GameManager.instance == null || GameManager.instance.player == null)
+            return;
 
+        bool seeingPlayer = canSeePlayer();
+
+        if (!seeingPlayer)
+        {
+            Wander();
+        }
+
+        UpdateAnim();
+    }
+
+    void UpdateAnim()
+    {
+        if (anim == null || agent == null)
+            return;
+
+        bool moving = agent.velocity.magnitude > 0.1f;
+        anim.SetBool("isMoving", moving);
+    }
+
+    void Wander()
+    {
+        if (waitingToWander)
+        {
+            wanderTimer += Time.deltaTime;
+            if (wanderTimer >= wanderPause)
+            {
+                waitingToWander = false;
+                wanderTimer = 0f;
+            }
+            else
+                return;
+        }
+
+        if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
+        {
+            Vector3 random = Random.insideUnitSphere * wanderRadius + transform.position;
+
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(random, out hit, wanderRadius, NavMesh.AllAreas))
+            {
+                agent.SetDestination(hit.position);
+                waitingToWander = true;
+            }
         }
     }
 

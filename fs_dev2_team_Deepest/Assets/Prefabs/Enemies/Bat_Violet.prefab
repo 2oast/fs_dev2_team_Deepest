@@ -688,7 +688,7 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 59afa1f2c595d6343b15e945602e1f8f, type: 3}
   m_Controller: {fileID: 9100000, guid: 392160e2c434bcc48a9d591aef9a08c0, type: 2}
-  m_CullingMode: 1
+  m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
@@ -717,6 +717,7 @@ MonoBehaviour:
   attackRange: 3
   model: {fileID: 7427598429828401912}
   agent: {fileID: 9075617564335876043}
+  anim: {fileID: 8633929396523807312}
   faceTargetSpeed: 10
   FOV: 90
   audioSource: {fileID: 8092925856508157837}

@@ -11,6 +11,7 @@ public class ghostEnemyAI : MonoBehaviour, IDamage
 
     [SerializeField] Renderer model;
     [SerializeField] NavMeshAgent agent;
+    [SerializeField] Animator anim;
 
     [SerializeField] int faceTargetSpeed = 5;
     [SerializeField] int FOV = 90;
@@ -23,11 +24,17 @@ public class ghostEnemyAI : MonoBehaviour, IDamage
     [SerializeField] AudioSource audioSource;
     [SerializeField] AudioClip slapSound;
 
+    [SerializeField] float wanderRadius = 8f;
+    [SerializeField] float wanderPause = 2f;
+
     Color colorOrig;
 
     float attackTimer;
     float angleToPlayer;
     bool isAttacking;
+
+    bool waitingToWander;
+    float wanderTimer;
 
     Vector3 playerDir;
 
@@ -38,6 +45,8 @@ public class ghostEnemyAI : MonoBehaviour, IDamage
 
         if (ghostHand != null)
             ghostHand.SetActive(false);
+
+        UpdateAnim();
     }
 
     void Update()
@@ -66,6 +75,46 @@ public class ghostEnemyAI : MonoBehaviour, IDamage
                 }
             }
         }
+        else
+        {
+            Wander();
+        }
+    }
+
+    void Wander()
+    {
+        if (waitingToWander)
+        {
+            wanderTimer += Time.deltaTime;
+            if (wanderTimer >= wanderPause)
+            {
+                waitingToWander = false;
+                wanderTimer = 0f;
+            }
+            else
+                return;
+        }
+
+        if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
+        {
+            Vector3 random = Random.insideUnitSphere * wanderRadius + transform.position;
+
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(random, out hit, wanderRadius, NavMesh.AllAreas))
+            {
+                agent.SetDestination(hit.position);
+                waitingToWander = true;
+            }
+        }
+    }
+
+    void UpdateAnim()
+    {
+        if (anim == null || agent == null)
+            return;
+
+        bool moving = agent.desiredVelocity.magnitude > 0.05f && !isAttacking;
+        anim.SetBool("isMoving", moving);
     }
 
     bool CanSeePlayer()

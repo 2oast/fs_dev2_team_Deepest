@@ -73,7 +73,7 @@ public class playerController : MonoBehaviour, IDamage
         sprint();
         Blocking();
         UpdateShieldPosition();
-        WeaponManager.instance.SwingSword();
+        SwingSword();
 
         if (isSprinting)
         {
@@ -127,7 +127,7 @@ public class playerController : MonoBehaviour, IDamage
         jump();
         controller.Move(playerVel * Time.deltaTime);
 
-        if (Input.GetButton("Fire1") && shootTimer >= shootRate)
+        if (Input.GetKeyDown(KeyCode.F) && shootTimer >= shootRate)
         {
             shoot();
         }
@@ -156,27 +156,7 @@ public class playerController : MonoBehaviour, IDamage
         }
     }
 
-    void shoot()
-    {
-        shootTimer = 0;
-
-        RaycastHit hit;
-        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
-        {
-            Debug.Log(hit.collider.name);
-
-            IDamage dmg = hit.collider.GetComponent<IDamage>();
-            if (dmg != null)
-            {
-                dmg.takeDamage(shootDamage);
-            }
-        }
-    }
-
-    void SwingSword()
-    {
-        
-    }
+    
 
     public void takeDamage(int amount)
     {
@@ -258,6 +238,19 @@ public class playerController : MonoBehaviour, IDamage
         shieldTransform.localPosition =
             Vector3.Lerp(shieldTransform.localPosition, target, Time.deltaTime * shieldMoveSpeed);
     }
+    public void SwingSword()
+    {
+        if (WeaponManager.instance.ItemEquipped() && WeaponManager.instance.currentItem.itemData.isWeapon && Input.GetButtonDown("Fire1"))
+        {
+            PlayerAnimatorManager.instance.PlayTargetAnimation(PlayerAnimatorManager.instance.playerAnimator, "SwordSwing");
+            GameManager.instance.isInteracting = true;
+            stamina -= WeaponManager.instance.currentItem.itemData.staminaDrainAmount;
+        }
+        else
+        {
+            return;
+        }
+    }
 
     void OnInteract()
     {
@@ -276,5 +269,20 @@ public class playerController : MonoBehaviour, IDamage
             }
         }
         
+    }
+
+    void shoot()
+    {
+        if (WeaponManager.instance.ringEquipped)
+        {
+            shootTimer = 0;
+            MagicRing magic = InventoryManager.instance.ringSlot.itemInSlot.modelPrefab.GetComponent<MagicRing>();
+            GameObject shootEffect = Instantiate(magic.shootEffect, WeaponManager.instance.rightHandTransform, false);
+            shootEffect.transform.parent = null;
+            Rigidbody shootEffectRB = shootEffect.GetComponent<Rigidbody>();
+            shootEffectRB.linearVelocity = Camera.main.transform.forward * magic.shootSpeed * Time.deltaTime;
+        }
+        else
+            return;
     }
 }

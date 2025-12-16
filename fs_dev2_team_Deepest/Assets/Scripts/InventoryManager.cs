@@ -9,11 +9,20 @@ public class InventoryManager : MonoBehaviour
     public static InventoryManager instance;
 
     [SerializeField] InventorySlot[] inventorySlots;
+    public InventorySlot ringSlot;
+    public InventorySlot activeSlot;
     [SerializeField] TextMeshProUGUI descriptionTextBox;
 
     void Start()
     {
         instance = this;
+    }
+    
+    public void ResetInventorySlot(InventorySlot slot)
+    {
+        slot.itemInSlot = null;
+        slot.inventorySlotSprite.sprite = null;
+        slot.isFilled = false;
     }
 
     bool InventoryFull()

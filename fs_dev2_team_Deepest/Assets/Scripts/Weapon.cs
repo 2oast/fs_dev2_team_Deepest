@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class Weapon : MonoBehaviour
+public class Weapon : Item
 {
-    [SerializeField] ItemData weapon;
+    public ItemData weaponData;
 
     public void StartDamageWindow()
     {
@@ -21,7 +21,7 @@ public class Weapon : MonoBehaviour
         IDamage dmg = other.GetComponent<IDamage>();
         if(dmg != null)
         {
-            dmg.takeDamage(weapon.damageAmount);
+            dmg.takeDamage(weaponData.damageAmount);
         }
     }
 }

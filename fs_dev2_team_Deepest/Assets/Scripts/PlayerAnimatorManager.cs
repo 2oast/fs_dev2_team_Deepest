@@ -10,4 +10,9 @@ public class PlayerAnimatorManager : AnimatorManager
         instance = this;
     }
 
+    public void UpdateAnimator(Animator animator)
+    {
+        playerAnimator = animator;
+    }
+
 }

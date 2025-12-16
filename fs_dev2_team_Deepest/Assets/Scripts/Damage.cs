@@ -4,6 +4,8 @@ using System.Collections;
 public class Damage : MonoBehaviour
 {
     enum damageType { moving, stationary, DOT, homing }
+    public enum ElementalType { Fire, Ice, Earth, Wind}
+    public ElementalType elementalType;
     [SerializeField] damageType type;
     [SerializeField] Rigidbody rb;
 
@@ -54,6 +56,8 @@ public class Damage : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        
     }
 
     private void OnTriggerStay(Collider other)

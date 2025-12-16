@@ -7,22 +7,31 @@ public class WeaponManager : MonoBehaviour
 
 
     public Transform rightHandTransform;
-    public Weapon currentWeapon;
+    public Item currentItem;
+    public bool ringEquipped;
+    
     public BoxCollider weaponCollider;
+
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         instance = this;
-        if (currentWeapon != null)
+
+        if (rightHandTransform.childCount > 0)
         {
-            weaponCollider = currentWeapon.GetComponent<BoxCollider>();
-            weaponCollider.enabled = false;
+            currentItem = rightHandTransform.GetChild(0).GetComponent<Item>();
+
+            if (currentItem != null && currentItem.itemData.isWeapon)
+            {
+                weaponCollider = currentItem.GetComponent<BoxCollider>();
+                weaponCollider.enabled = false;
+            }
         }
-        currentWeapon = rightHandTransform.GetChild(0).gameObject.GetComponent<Weapon>();
     }
 
-    public bool WeaponEquipped()
+    public bool ItemEquipped()
     {
         if(rightHandTransform.childCount == 0)
         {
@@ -32,23 +41,33 @@ public class WeaponManager : MonoBehaviour
         return true;
     }
 
-    public void SwingSword()
+    private void Update()
     {
-        if (WeaponEquipped() && Input.GetButtonDown("Fire1"))
-        {
-            PlayerAnimatorManager.instance.PlayTargetAnimation(PlayerAnimatorManager.instance.playerAnimator, "SwordSwing");
-            GameManager.instance.isInteracting = true;
-        }
-        else
-        {
+        if (currentItem == null)
             return;
+        else if(currentItem.itemData.isKeyItem)
+        {
+            GameManager.instance.keyEquipped = true;
         }
+    }
+
+    public void SetCurrentItemData(Item item)
+    {
+        currentItem = item;
+
+        if(currentItem != null)
+        {
+            if (currentItem.itemData.isWeapon)
+            {
+                weaponCollider = currentItem.GetComponent<BoxCollider>();
+                PlayerAnimatorManager.instance.UpdateAnimator(currentItem.gameObject.GetComponent<Animator>());
+            }
+            else
+                return;
+        }
+        
     }
 
     
 
-    private void Update()
-    {
-        weaponCollider = currentWeapon.GetComponent<BoxCollider>();
-    }
 }

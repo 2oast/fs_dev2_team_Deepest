@@ -932,11 +932,14 @@ MonoBehaviour:
   menuLose: {fileID: 6585966943760430634}
   player: {fileID: 0}
   playerScript: {fileID: 0}
+  cameraController: {fileID: 0}
   playerHPBar: {fileID: 3082189016435519618}
   playerStaminaBar: {fileID: 6441332817570206595}
   playerDamageScreen: {fileID: 1778205901495559257}
+  inventoryScreen: {fileID: 0}
   bgmSource: {fileID: 0}
   isPaused: 0
+  playerGrabPosition: {fileID: 0}
 --- !u!1 &2201537793489957606
 GameObject:
   m_ObjectHideFlags: 0

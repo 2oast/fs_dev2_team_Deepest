@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
@@ -21,8 +22,11 @@ public class GameManager : MonoBehaviour
     public TMP_Text escapePromptText;
     public TMP_Text doorPromptText;
     public TMP_Text icePromptText;
+    public TMP_Text tutorialText;
 
     public AudioSource bgmSource;
+
+    public bool inventoryTutorialShown = false;
 
     public bool isPaused;
 
@@ -34,6 +38,8 @@ public class GameManager : MonoBehaviour
     int gameGoalCount;
 
     public Transform playerGrabPosition;
+
+    Coroutine tutorialRoutine;
 
     void Awake()
     {
@@ -80,6 +86,10 @@ public class GameManager : MonoBehaviour
             {
                 StateUnpause();
             }
+        }
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            HideTutorialText();
         }
     }
 
@@ -146,5 +156,41 @@ public class GameManager : MonoBehaviour
     {
         if (icePromptText != null)
             icePromptText.gameObject.SetActive(show);
+    }
+    public void ShowInventoryTutorial()
+    {
+        if (inventoryTutorialShown)
+            return;
+
+        inventoryTutorialShown = true;
+
+        if (tutorialText != null)
+        {
+            tutorialText.text = "Press I to open inventory";
+            tutorialText.gameObject.SetActive(true);
+
+            if (tutorialRoutine != null)
+                StopCoroutine(tutorialRoutine);
+
+            tutorialRoutine = StartCoroutine(HideTutorialTextDelay());
+        }
+    }
+
+    void HideTutorialText()
+    {
+        if (tutorialText != null)
+            tutorialText.gameObject.SetActive(false);
+
+        if (tutorialRoutine != null)
+        {
+            StopCoroutine(tutorialRoutine);
+            tutorialRoutine = null;
+        }
+    }
+
+    IEnumerator HideTutorialTextDelay()
+    {
+        yield return new WaitForSeconds(3f);
+        HideTutorialText();
     }
 }

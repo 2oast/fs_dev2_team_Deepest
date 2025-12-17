@@ -24,7 +24,6 @@ public class Item : MonoBehaviour, IInteractable
 
         if (itemRenderer != null)
             itemMat = itemRenderer.material;
-
     }
 
     void Update()
@@ -53,6 +52,7 @@ public class Item : MonoBehaviour, IInteractable
     {
         GameManager.instance.isInteracting = false;
         InventoryManager.instance.AddItemToInventory(itemData);
+        GameManager.instance.ShowInventoryTutorial();
         GameManager.instance.cameraController.enabled = true;
         Destroy(gameObject);
     }
@@ -76,6 +76,7 @@ public class Item : MonoBehaviour, IInteractable
 
         isFloating = false;
         isReadyToCollect = true;
-    }
 
+        GameManager.instance.isInteracting = false;
+    }
 }

@@ -13,15 +13,16 @@ MonoBehaviour:
   m_Name: testItem
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: cube
-  inventoryIcon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  inventoryIcon: {fileID: 21300000, guid: d7f7ee505cdaf9c42a373df32395279a, type: 3}
   weapon: {fileID: 0}
   isConsumable: 0
   isHealingItem: 1
   isEquippable: 0
+  isRing: 0
   isWeapon: 0
   staminaDrainAmount: 0
   isKeyItem: 0
   damageAmount: 0
-  healAmount: 20
+  healAmount: 50
   inventoryDescription: 
-  modelPrefab: {fileID: 9183560261532742718, guid: e806f401e449c51409695b8a72de193f, type: 3}
+  modelPrefab: {fileID: 6800510950618195169, guid: bea73c3af3c19b44ca43454345478e32, type: 3}

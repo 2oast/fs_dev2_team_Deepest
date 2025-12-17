@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: Key
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Key
-  inventoryIcon: {fileID: 21300000, guid: 24d1314fd796a174e9b532e1e261300c, type: 3}
+  inventoryIcon: {fileID: 21300000, guid: 3f5cba41d25af1d4abff3eedb007d2b2, type: 3}
   weapon: {fileID: 0}
   isConsumable: 0
   isHealingItem: 0
   isEquippable: 1
+  isRing: 0
   isWeapon: 0
   staminaDrainAmount: 0
   isKeyItem: 1

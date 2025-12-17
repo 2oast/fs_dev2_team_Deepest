@@ -43,7 +43,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2958690757042059995}
-  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: -1215533875317036940, guid: 0669f3d8f4b119f418a4bbe061cc198f, type: 3}
 --- !u!23 &8073225037529817186
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -69,7 +69,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 1a7c6b13b8983fa4bbfb1dbfbb5fef57, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -130,6 +130,10 @@ MonoBehaviour:
   itemData: {fileID: 11400000, guid: f4b4c074fe3c51643a19ffdf9c51d50a, type: 2}
   floatSpeed: 2
   spinSpeed: 50
+  itemRenderer: {fileID: 0}
+  glowDistance: 4
+  glowColor: {r: 0, g: 1, b: 1, a: 1}
+  glowIntensity: 2
 --- !u!114 &5918384121192638826
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -145,3 +149,7 @@ MonoBehaviour:
   itemData: {fileID: 11400000, guid: f4b4c074fe3c51643a19ffdf9c51d50a, type: 2}
   floatSpeed: 2
   spinSpeed: 50
+  itemRenderer: {fileID: 0}
+  glowDistance: 4
+  glowColor: {r: 0, g: 1, b: 1, a: 1}
+  glowIntensity: 2

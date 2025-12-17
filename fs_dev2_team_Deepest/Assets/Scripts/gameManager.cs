@@ -4,7 +4,6 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-
     public static GameManager instance;
 
     [SerializeField] GameObject menuActive;
@@ -19,6 +18,9 @@ public class GameManager : MonoBehaviour
     public Image playerStaminaBar;
     public GameObject playerDamageScreen;
     public GameObject inventoryScreen;
+    public TMP_Text escapePromptText;
+    public TMP_Text doorPromptText;
+    public TMP_Text icePromptText;
 
     public AudioSource bgmSource;
 
@@ -36,16 +38,22 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         instance = this;
-        inventoryScreen.SetActive(false);
+
+        if (inventoryScreen != null)
+            inventoryScreen.SetActive(false);
+
         timeScaleOrig = Time.timeScale;
 
         player = GameObject.FindWithTag("Player");
-        playerScript = player.GetComponent<playerController>();
+        if (player != null)
+            playerScript = player.GetComponent<playerController>();
+
+        if (bgmSource != null && !bgmSource.isPlaying)
+            bgmSource.Play();
     }
 
     void Update()
     {
-
         if (Input.GetButtonDown("Cancel"))
         {
             if (menuActive == null)
@@ -81,7 +89,9 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
-        bgmSource.Pause();
+
+        if (bgmSource != null)
+            bgmSource.Pause();
     }
 
     public void StateUnpause()
@@ -90,21 +100,27 @@ public class GameManager : MonoBehaviour
         Time.timeScale = timeScaleOrig;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
-        menuActive.SetActive(false);
+
+        if (menuActive != null)
+            menuActive.SetActive(false);
+
         menuActive = null;
-        bgmSource.UnPause();
+
+        if (bgmSource != null)
+            bgmSource.UnPause();
+    }
+
+    public void YouWin()
+    {
+        StatePause();
+        menuActive = menuWin;
+        menuActive.SetActive(true);
+        ShowEscapePrompt(false);
     }
 
     public void UpdateGameGoal(int amount)
     {
         gameGoalCount += amount;
-
-        if (gameGoalCount <= 0)
-        {
-            StatePause();
-            menuActive = menuWin;
-            menuActive.SetActive(true);
-        }
     }
 
     public void YouLose()
@@ -112,5 +128,23 @@ public class GameManager : MonoBehaviour
         StatePause();
         menuActive = menuLose;
         menuActive.SetActive(true);
+    }
+
+    public void ShowEscapePrompt(bool show)
+    {
+        if (escapePromptText != null)
+            escapePromptText.gameObject.SetActive(show);
+    }
+
+    public void ShowDoorPrompt(bool show)
+    {
+        if (doorPromptText != null)
+            doorPromptText.gameObject.SetActive(show);
+    }
+
+    public void ShowIcePrompt(bool show)
+    {
+        if (icePromptText != null)
+            icePromptText.gameObject.SetActive(show);
     }
 }

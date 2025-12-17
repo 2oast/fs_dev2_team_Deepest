@@ -9,7 +9,7 @@ public class ghostEnemyAI : MonoBehaviour, IDamage
     [SerializeField] float attackRate = 4f;
     [SerializeField] float attackRange = 2f;
 
-    [SerializeField] Renderer model;
+    [SerializeField] SkinnedMeshRenderer model;
     [SerializeField] NavMeshAgent agent;
     [SerializeField] Animator anim;
 

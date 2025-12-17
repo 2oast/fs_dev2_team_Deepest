@@ -31,6 +31,11 @@ public class playerController : MonoBehaviour, IDamage
 
     [SerializeField] int interactDistance;
 
+    [SerializeField] AudioSource footstepSource;
+    [SerializeField] AudioClip[] footstepClips;
+    [SerializeField] float walkStepInterval = 0.5f;
+    [SerializeField] float sprintStepInterval = 0.28f;
+
     Vector3 moveDir;
     Vector3 playerVel;
 
@@ -47,6 +52,8 @@ public class playerController : MonoBehaviour, IDamage
     float shootTimer;
 
     float baseSpeed;
+
+    float nextStepTime;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -74,6 +81,7 @@ public class playerController : MonoBehaviour, IDamage
         Blocking();
         UpdateShieldPosition();
         SwingSword();
+        Footsteps();
 
         if (isSprinting)
         {
@@ -130,6 +138,34 @@ public class playerController : MonoBehaviour, IDamage
         if (Input.GetKeyDown(KeyCode.F) && shootTimer >= shootRate)
         {
             shoot();
+        }
+    }
+
+    void Footsteps()
+    {
+        if (GameManager.instance != null && GameManager.instance.isPaused)
+            return;
+
+        if (footstepSource == null || footstepClips == null || footstepClips.Length == 0)
+            return;
+
+        if (!controller.isGrounded)
+            return;
+
+        bool moving =
+            Mathf.Abs(Input.GetAxis("Horizontal")) > 0.1f ||
+            Mathf.Abs(Input.GetAxis("Vertical")) > 0.1f;
+
+        if (!moving)
+            return;
+
+        float interval = isSprinting ? sprintStepInterval : walkStepInterval;
+
+        if (Time.time >= nextStepTime)
+        {
+            AudioClip clip = footstepClips[Random.Range(0, footstepClips.Length)];
+            footstepSource.PlayOneShot(clip);
+            nextStepTime = Time.time + interval;
         }
     }
 

@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f74b2c48c1ad5ae4f8eed08b6b65e1ff, type: 3}
-  m_Name: testItem
+  m_Name: Key
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemName: cube
-  inventoryIcon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  itemName: Key
+  inventoryIcon: {fileID: 21300000, guid: 24d1314fd796a174e9b532e1e261300c, type: 3}
   weapon: {fileID: 0}
   isConsumable: 0
-  isHealingItem: 1
-  isEquippable: 0
+  isHealingItem: 0
+  isEquippable: 1
   isWeapon: 0
   staminaDrainAmount: 0
-  isKeyItem: 0
+  isKeyItem: 1
   damageAmount: 0
-  healAmount: 20
+  healAmount: 0
   inventoryDescription: 
-  modelPrefab: {fileID: 9183560261532742718, guid: e806f401e449c51409695b8a72de193f, type: 3}
+  modelPrefab: {fileID: 2958690757042059995, guid: 6fe1ec59b4532f34cac3716faa1a8167, type: 3}

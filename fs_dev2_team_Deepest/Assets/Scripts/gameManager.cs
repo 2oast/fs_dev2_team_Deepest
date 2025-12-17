@@ -24,25 +24,28 @@ public class GameManager : MonoBehaviour
 
     public bool isPaused;
 
+    public bool isInteracting = false;
+    public bool keyEquipped;
+
     float timeScaleOrig;
 
     int gameGoalCount;
 
     public Transform playerGrabPosition;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
         instance = this;
+        inventoryScreen.SetActive(false);
         timeScaleOrig = Time.timeScale;
 
         player = GameObject.FindWithTag("Player");
         playerScript = player.GetComponent<playerController>();
     }
 
-    // Update is called once per frame
     void Update()
     {
+
         if (Input.GetButtonDown("Cancel"))
         {
             if (menuActive == null)

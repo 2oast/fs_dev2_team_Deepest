@@ -1,16 +1,27 @@
 using UnityEngine;
 
-public class Weapon : MonoBehaviour
+public class Weapon : Item
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public ItemData weaponData;
+
+    public void StartDamageWindow()
     {
-        
+        GameManager.instance.isInteracting = true;
+        WeaponManager.instance.weaponCollider.enabled = true;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void EndDamageWindow()
     {
-        
+        GameManager.instance.isInteracting = false;
+        WeaponManager.instance.weaponCollider.enabled = false;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        IDamage dmg = other.GetComponent<IDamage>();
+        if(dmg != null)
+        {
+            dmg.takeDamage(weaponData.damageAmount);
+        }
     }
 }

@@ -6,7 +6,7 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] CharacterController controller;
     [SerializeField] LayerMask ignoreLayer;
 
-    [Range(1, 10)][SerializeField] int HP;
+    [Range(1, 10)]public int HP;
     [Range(1, 5)][SerializeField] int speed;
     [Range(2, 5)][SerializeField] int sprintMod;
     [Range(5, 20)][SerializeField] int JumpSpeed;
@@ -19,11 +19,6 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] float staminaDrainRate = 10f;
     [SerializeField] float staminaRegenRate = 5f;
     [SerializeField] float staminaRegenInterval = 0.5f;
-
-    [SerializeField] AudioSource footstepSource;
-    [SerializeField] AudioClip[] footstepClips;
-    [SerializeField] float walkStepInterval = 0.5f;
-    [SerializeField] float sprintStepInterval = 0.3f;
 
     [SerializeField] Transform shieldTransform;
     [SerializeField] Vector3 shieldBlockOffset = new Vector3(0.3f, 0.2f, 0f);
@@ -51,8 +46,6 @@ public class playerController : MonoBehaviour, IDamage
 
     float shootTimer;
 
-    float nextStepTime;
-
     float baseSpeed;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -78,11 +71,9 @@ public class playerController : MonoBehaviour, IDamage
             movement();
 
         sprint();
-
-        Footsteps();
-
         Blocking();
         UpdateShieldPosition();
+        SwingSword();
 
         if (isSprinting)
         {
@@ -136,7 +127,7 @@ public class playerController : MonoBehaviour, IDamage
         jump();
         controller.Move(playerVel * Time.deltaTime);
 
-        if (Input.GetButton("Fire1") && shootTimer >= shootRate)
+        if (Input.GetKeyDown(KeyCode.F) && shootTimer >= shootRate)
         {
             shoot();
         }
@@ -165,22 +156,7 @@ public class playerController : MonoBehaviour, IDamage
         }
     }
 
-    void shoot()
-    {
-        shootTimer = 0;
-
-        RaycastHit hit;
-        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
-        {
-            Debug.Log(hit.collider.name);
-
-            IDamage dmg = hit.collider.GetComponent<IDamage>();
-            if (dmg != null)
-            {
-                dmg.takeDamage(shootDamage);
-            }
-        }
-    }
+    
 
     public void takeDamage(int amount)
     {
@@ -262,6 +238,19 @@ public class playerController : MonoBehaviour, IDamage
         shieldTransform.localPosition =
             Vector3.Lerp(shieldTransform.localPosition, target, Time.deltaTime * shieldMoveSpeed);
     }
+    public void SwingSword()
+    {
+        if (WeaponManager.instance.ItemEquipped() && WeaponManager.instance.currentItem.itemData.isWeapon && Input.GetButtonDown("Fire1"))
+        {
+            PlayerAnimatorManager.instance.PlayTargetAnimation(PlayerAnimatorManager.instance.playerAnimator, "SwordSwing");
+            GameManager.instance.isInteracting = true;
+            stamina -= WeaponManager.instance.currentItem.itemData.staminaDrainAmount;
+        }
+        else
+        {
+            return;
+        }
+    }
 
     void OnInteract()
     {
@@ -282,43 +271,18 @@ public class playerController : MonoBehaviour, IDamage
         
     }
 
-    void Footsteps()
+    void shoot()
     {
-        if (GameManager.instance != null && GameManager.instance.isPaused)
-            return;
-
-        if (footstepSource == null || footstepClips == null || footstepClips.Length == 0)
-            return;
-
-        if (!controller.isGrounded)
-            return;
-
-        float inputX = Input.GetAxis("Horizontal");
-        float inputZ = Input.GetAxis("Vertical");
-        float inputMag = Mathf.Abs(inputX) + Mathf.Abs(inputZ);
-
-        if (inputMag < 0.1f)
-            return;
-
-        float interval = isSprinting ? sprintStepInterval : walkStepInterval;
-
-        if (interval < 0.1f)
-            interval = 0.1f;
-
-        if (Time.time >= nextStepTime)
+        if (WeaponManager.instance.ringEquipped)
         {
-            PlayFootstep();
-            nextStepTime = Time.time + interval;
+            shootTimer = 0;
+            MagicRing magic = InventoryManager.instance.ringSlot.itemInSlot.modelPrefab.GetComponent<MagicRing>();
+            GameObject shootEffect = Instantiate(magic.shootEffect, WeaponManager.instance.rightHandTransform, false);
+            shootEffect.transform.parent = null;
+            Rigidbody shootEffectRB = shootEffect.GetComponent<Rigidbody>();
+            shootEffectRB.linearVelocity = Camera.main.transform.forward * magic.shootSpeed * Time.deltaTime;
         }
+        else
+            return;
     }
-
-    void PlayFootstep()
-    {
-        int index = Random.Range(0, footstepClips.Length);
-        AudioClip clip = footstepClips[index];
-
-        footstepSource.pitch = Random.Range(0.95f, 1.05f);
-        footstepSource.PlayOneShot(clip);
-    }
-
 }

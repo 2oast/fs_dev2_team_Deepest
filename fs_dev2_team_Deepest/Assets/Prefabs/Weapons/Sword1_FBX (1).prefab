@@ -10,9 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 1100311094342209544}
   - component: {fileID: 4480827094095549415}
-  - component: {fileID: 5501380576537148911}
   - component: {fileID: 6383603570489942206}
   - component: {fileID: 3424472158768393938}
+  - component: {fileID: -547593240993727355}
+  - component: {fileID: 9012596227491881412}
+  - component: {fileID: -426121114586018393}
   m_Layer: 0
   m_Name: Sword1_FBX (1)
   m_TagString: Untagged
@@ -43,22 +45,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 913205623336244230}
   m_Mesh: {fileID: 4077779311563332892, guid: 1af6c9d4792b975498541f34267aefc6, type: 3}
---- !u!114 &5501380576537148911
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 913205623336244230}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e786a3e1c8ba2d44e948a851eb92edea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Item
-  itemData: {fileID: 11400000, guid: 7b1734d8099432b43bfc4a3079a71dc9, type: 2}
-  floatSpeed: 2
-  spinSpeed: 50
-  itemRenderer: {fileID: 6383603570489942206}
 --- !u!23 &6383603570489942206
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -120,11 +106,76 @@ BoxCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 8
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 1, y: 3, z: 0.11519314}
   m_Center: {x: 0, y: 0.47956443, z: 0}
+--- !u!114 &-547593240993727355
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 913205623336244230}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d13b45e5583ee743949bbfbf35a750d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Weapon
+  itemData: {fileID: 11400000, guid: 7b1734d8099432b43bfc4a3079a71dc9, type: 2}
+  floatSpeed: 2
+  spinSpeed: 50
+  weaponData: {fileID: 11400000, guid: 7b1734d8099432b43bfc4a3079a71dc9, type: 2}
+--- !u!95 &9012596227491881412
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 913205623336244230}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 927172a17bf8d9748a5ca7fc7d05ba0e, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!54 &-426121114586018393
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 913205623336244230}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 8
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0

@@ -21,6 +21,7 @@ public class enemyAI : MonoBehaviour, IDamage
 
     [SerializeField] AudioSource audioSource;
     [SerializeField] AudioClip spitSound;
+    [SerializeField] AudioClip hurtSound;
 
     [SerializeField] float wanderRadius = 8f;
     [SerializeField] float wanderPause = 2f;
@@ -185,7 +186,7 @@ public class enemyAI : MonoBehaviour, IDamage
     {
         HP -= amount;
         agent.SetDestination(GameManager.instance.player.transform.position);
-
+        audioSource.PlayOneShot(hurtSound, .5f);
         if (HP <= 0)
         {
             GameManager.instance.UpdateGameGoal(-1);

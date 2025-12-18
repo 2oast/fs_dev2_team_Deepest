@@ -23,6 +23,6 @@ MonoBehaviour:
   staminaDrainAmount: 0
   isKeyItem: 0
   damageAmount: 0
-  healAmount: 50
+  healAmount: 5
   inventoryDescription: 
   modelPrefab: {fileID: 0}

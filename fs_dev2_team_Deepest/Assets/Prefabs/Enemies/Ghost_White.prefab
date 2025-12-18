@@ -1251,6 +1251,7 @@ MonoBehaviour:
   handSwipeTime: 0.25
   audioSource: {fileID: 6095570243530999330}
   slapSound: {fileID: 8300000, guid: a4d18b2972eb81a4785ddc5398f8e10d, type: 3}
+  hurtSound: {fileID: 8300000, guid: d58a936f96a00f14489c33ace667bf93, type: 3}
   wanderRadius: 8
   wanderPause: 2
 --- !u!95 &1775385178016955781

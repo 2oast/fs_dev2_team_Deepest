@@ -5,6 +5,7 @@ public class MagicRing : Item
     [SerializeField] int castingCost;
     [SerializeField] int shootDist;
     [SerializeField] float shootRate;
+    public AudioClip shootSound;
     public int shootSpeed;
 
     public GameObject shootEffect;

@@ -7,7 +7,7 @@ public class ghostEnemyAI : MonoBehaviour, IDamage
     [SerializeField] int HP;
     [SerializeField] int meleeDamage = 10;
     [SerializeField] float attackRate = 4f;
-    [SerializeField] float attackRange = 2f;
+    [SerializeField] float attackRange = 2f; 
 
     [SerializeField] SkinnedMeshRenderer model;
     [SerializeField] NavMeshAgent agent;
@@ -23,6 +23,8 @@ public class ghostEnemyAI : MonoBehaviour, IDamage
 
     [SerializeField] AudioSource audioSource;
     [SerializeField] AudioClip slapSound;
+    [SerializeField] AudioClip hurtSound;
+
 
     [SerializeField] float wanderRadius = 8f;
     [SerializeField] float wanderPause = 2f;
@@ -201,6 +203,7 @@ public class ghostEnemyAI : MonoBehaviour, IDamage
     {
         HP -= amount;
         agent.SetDestination(GameManager.instance.player.transform.position);
+        audioSource.PlayOneShot(hurtSound, .5f);
 
         if (HP <= 0)
         {

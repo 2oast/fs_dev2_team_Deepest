@@ -110,8 +110,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2, y: 2, z: 2}
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Size: {x: 0.5, y: 0.5, z: 0.5}
+  m_Center: {x: 0, y: 0.2, z: 0}
 --- !u!114 &5847577661269966350
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127,4 +127,4 @@ MonoBehaviour:
   itemData: {fileID: 11400000, guid: fb66b1a2b8897eb429c95a6500db2dc3, type: 2}
   floatSpeed: 1
   spinSpeed: 50
-  itemRenderer: {fileID: 6295725815840847530}
+  isReadyToCollect: 0

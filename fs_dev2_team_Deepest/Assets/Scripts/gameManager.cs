@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
     public TMP_Text doorPromptText;
     public TMP_Text icePromptText;
     public TMP_Text tutorialText;
+    public TMP_Text ringText;
 
     public AudioSource bgmSource;
 
@@ -140,6 +141,15 @@ public class GameManager : MonoBehaviour
         menuActive.SetActive(true);
     }
 
+    public void ShowRingTutorial(bool show)
+    {
+        if (tutorialText != null)
+            tutorialText.text = "Press F to shoot fireballs";
+            tutorialText.gameObject.SetActive(show);
+
+        StartCoroutine(HideTutorialTextDelay());
+    }
+
     public void ShowEscapePrompt(bool show)
     {
         if (escapePromptText != null)
@@ -188,7 +198,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    IEnumerator HideTutorialTextDelay()
+    public IEnumerator HideTutorialTextDelay()
     {
         yield return new WaitForSeconds(3f);
         HideTutorialText();

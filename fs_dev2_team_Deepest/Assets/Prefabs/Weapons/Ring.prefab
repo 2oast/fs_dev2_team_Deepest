@@ -127,10 +127,10 @@ MonoBehaviour:
   itemData: {fileID: 11400000, guid: bb4c4dedd9d015e448dee97eca0f1482, type: 2}
   floatSpeed: 2
   spinSpeed: 50
-  type: 0
-  damageAmount: 0
+  isReadyToCollect: 0
   castingCost: 10
   shootDist: 30
   shootRate: 1
-  shootSpeed: 1000
-  shootEffect: {fileID: 2637062693264136242, guid: 3e2bc21f86069a3408456a36fd27ad26, type: 3}
+  shootSound: {fileID: 8300000, guid: f4da3eaf7af5a9d4ba4d955b58921282, type: 3}
+  shootSpeed: 5000
+  shootEffect: {fileID: 18025331703054662, guid: 827da55f7d9a5124999dd01a01eb7a4a, type: 3}

@@ -650,6 +650,7 @@ MonoBehaviour:
   projectileSpeed: 10
   audioSource: {fileID: 3195376820924939712}
   spitSound: {fileID: 8300000, guid: 9ebe109be1d920142b2bda77856a5b53, type: 3}
+  hurtSound: {fileID: 8300000, guid: d58a936f96a00f14489c33ace667bf93, type: 3}
   wanderRadius: 8
   wanderPause: 2
 --- !u!95 &8918523828580535918

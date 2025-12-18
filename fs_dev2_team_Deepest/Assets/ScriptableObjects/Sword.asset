@@ -25,4 +25,4 @@ MonoBehaviour:
   damageAmount: 1
   healAmount: 0
   inventoryDescription: 
-  modelPrefab: {fileID: 6959722664410815549, guid: 24c01b2f519063a4696dd236db9bf8aa, type: 3}
+  modelPrefab: {fileID: 913205623336244230, guid: a395dba5b307777418161f71dc46946a, type: 3}

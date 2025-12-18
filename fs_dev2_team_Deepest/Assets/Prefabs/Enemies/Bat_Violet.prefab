@@ -722,6 +722,7 @@ MonoBehaviour:
   FOV: 90
   audioSource: {fileID: 8092925856508157837}
   biteSound: {fileID: 8300000, guid: 42c870dde7e4a0a429c67c39af687179, type: 3}
+  hurtSound: {fileID: 8300000, guid: d58a936f96a00f14489c33ace667bf93, type: 3}
   wanderRadius: 10
   wanderTimer: 5
 --- !u!195 &9075617564335876043

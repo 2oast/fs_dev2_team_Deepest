@@ -25,10 +25,6 @@ public class Door : MonoBehaviour, IInteractable
             {
                 if (!isOpen)
                     isOpen = true;
-
-                Destroy(WeaponManager.instance.currentItem.gameObject);
-                InventoryManager.instance.ResetInventorySlot(InventoryManager.instance.activeSlot);
-                InventoryManager.instance.activeSlot = null;
             }
         }
 

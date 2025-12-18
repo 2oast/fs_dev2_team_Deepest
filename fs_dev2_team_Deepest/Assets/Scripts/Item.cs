@@ -9,21 +9,15 @@ public class Item : MonoBehaviour, IInteractable
     public float floatSpeed = 2f;
     public int spinSpeed = 50;
 
-    [SerializeField] Renderer itemRenderer;
-
     private bool isFloating = false;
-    private bool isReadyToCollect = false;
+    [SerializeField] bool isReadyToCollect = false;
     private Vector3 targetPos;
 
     Material itemMat;
 
     void Start()
     {
-        if (itemRenderer == null)
-            itemRenderer = GetComponentInChildren<Renderer>();
-
-        if (itemRenderer != null)
-            itemMat = itemRenderer.material;
+        
     }
 
     void Update()

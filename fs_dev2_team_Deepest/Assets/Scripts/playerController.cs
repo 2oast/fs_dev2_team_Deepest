@@ -31,7 +31,7 @@ public class playerController : MonoBehaviour, IDamage
 
     [SerializeField] int interactDistance;
 
-    [SerializeField] AudioSource footstepSource;
+    [SerializeField] AudioSource audioSource;
     [SerializeField] AudioClip[] footstepClips;
     [SerializeField] float walkStepInterval = 0.5f;
     [SerializeField] float sprintStepInterval = 0.28f;
@@ -146,7 +146,7 @@ public class playerController : MonoBehaviour, IDamage
         if (GameManager.instance != null && GameManager.instance.isPaused)
             return;
 
-        if (footstepSource == null || footstepClips == null || footstepClips.Length == 0)
+        if (audioSource == null || footstepClips == null || footstepClips.Length == 0)
             return;
 
         if (!controller.isGrounded)
@@ -164,7 +164,7 @@ public class playerController : MonoBehaviour, IDamage
         if (Time.time >= nextStepTime)
         {
             AudioClip clip = footstepClips[Random.Range(0, footstepClips.Length)];
-            footstepSource.PlayOneShot(clip);
+            audioSource.PlayOneShot(clip);
             nextStepTime = Time.time + interval;
         }
     }
@@ -276,49 +276,65 @@ public class playerController : MonoBehaviour, IDamage
     }
     public void SwingSword()
     {
-        if (WeaponManager.instance.ItemEquipped() && WeaponManager.instance.currentItem.itemData.isWeapon && Input.GetButtonDown("Fire1"))
+        if (!GameManager.instance.isPaused)
         {
-            PlayerAnimatorManager.instance.PlayTargetAnimation(PlayerAnimatorManager.instance.playerAnimator, "SwordSwing");
-            GameManager.instance.isInteracting = true;
-            stamina -= WeaponManager.instance.currentItem.itemData.staminaDrainAmount;
+            if (WeaponManager.instance.ItemEquipped() && WeaponManager.instance.currentItem.itemData.isWeapon && Input.GetButtonDown("Fire1"))
+            {
+                PlayerAnimatorManager.instance.PlayTargetAnimation(PlayerAnimatorManager.instance.playerAnimator, "SwordSwing");
+                GameManager.instance.isInteracting = true;
+                stamina -= WeaponManager.instance.currentItem.itemData.staminaDrainAmount;
+            }
+            else
+            {
+                return;
+            }
         }
-        else
-        {
-            return;
-        }
+          
     }
 
     void OnInteract()
     {
-        if(Input.GetKeyDown(KeyCode.E))
+        if (!GameManager.instance.isPaused)
         {
-            RaycastHit hit;
-            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, interactDistance))
+            if (Input.GetKeyDown(KeyCode.E))
             {
-                Debug.Log(hit.collider.name);
-
-                IInteractable interactable = hit.collider.GetComponent<IInteractable>();
-                if (interactable != null)
+                RaycastHit hit;
+                if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, interactDistance))
                 {
-                    interactable.Interact();
+                    Debug.Log(hit.collider.name);
+
+                    IInteractable interactable = hit.collider.GetComponent<IInteractable>();
+                    if (interactable != null)
+                    {
+                        interactable.Interact();
+                    }
                 }
             }
+
         }
-        
+
     }
 
     void shoot()
     {
-        if (WeaponManager.instance.ringEquipped)
+        if(!GameManager.instance.isPaused)
         {
-            shootTimer = 0;
-            MagicRing magic = InventoryManager.instance.ringSlot.itemInSlot.modelPrefab.GetComponent<MagicRing>();
-            GameObject shootEffect = Instantiate(magic.shootEffect, WeaponManager.instance.rightHandTransform, false);
-            shootEffect.transform.parent = null;
-            Rigidbody shootEffectRB = shootEffect.GetComponent<Rigidbody>();
-            shootEffectRB.linearVelocity = Camera.main.transform.forward * magic.shootSpeed * Time.deltaTime;
+            if (shootTimer > 3)
+            {
+                if (WeaponManager.instance.ringEquipped)
+                {
+                    shootTimer = 0;
+                    MagicRing magic = InventoryManager.instance.ringSlot.itemInSlot.modelPrefab.GetComponent<MagicRing>();
+                    GameObject shootEffect = Instantiate(magic.shootEffect, WeaponManager.instance.rightHandTransform, false);
+                    shootEffect.transform.parent = null;
+                    Rigidbody shootEffectRB = shootEffect.GetComponent<Rigidbody>();
+                    shootEffectRB.linearVelocity = Camera.main.transform.forward * magic.shootSpeed * Time.deltaTime;
+                    audioSource.PlayOneShot(magic.shootSound, .8f);
+                }
+                else
+                    return;
+            }
         }
-        else
-            return;
+       
     }
 }

@@ -11,10 +11,12 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
     public Image inventorySlotSprite;
     public ItemData itemInSlot;
     public Button useItemButton;
+    Sprite originalSprite;
     public bool isFilled;
 
     public void Awake()
     {
+        originalSprite = this.gameObject.GetComponent<Image>().sprite;
         originalImage = GetComponent<Image>();
         inventorySlotSprite = GetComponent<Image>();
         useItemButton = GetComponent<Button>();
@@ -34,8 +36,10 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
         {
             if (itemInSlot.isHealingItem)
             {
-                GameManager.instance.playerScript.HP += 10;
+                GameManager.instance.playerScript.HP += itemInSlot.healAmount;
+                GameManager.instance.playerScript.updatePlayerUI();
                 InventoryManager.instance.ResetInventorySlot(this);
+                inventorySlotSprite.sprite = originalSprite;
             }
             else if(itemInSlot.isEquippable && !itemInSlot.isRing)
             {
@@ -52,6 +56,7 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
                 InventoryManager.instance.ringSlot.inventorySlotSprite.sprite = itemInSlot.inventoryIcon;
                 WeaponManager.instance.ringEquipped = true;
                 InventoryManager.instance.ringSlot.itemInSlot = this.itemInSlot;
+                GameManager.instance.ShowRingTutorial(true);
             }
 
         }

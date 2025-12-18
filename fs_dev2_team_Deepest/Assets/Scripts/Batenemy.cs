@@ -18,6 +18,8 @@ public class batEnemyAI : MonoBehaviour, IDamage
 
     [SerializeField] AudioSource audioSource;
     [SerializeField] AudioClip biteSound;
+    [SerializeField] AudioClip hurtSound;
+
 
     [SerializeField] float wanderRadius = 10f;
     [SerializeField] float wanderTimer = 5f;
@@ -157,6 +159,7 @@ public class batEnemyAI : MonoBehaviour, IDamage
     {
         HP -= amount;
         agent.SetDestination(GameManager.instance.player.transform.position);
+        audioSource.PlayOneShot(hurtSound, .5f);
 
         if (HP <= 0)
         {

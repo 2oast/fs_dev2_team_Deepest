@@ -59,12 +59,12 @@ public class Item : MonoBehaviour, IInteractable
         targetPos = GameManager.instance.playerGrabPosition.position;
 
         Vector3 startPos = transform.position;
-        float t = 0f;
+        float time = 0f;
 
-        while (t < 1f)
+        while (time < 1f)
         {
-            t += Time.deltaTime * floatSpeed;
-            transform.position = Vector3.Lerp(startPos, targetPos, t);
+            time += Time.deltaTime * floatSpeed;
+            transform.position = Vector3.Lerp(startPos, targetPos, time);
             yield return null;
         }
 

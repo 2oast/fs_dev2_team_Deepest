@@ -1,23 +1,32 @@
 using UnityEngine;
 using System.Collections;
+using NUnit.Framework.Interfaces;
 
 public class Item : MonoBehaviour, IInteractable
 {
-    public ItemData itemData;
+    public ItemData item;
 
     [Header("---Stylish Floating---")]
-    public float floatSpeed = 2f;
+
+    [SerializeField] float floatSpeed = 2f;
     public int spinSpeed = 50;
 
-    private bool isFloating = false;
-    [SerializeField] bool isReadyToCollect = false;
+    [Header("Flags")]
+    public bool isFloating = false;
+    public bool isReadyToCollect = false;
+
+    [Header("Position/Rotations")]
     private Vector3 targetPos;
+    public Vector3 originalPos;
+    public Quaternion originalRot;
+    [SerializeField] Transform grabPosition;
 
     Material itemMat;
 
     void Start()
     {
-        
+        originalPos = transform.position;
+        originalRot = transform.rotation;
     }
 
     void Update()
@@ -25,38 +34,31 @@ public class Item : MonoBehaviour, IInteractable
         if (isFloating || isReadyToCollect)
         {
             transform.Rotate(Vector3.up * spinSpeed * Time.deltaTime);
+            GameManager.instance.isInteracting = true;
             Camera.main.transform.LookAt(this.transform.position);
-            GameManager.instance.cameraController.enabled = false;
+            GameManager.instance.cameraControllerScript.enabled = false;
+        }
+
+        if (isReadyToCollect)
+        {
+            PickupMessage(this.name);
         }
     }
 
     public void Interact()
     {
-        if (!GameManager.instance.isInteracting && !isReadyToCollect)
+        if (!isReadyToCollect)
         {
             StartCoroutine(FloatToCenter());
         }
-        else if (isReadyToCollect)
-        {
-            CollectItem();
-        }
+
     }
 
-    private void CollectItem()
-    {
-        GameManager.instance.isInteracting = false;
-        InventoryManager.instance.AddItemToInventory(itemData);
-        GameManager.instance.ShowInventoryTutorial();
-        GameManager.instance.cameraController.enabled = true;
-        Destroy(gameObject);
-    }
-
-    IEnumerator FloatToCenter()
+    public IEnumerator FloatToCenter()
     {
         isFloating = true;
 
-        GameManager.instance.isInteracting = true;
-        targetPos = GameManager.instance.playerGrabPosition.position;
+        targetPos = grabPosition.position;
 
         Vector3 startPos = transform.position;
         float time = 0f;
@@ -65,12 +67,17 @@ public class Item : MonoBehaviour, IInteractable
         {
             time += Time.deltaTime * floatSpeed;
             transform.position = Vector3.Lerp(startPos, targetPos, time);
+            InventoryManager.instance.itemToBeCollected = this;
             yield return null;
         }
-
+        GameManager.instance.YesOrNoObj.SetActive(true);
         isFloating = false;
         isReadyToCollect = true;
 
-        GameManager.instance.isInteracting = false;
+    }
+
+    void PickupMessage(string objectName)
+    {
+        GameManager.instance.pickupText.text = "Pick up " + objectName + "?";
     }
 }

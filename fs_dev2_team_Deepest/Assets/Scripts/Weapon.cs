@@ -1,27 +1,22 @@
 using UnityEngine;
-
-public class Weapon : Item
+[CreateAssetMenu(menuName = "Item/Weapon")]
+public class Weapon : ItemData
 {
-    public ItemData weaponData;
+    public int damage;
 
-    public void StartDamageWindow()
+    [Header("Gun Settings")]
+    public Material bulletHoles;
+    public ParticleSystem smoke;
+
+    [Header("Sword Settings")]
+    public float staminaDrain;
+
+
+
+
+    public override void Use(PlayerController player)
     {
-        GameManager.instance.isInteracting = true;
-        WeaponManager.instance.weaponCollider.enabled = true;
+        player.EquipWeapon(this);
     }
 
-    public void EndDamageWindow()
-    {
-        GameManager.instance.isInteracting = false;
-        WeaponManager.instance.weaponCollider.enabled = false;
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        IDamage dmg = other.GetComponent<IDamage>();
-        if(dmg != null)
-        {
-            dmg.takeDamage(weaponData.damageAmount);
-        }
-    }
 }

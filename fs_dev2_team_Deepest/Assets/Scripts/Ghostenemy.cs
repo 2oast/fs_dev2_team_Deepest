@@ -43,7 +43,6 @@ public class ghostEnemyAI : MonoBehaviour, IDamage
     void Start()
     {
         colorOrig = model.material.color;
-        GameManager.instance.UpdateGameGoal(1);
 
         if (ghostHand != null)
             ghostHand.SetActive(false);
@@ -174,13 +173,13 @@ public class ghostEnemyAI : MonoBehaviour, IDamage
             }
         }
 
-        if (GameManager.instance != null && GameManager.instance.playerScript != null)
+        if (GameManager.instance != null && GameManager.instance.playerControllerScript != null)
         {
             float distToPlayer = Vector3.Distance(transform.position, GameManager.instance.player.transform.position);
 
             if (distToPlayer <= attackRange + 0.5f)
             {
-                GameManager.instance.playerScript.takeDamage(meleeDamage);
+                GameManager.instance.playerControllerScript.takeDamage(meleeDamage);
                 if (audioSource != null && slapSound != null)
                 {
                     audioSource.PlayOneShot(slapSound);
@@ -207,7 +206,6 @@ public class ghostEnemyAI : MonoBehaviour, IDamage
 
         if (HP <= 0)
         {
-            GameManager.instance.UpdateGameGoal(-1);
             Destroy(gameObject);
         }
         else

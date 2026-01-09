@@ -36,7 +36,6 @@ public class batEnemyAI : MonoBehaviour, IDamage
     void Start()
     {
         colorOrig = model.material.color;
-        GameManager.instance.UpdateGameGoal(1);
 
         StartCoroutine(Wander());
     }
@@ -123,13 +122,13 @@ public class batEnemyAI : MonoBehaviour, IDamage
             audioSource.PlayOneShot(biteSound);
         }
 
-        if (GameManager.instance != null && GameManager.instance.playerScript != null)
+        if (GameManager.instance != null && GameManager.instance.playerControllerScript != null)
         {
             float distToPlayer = Vector3.Distance(transform.position, GameManager.instance.player.transform.position);
 
             if (distToPlayer <= attackRange)
             {
-                GameManager.instance.playerScript.takeDamage(meleeDamage);
+                GameManager.instance.playerControllerScript.takeDamage(meleeDamage);
             }
         }
 
@@ -163,7 +162,6 @@ public class batEnemyAI : MonoBehaviour, IDamage
 
         if (HP <= 0)
         {
-            GameManager.instance.UpdateGameGoal(-1);
             Destroy(gameObject);
         }
         else

@@ -43,7 +43,6 @@ public class enemyAI : MonoBehaviour, IDamage
     void Start()
     {
         colorOrig = model.material.color;
-        GameManager.instance.UpdateGameGoal(1);
     }
 
     // Update is called once per frame
@@ -189,7 +188,6 @@ public class enemyAI : MonoBehaviour, IDamage
         audioSource.PlayOneShot(hurtSound, .5f);
         if (HP <= 0)
         {
-            GameManager.instance.UpdateGameGoal(-1);
             Destroy(gameObject);
         }
         else

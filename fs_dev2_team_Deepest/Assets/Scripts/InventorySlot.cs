@@ -1,30 +1,23 @@
-using TMPro;
-using Unity.VisualScripting;
-using UnityEditorInternal.Profiling.Memory.Experimental;
-using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine;
 using UnityEngine.UI;
- 
-public class InventorySlot : MonoBehaviour, IPointerClickHandler
+
+public class InventorySlot : MonoBehaviour, ISubmitHandler, IPointerClickHandler, ISelectHandler
 {
-    public Image originalImage;
-    public Image inventorySlotSprite;
     public ItemData itemInSlot;
-    public Button useItemButton;
-    Sprite originalSprite;
+    public Image itemImageComp;
+    public Sprite itemSprite;
+
     public bool isFilled;
 
-    public void Awake()
+    private void Awake()
     {
-        originalSprite = this.gameObject.GetComponent<Image>().sprite;
-        originalImage = GetComponent<Image>();
-        inventorySlotSprite = GetComponent<Image>();
-        useItemButton = GetComponent<Button>();
+
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if(eventData.button == PointerEventData.InputButton.Left)
+        if (eventData.button == PointerEventData.InputButton.Left)
         {
             UseItem();
         }
@@ -32,39 +25,16 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
 
     public void UseItem()
     {
-        if(itemInSlot != null)
-        {
-            if (itemInSlot.isHealingItem)
-            {
-                GameManager.instance.playerScript.HP += itemInSlot.healAmount;
-                GameManager.instance.playerScript.updatePlayerUI();
-                InventoryManager.instance.ResetInventorySlot(this);
-                inventorySlotSprite.sprite = originalSprite;
-            }
-            else if(itemInSlot.isEquippable && !itemInSlot.isRing)
-            {
-                if(WeaponManager.instance.ItemEquipped())
-                {
-                    Destroy(WeaponManager.instance.currentItem.gameObject);
-                }
-                GameObject newItem = Instantiate( itemInSlot.modelPrefab, WeaponManager.instance.rightHandTransform, false);
-                WeaponManager.instance.SetCurrentItemData(newItem.GetComponent<Item>());
-                InventoryManager.instance.activeSlot = this;
-            }
-            else if (itemInSlot.isEquippable && itemInSlot.isRing)
-            {
-                InventoryManager.instance.ringSlot.inventorySlotSprite.sprite = itemInSlot.inventoryIcon;
-                WeaponManager.instance.ringEquipped = true;
-                InventoryManager.instance.ringSlot.itemInSlot = this.itemInSlot;
-                GameManager.instance.ShowRingTutorial(true);
-            }
+        itemInSlot.Use(GameManager.instance.playerControllerScript);
+    }
 
-        }
-        else
-        {
-            return;
-        }
+    public void OnSelect(BaseEventData eventData)
+    {
 
+    }
 
+    public void OnSubmit(BaseEventData eventData)
+    {
+        UseItem();
     }
 }

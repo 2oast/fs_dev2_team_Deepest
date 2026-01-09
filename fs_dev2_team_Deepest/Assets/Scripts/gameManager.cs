@@ -1,47 +1,46 @@
-using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
 using System.Collections;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.Rendering;
+using static UnityEngine.GraphicsBuffer;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
-    [SerializeField] GameObject menuActive;
+    [Header("Menu's")]
+    public GameObject menuActive;
     [SerializeField] GameObject menuPause;
     [SerializeField] GameObject menuWin;
     [SerializeField] GameObject menuLose;
-
-    public GameObject player;
-    public playerController playerScript;
-    public cameraController cameraController;
-    public Image playerHPBar;
-    public Image playerStaminaBar;
-    public GameObject playerDamageScreen;
     public GameObject inventoryScreen;
-    public TMP_Text escapePromptText;
-    public TMP_Text doorPromptText;
-    public TMP_Text icePromptText;
-    public TMP_Text tutorialText;
-    public TMP_Text ringText;
+    public GameObject radioUI;
 
-    public AudioSource bgmSource;
+    [Header("Text Objects")]
+    public GameObject interactTextBox;
+    public GameObject YesOrNoObj;
+    public GameObject loadingScreen;
+    public GameObject flashScreen;
+    public TextMeshProUGUI interactText;
+    public TextMeshProUGUI pickupText;
 
-    public bool inventoryTutorialShown = false;
-
-    public bool isPaused;
-
-    public bool isInteracting = false;
-    public bool keyEquipped;
+    [Header("Player")]
+    public PlayerController playerControllerScript;
+    public CameraController cameraControllerScript;
+    public GameObject player;
+    public GameObject radioObj;
 
     float timeScaleOrig;
 
-    int gameGoalCount;
+    public bool isInteracting;
+    public bool isPaused;
 
-    public Transform playerGrabPosition;
 
-    Coroutine tutorialRoutine;
+    [Header("Camera Stuff")]
+    GameObject currentCam;
 
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
         instance = this;
@@ -53,13 +52,15 @@ public class GameManager : MonoBehaviour
 
         player = GameObject.FindWithTag("Player");
         if (player != null)
-            playerScript = player.GetComponent<playerController>();
+        {
+            playerControllerScript = player.GetComponent<PlayerController>();
+            cameraControllerScript = player.GetComponentInChildren<CameraController>();
+        }
 
-        if (bgmSource != null && !bgmSource.isPlaying)
-            bgmSource.Play();
+
     }
 
-    void Update()
+    private void Update()
     {
         if (Input.GetButtonDown("Cancel"))
         {
@@ -73,6 +74,7 @@ public class GameManager : MonoBehaviour
             {
                 StateUnpause();
             }
+
         }
 
         if (Input.GetKeyDown(KeyCode.I))
@@ -88,10 +90,52 @@ public class GameManager : MonoBehaviour
                 StateUnpause();
             }
         }
-        if (Input.GetKeyDown(KeyCode.I))
+
+    }
+
+    public void SwitchCamera(GameObject newCamera)
+    {
+        if (currentCam == newCamera)
+            return;
+
+        if (currentCam != null)
+            currentCam.SetActive(false);
+
+        currentCam = newCamera;
+        currentCam.SetActive(true);
+    }
+
+    public IEnumerator TransitionScreen(float duration, Transform target)
+    {
+
+        Image img = loadingScreen.GetComponent<Image>();
+        Color c = img.color;
+        CharacterController cc = playerControllerScript.GetComponent<CharacterController>();
+
+        float t = 0f;
+        while (t < 1f)
         {
-            HideTutorialText();
+            t += Time.deltaTime / duration;
+            c.a = Mathf.Lerp(0f, 1f, t);
+            img.color = c;
+            yield return null;
         }
+
+        cc.enabled = false;
+        playerControllerScript.transform.position = target.position;
+        cc.enabled = true;
+
+        yield return new WaitForSecondsRealtime(0.5f);
+
+        t = 0f;
+        while (t < 1f)
+        {
+            t += Time.deltaTime / duration;
+            c.a = Mathf.Lerp(1f, 0f, t);
+            img.color = c;
+            yield return null;
+        }
+
     }
 
     public void StatePause()
@@ -100,9 +144,6 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
-
-        if (bgmSource != null)
-            bgmSource.Pause();
     }
 
     public void StateUnpause()
@@ -116,22 +157,6 @@ public class GameManager : MonoBehaviour
             menuActive.SetActive(false);
 
         menuActive = null;
-
-        if (bgmSource != null)
-            bgmSource.UnPause();
-    }
-
-    public void YouWin()
-    {
-        StatePause();
-        menuActive = menuWin;
-        menuActive.SetActive(true);
-        ShowEscapePrompt(false);
-    }
-
-    public void UpdateGameGoal(int amount)
-    {
-        gameGoalCount += amount;
     }
 
     public void YouLose()
@@ -141,66 +166,11 @@ public class GameManager : MonoBehaviour
         menuActive.SetActive(true);
     }
 
-    public void ShowRingTutorial(bool show)
+
+    public IEnumerator ScreenFlash()
     {
-        if (tutorialText != null)
-            tutorialText.text = "Press F to shoot fireballs";
-            tutorialText.gameObject.SetActive(show);
-
-        StartCoroutine(HideTutorialTextDelay());
-    }
-
-    public void ShowEscapePrompt(bool show)
-    {
-        if (escapePromptText != null)
-            escapePromptText.gameObject.SetActive(show);
-    }
-
-    public void ShowDoorPrompt(bool show)
-    {
-        if (doorPromptText != null)
-            doorPromptText.gameObject.SetActive(show);
-    }
-
-    public void ShowIcePrompt(bool show)
-    {
-        if (icePromptText != null)
-            icePromptText.gameObject.SetActive(show);
-    }
-    public void ShowInventoryTutorial()
-    {
-        if (inventoryTutorialShown)
-            return;
-
-        inventoryTutorialShown = true;
-
-        if (tutorialText != null)
-        {
-            tutorialText.text = "Press I to open inventory";
-            tutorialText.gameObject.SetActive(true);
-
-            if (tutorialRoutine != null)
-                StopCoroutine(tutorialRoutine);
-
-            tutorialRoutine = StartCoroutine(HideTutorialTextDelay());
-        }
-    }
-
-    void HideTutorialText()
-    {
-        if (tutorialText != null)
-            tutorialText.gameObject.SetActive(false);
-
-        if (tutorialRoutine != null)
-        {
-            StopCoroutine(tutorialRoutine);
-            tutorialRoutine = null;
-        }
-    }
-
-    public IEnumerator HideTutorialTextDelay()
-    {
-        yield return new WaitForSeconds(3f);
-        HideTutorialText();
+        flashScreen.gameObject.SetActive(true);
+        yield return new WaitForSeconds(.1f);
+        flashScreen.gameObject.SetActive(false);
     }
 }

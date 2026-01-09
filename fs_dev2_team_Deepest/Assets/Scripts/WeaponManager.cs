@@ -1,73 +1,25 @@
-using System;
 using UnityEngine;
 
 public class WeaponManager : MonoBehaviour
 {
     public static WeaponManager instance;
 
-
-    public Transform rightHandTransform;
-    public Item currentItem;
-    public bool ringEquipped;
-    
-    public BoxCollider weaponCollider;
-
-
+    public Weapon currentWeapon;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         instance = this;
-
-        if (rightHandTransform.childCount > 0)
-        {
-            currentItem = rightHandTransform.GetChild(0).GetComponent<Item>();
-
-            if (currentItem != null && currentItem.itemData.isWeapon)
-            {
-                weaponCollider = currentItem.GetComponent<BoxCollider>();
-                weaponCollider.enabled = false;
-            }
-        }
     }
 
-    public bool ItemEquipped()
+    // Update is called once per frame
+    void Update()
     {
-        if(rightHandTransform.childCount == 0)
-        {
-            return false;
-        }
 
-        return true;
     }
 
-    private void Update()
+    public void UpdateWeaponAnimator(GameObject weapon, Animator animator)
     {
-        if (currentItem == null)
-            return;
-        else if(currentItem.itemData.isKeyItem)
-        {
-            GameManager.instance.keyEquipped = true;
-        }
+        animator = weapon.GetComponent<Animator>();
     }
-
-    public void SetCurrentItemData(Item item)
-    {
-        currentItem = item;
-
-        if(currentItem != null)
-        {
-            if (currentItem.itemData.isWeapon)
-            {
-                weaponCollider = currentItem.GetComponent<BoxCollider>();
-                PlayerAnimatorManager.instance.UpdateAnimator(currentItem.gameObject.GetComponent<Animator>());
-            }
-            else
-                return;
-        }
-        
-    }
-
-    
-
 }

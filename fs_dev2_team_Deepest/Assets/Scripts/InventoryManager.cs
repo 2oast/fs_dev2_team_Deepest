@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -8,26 +9,29 @@ public class InventoryManager : MonoBehaviour
 {
     public static InventoryManager instance;
 
-    [SerializeField] InventorySlot[] inventorySlots;
-    public InventorySlot ringSlot;
-    public InventorySlot activeSlot;
-    [SerializeField] TextMeshProUGUI descriptionTextBox;
+    public Item itemToBeCollected;
+    public List<InventorySlot> slots;
 
+    public bool radioInInventory;
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         instance = this;
+        Init();
     }
-    
-    public void ResetInventorySlot(InventorySlot slot)
+
+    public void Init()
     {
-        slot.itemInSlot = null;
-        slot.inventorySlotSprite.sprite = null;
-        slot.isFilled = false;
+        foreach (InventorySlot slot in slots)
+        {
+            slot.itemImageComp = slot.GetComponent<Image>();
+        }
     }
 
     bool InventoryFull()
     {
-        foreach(InventorySlot slot in inventorySlots)
+        foreach (InventorySlot slot in slots)
         {
             if (slot.itemInSlot == null)
             {
@@ -37,17 +41,18 @@ public class InventoryManager : MonoBehaviour
         return true;
     }
 
-    public void AddItemToInventory(ItemData item)
+
+    public void AddItemToInventory(Item item)
     {
-        if(!InventoryFull())
+        if (!InventoryFull())
         {
-            for (int i = 0; i < inventorySlots.Length; i++)
+            for (int i = 0; i < slots.Count; i++)
             {
-                if (inventorySlots[i].itemInSlot == null)
+                if (slots[i].itemInSlot == null)
                 {
-                    inventorySlots[i].itemInSlot = item;
-                    inventorySlots[i].inventorySlotSprite.sprite = item.inventoryIcon;
-                    inventorySlots[i].isFilled = true;
+                    slots[i].itemInSlot = item.item;
+                    slots[i].itemImageComp.sprite = item.item.itemIcon;
+                    slots[i].isFilled = true;
                     return;
                 }
             }

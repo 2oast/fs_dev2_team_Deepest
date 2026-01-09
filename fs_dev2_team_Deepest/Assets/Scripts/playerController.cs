@@ -1,12 +1,12 @@
 using UnityEngine;
 using System.Collections;
 
-public class playerController : MonoBehaviour, IDamage
+public class PlayerController : MonoBehaviour, IDamage
 {
     [SerializeField] CharacterController controller;
     [SerializeField] LayerMask ignoreLayer;
 
-    [Range(1, 10)]public int HP;
+    [Range(1, 10)] public int HP;
     [Range(1, 5)][SerializeField] int speed;
     [Range(2, 5)][SerializeField] int sprintMod;
     [Range(5, 20)][SerializeField] int JumpSpeed;
@@ -21,6 +21,7 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] float staminaRegenInterval = 0.5f;
 
     [SerializeField] Transform shieldTransform;
+    [SerializeField] Transform armTransform;
     [SerializeField] Vector3 shieldBlockOffset = new Vector3(0.3f, 0.2f, 0f);
     [SerializeField] float shieldMoveSpeed = 10f;
     [SerializeField] float blockStaminaCost = 25f;
@@ -35,6 +36,13 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] AudioClip[] footstepClips;
     [SerializeField] float walkStepInterval = 0.5f;
     [SerializeField] float sprintStepInterval = 0.28f;
+
+    [SerializeField] MeshRenderer armMeshRenderer;
+
+    [SerializeField] Animator currentWeaponAnimator;
+    [SerializeField] Animator animator;
+
+
 
     Vector3 moveDir;
     Vector3 playerVel;
@@ -54,6 +62,8 @@ public class playerController : MonoBehaviour, IDamage
     float baseSpeed;
 
     float nextStepTime;
+
+    public GameObject currentWeaponInstance;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -80,7 +90,6 @@ public class playerController : MonoBehaviour, IDamage
         sprint();
         Blocking();
         UpdateShieldPosition();
-        SwingSword();
         Footsteps();
 
         if (isSprinting)
@@ -135,9 +144,9 @@ public class playerController : MonoBehaviour, IDamage
         jump();
         controller.Move(playerVel * Time.deltaTime);
 
-        if (Input.GetKeyDown(KeyCode.F) && shootTimer >= shootRate)
+        if(WeaponManager.instance.currentWeapon != null)
         {
-            shoot();
+            Attack(WeaponManager.instance.currentWeapon);
         }
     }
 
@@ -192,7 +201,7 @@ public class playerController : MonoBehaviour, IDamage
         }
     }
 
-    
+
 
     public void takeDamage(int amount)
     {
@@ -226,19 +235,19 @@ public class playerController : MonoBehaviour, IDamage
 
     public void updatePlayerUI()
     {
-        GameManager.instance.playerHPBar.fillAmount = (float)HP / HPOrig;
+        UImanager.instance.playerHPBar.fillAmount = (float)HP / HPOrig;
     }
 
     void updateStaminaUI()
     {
-        GameManager.instance.playerStaminaBar.fillAmount = stamina / maxStamina;
+        UImanager.instance.playerStaminaBar.fillAmount = stamina / maxStamina;
     }
 
     IEnumerator flashRed()
     {
-        GameManager.instance.playerDamageScreen.SetActive(true);
+        UImanager.instance.playerDamageScreen.SetActive(true);
         yield return new WaitForSeconds(0.1f);
-        GameManager.instance.playerDamageScreen.SetActive(false);
+        UImanager.instance.playerDamageScreen.SetActive(false);
     }
 
     void Blocking()
@@ -274,23 +283,7 @@ public class playerController : MonoBehaviour, IDamage
         shieldTransform.localPosition =
             Vector3.Lerp(shieldTransform.localPosition, target, Time.deltaTime * shieldMoveSpeed);
     }
-    public void SwingSword()
-    {
-        if (!GameManager.instance.isPaused)
-        {
-            if (WeaponManager.instance.ItemEquipped() && WeaponManager.instance.currentItem.itemData.isWeapon && Input.GetButtonDown("Fire1"))
-            {
-                PlayerAnimatorManager.instance.PlayTargetAnimation(PlayerAnimatorManager.instance.playerAnimator, "SwordSwing");
-                GameManager.instance.isInteracting = true;
-                stamina -= WeaponManager.instance.currentItem.itemData.staminaDrainAmount;
-            }
-            else
-            {
-                return;
-            }
-        }
-          
-    }
+
 
     void OnInteract()
     {
@@ -317,22 +310,63 @@ public class playerController : MonoBehaviour, IDamage
 
     void shoot()
     {
-        if(!GameManager.instance.isPaused)
+        if (!GameManager.instance.isPaused)
         {
             if (shootTimer > 3)
             {
-                if (WeaponManager.instance.ringEquipped)
-                {
-                    shootTimer = 0;
-                    MagicRing magic = InventoryManager.instance.ringSlot.itemInSlot.modelPrefab.GetComponent<MagicRing>();
-                    GameObject shootEffect = Instantiate(magic.shootEffect, WeaponManager.instance.rightHandTransform, false);
-                    shootEffect.transform.parent = null;
-                    Rigidbody shootEffectRB = shootEffect.GetComponent<Rigidbody>();
-                    shootEffectRB.linearVelocity = Camera.main.transform.forward * magic.shootSpeed * Time.deltaTime;
-                    audioSource.PlayOneShot(magic.shootSound, .8f);
-                }
-                else
-                    return;
+
+            }
+        }
+
+    }
+
+    public void EquipWeapon(Weapon weapon)
+    {
+
+        if (currentWeaponInstance != null &&
+                WeaponManager.instance.currentWeapon == weapon)
+        {
+            Destroy(currentWeaponInstance);
+            currentWeaponInstance = null;
+            WeaponManager.instance.currentWeapon = null;
+
+            //armMeshRenderer.enabled = false;
+            currentWeaponAnimator = null;
+            return;
+        }
+
+        // Different weapon or nothing equipped
+        if (currentWeaponInstance != null)
+        {
+            Destroy(currentWeaponInstance);
+            currentWeaponInstance = null;
+        }
+
+        //armMeshRenderer.enabled = true;
+
+        // Always instantiate a new scene object
+        currentWeaponInstance = Instantiate(
+            weapon.modelPrefab,
+            armTransform,
+            false
+        );
+        WeaponManager.instance.currentWeapon = weapon;
+        currentWeaponAnimator = currentWeaponInstance.GetComponent<Animator>();
+    }
+
+    void Attack(Weapon weapon)
+    {
+        if (Input.GetButtonDown("Fire1"))
+        {
+            switch (weapon.itemName)
+            {
+                case "Sword":
+                    PlayerAnimatorManager.instance.PlayTargetAnimation(currentWeaponAnimator, "SwordSwing");
+                    stamina -= weapon.staminaDrain;
+                    updateStaminaUI();
+                    break;
+                case "Gun":
+                    break;
             }
         }
        

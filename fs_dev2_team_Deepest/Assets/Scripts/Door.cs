@@ -1,4 +1,4 @@
-using TreeEditor;
+
 using UnityEngine;
 
 public class Door : MonoBehaviour, IInteractable
@@ -12,24 +12,7 @@ public class Door : MonoBehaviour, IInteractable
 
     public void Interact()
     {
-        if(!isKeyDoor)
-        {
-            if (!isOpen)
-                isOpen = true;
-            else
-                isOpen = false;
-        }
-        else
-        {
-            if(GameManager.instance.keyEquipped)
-            {
-                if (!isOpen)
-                    isOpen = true;
-            }
-        }
-
-        if (isOpen && GameManager.instance != null)
-            GameManager.instance.ShowDoorPrompt(false);
+        
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -50,24 +33,6 @@ public class Door : MonoBehaviour, IInteractable
         {
             transform.position = Vector3.MoveTowards(transform.position, closedPos, openSpeed * Time.deltaTime);
         }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (!other.CompareTag("Player"))
-            return;
-
-        if (GameManager.instance != null && !isOpen)
-            GameManager.instance.ShowDoorPrompt(true);
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (!other.CompareTag("Player"))
-            return;
-
-        if (GameManager.instance != null)
-            GameManager.instance.ShowDoorPrompt(false);
     }
 
 }

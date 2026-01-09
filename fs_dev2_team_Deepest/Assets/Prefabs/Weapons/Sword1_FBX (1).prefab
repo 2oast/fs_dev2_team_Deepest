@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 4480827094095549415}
   - component: {fileID: 6383603570489942206}
   - component: {fileID: 3424472158768393938}
-  - component: {fileID: -547593240993727355}
   - component: {fileID: 9012596227491881412}
   - component: {fileID: -426121114586018393}
+  - component: {fileID: 4762509398917434484}
   m_Layer: 0
   m_Name: Sword1_FBX (1)
   m_TagString: Untagged
@@ -114,22 +114,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 3, z: 0.11519314}
   m_Center: {x: 0, y: 0.47956443, z: 0}
---- !u!114 &-547593240993727355
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 913205623336244230}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d13b45e5583ee743949bbfbf35a750d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Weapon
-  itemData: {fileID: 11400000, guid: 7b1734d8099432b43bfc4a3079a71dc9, type: 2}
-  floatSpeed: 2
-  spinSpeed: 50
-  weaponData: {fileID: 11400000, guid: 7b1734d8099432b43bfc4a3079a71dc9, type: 2}
 --- !u!95 &9012596227491881412
 Animator:
   serializedVersion: 7
@@ -179,3 +163,15 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &4762509398917434484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 913205623336244230}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d36f9a08e333ab24597a489f02d638c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponAnimationEvents

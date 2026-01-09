@@ -17,32 +17,6 @@ public class MagicPuzzle : MonoBehaviour
         color = material.color;
     }
 
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            if (!isMelting && GameManager.instance != null)
-                GameManager.instance.ShowIcePrompt(true);
-        }
-
-        Damage dmg = other.GetComponent<Damage>();
-        if (dmg != null && dmg.elementalType == Damage.ElementalType.Fire)
-        {
-            isMelting = true;
-
-            if (GameManager.instance != null)
-                GameManager.instance.ShowIcePrompt(false);
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (!other.CompareTag("Player"))
-            return;
-
-        if (GameManager.instance != null)
-            GameManager.instance.ShowIcePrompt(false);
-    }
 
     void Update()
     {
@@ -60,8 +34,6 @@ public class MagicPuzzle : MonoBehaviour
 
         if (color.a <= 0f)
         {
-            if (GameManager.instance != null)
-                GameManager.instance.ShowIcePrompt(false);
 
             Destroy(gameObject);
         }

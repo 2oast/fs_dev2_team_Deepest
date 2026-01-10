@@ -11,7 +11,9 @@ public class InventoryManager : MonoBehaviour
 
     [SerializeField] Transform contentParent;
     [SerializeField] InventorySlot slotPrefab;
+    public GameObject YesOrNoPanel;
     public InventorySlot selectedSlot;
+    public InventorySlot pendingEquipSlot;
 
     public Image itemImage;
     public Image headPieceImage;

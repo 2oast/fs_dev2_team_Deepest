@@ -1,0 +1,137 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!319 &31900000
+AvatarMask:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: LeftARM
+  m_Mask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+  m_Elements:
+  - m_Path: 
+    m_Weight: 1
+  - m_Path: Arms
+    m_Weight: 1
+  - m_Path: Arms/IKARM.L
+    m_Weight: 1
+  - m_Path: Arms/IKARM.L/IKARM.L_end
+    m_Weight: 1
+  - m_Path: Arms/IKARM.R
+    m_Weight: 0
+  - m_Path: Arms/IKARM.R/IKARM.R_end
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L/ARM.L.001
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L/ARM.L.001/ARM.L.001_end
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L/HAND.L
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L/HAND.L/HANDBONE1.L
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L/HAND.L/HANDBONE1.L/POINTER1.L
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L/HAND.L/HANDBONE1.L/POINTER1.L/POINTER2.L
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L/HAND.L/HANDBONE1.L/POINTER1.L/POINTER2.L/POINTER3.L
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L/HAND.L/HANDBONE1.L/POINTER1.L/POINTER2.L/POINTER3.L/POINTER3.L_end
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L/HAND.L/HANDBONE2.L
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L/HAND.L/HANDBONE2.L/HANDBONE3.L
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L/HAND.L/HANDBONE2.L/HANDBONE3.L/PINKY1.L
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L/HAND.L/HANDBONE2.L/HANDBONE3.L/PINKY1.L/PINKY2.L
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L/HAND.L/HANDBONE2.L/HANDBONE3.L/PINKY1.L/PINKY2.L/PINKY3.L
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L/HAND.L/HANDBONE2.L/HANDBONE3.L/PINKY1.L/PINKY2.L/PINKY3.L/PINKY3.L_end
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L/HAND.L/HANDBONE2.L/RING1.L
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L/HAND.L/HANDBONE2.L/RING1.L/RING2.L
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L/HAND.L/HANDBONE2.L/RING1.L/RING2.L/RING3.L
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L/HAND.L/HANDBONE2.L/RING1.L/RING2.L/RING3.L/RING3.L_end
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L/HAND.L/MIDDLE1.L
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L/HAND.L/MIDDLE1.L/MIDDLE2.L
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L/HAND.L/MIDDLE1.L/MIDDLE2.L/MIDDLE3.L
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L/HAND.L/MIDDLE1.L/MIDDLE2.L/MIDDLE3.L/MIDDLE3.L_end
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L/THUMB1.L
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L/THUMB1.L/THUMB2.L
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L/THUMB1.L/THUMB2.L/THUMB3.L
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.L/ARM.L/THUMB1.L/THUMB2.L/THUMB3.L/THUMB3.L_end
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.R
+    m_Weight: 0
+  - m_Path: Arms/SHOULDER.R/ARM.R
+    m_Weight: 0
+  - m_Path: Arms/SHOULDER.R/ARM.R/ARM.R.001
+    m_Weight: 0
+  - m_Path: Arms/SHOULDER.R/ARM.R/ARM.R.001/ARM.R.001_end
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.R/ARM.R/HAND.R
+    m_Weight: 0
+  - m_Path: Arms/SHOULDER.R/ARM.R/HAND.R/HANDBONE1.R
+    m_Weight: 0
+  - m_Path: Arms/SHOULDER.R/ARM.R/HAND.R/HANDBONE1.R/POINTER1.R
+    m_Weight: 0
+  - m_Path: Arms/SHOULDER.R/ARM.R/HAND.R/HANDBONE1.R/POINTER1.R/POINTER2.R
+    m_Weight: 0
+  - m_Path: Arms/SHOULDER.R/ARM.R/HAND.R/HANDBONE1.R/POINTER1.R/POINTER2.R/POINTER3.R
+    m_Weight: 0
+  - m_Path: Arms/SHOULDER.R/ARM.R/HAND.R/HANDBONE1.R/POINTER1.R/POINTER2.R/POINTER3.R/POINTER3.R_end
+    m_Weight: 0
+  - m_Path: Arms/SHOULDER.R/ARM.R/HAND.R/HANDBONE2.R
+    m_Weight: 0
+  - m_Path: Arms/SHOULDER.R/ARM.R/HAND.R/HANDBONE2.R/HANDBONE3.R
+    m_Weight: 0
+  - m_Path: Arms/SHOULDER.R/ARM.R/HAND.R/HANDBONE2.R/HANDBONE3.R/PINKY1.R
+    m_Weight: 0
+  - m_Path: Arms/SHOULDER.R/ARM.R/HAND.R/HANDBONE2.R/HANDBONE3.R/PINKY1.R/PINKY2.R
+    m_Weight: 0
+  - m_Path: Arms/SHOULDER.R/ARM.R/HAND.R/HANDBONE2.R/HANDBONE3.R/PINKY1.R/PINKY2.R/PINKY3.R
+    m_Weight: 0
+  - m_Path: Arms/SHOULDER.R/ARM.R/HAND.R/HANDBONE2.R/HANDBONE3.R/PINKY1.R/PINKY2.R/PINKY3.R/PINKY3.R_end
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.R/ARM.R/HAND.R/HANDBONE2.R/RING1.R
+    m_Weight: 0
+  - m_Path: Arms/SHOULDER.R/ARM.R/HAND.R/HANDBONE2.R/RING1.R/RING2.R
+    m_Weight: 0
+  - m_Path: Arms/SHOULDER.R/ARM.R/HAND.R/HANDBONE2.R/RING1.R/RING2.R/RING3.R
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.R/ARM.R/HAND.R/HANDBONE2.R/RING1.R/RING2.R/RING3.R/RING3.R_end
+    m_Weight: 1
+  - m_Path: Arms/SHOULDER.R/ARM.R/HAND.R/MIDDLE1.R
+    m_Weight: 0
+  - m_Path: Arms/SHOULDER.R/ARM.R/HAND.R/MIDDLE1.R/MIDDLE2.R
+    m_Weight: 0
+  - m_Path: Arms/SHOULDER.R/ARM.R/HAND.R/MIDDLE1.R/MIDDLE2.R/MIDDLE3.R
+    m_Weight: 0
+  - m_Path: Arms/SHOULDER.R/ARM.R/HAND.R/MIDDLE1.R/MIDDLE2.R/MIDDLE3.R/MIDDLE3.R_end
+    m_Weight: 0
+  - m_Path: Arms/SHOULDER.R/ARM.R/THUMB1.R
+    m_Weight: 0
+  - m_Path: Arms/SHOULDER.R/ARM.R/THUMB1.R/THUMB2.R
+    m_Weight: 0
+  - m_Path: Arms/SHOULDER.R/ARM.R/THUMB1.R/THUMB2.R/THUMB3.R
+    m_Weight: 0
+  - m_Path: Arms/SHOULDER.R/ARM.R/THUMB1.R/THUMB2.R/THUMB3.R/THUMB3.R_end
+    m_Weight: 0
+  - m_Path: Cylinder.001
+    m_Weight: 1

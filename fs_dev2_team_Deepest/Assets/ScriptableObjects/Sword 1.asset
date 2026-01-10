@@ -18,7 +18,7 @@ MonoBehaviour:
   isRadio: 0
   maxStack: 0
   itemIcon: {fileID: 21300000, guid: cb8358b9049287d4b846f1040d18e225, type: 3}
-  modelPrefab: {fileID: 913205623336244230, guid: a395dba5b307777418161f71dc46946a, type: 3}
+  modelPrefab: {fileID: 3218188306531829914, guid: 974adf933e72eda4980b234cf06c9bff, type: 3}
   description: I could probably fit this up my butt.
   damage: 5
   bulletHoles: {fileID: 0}

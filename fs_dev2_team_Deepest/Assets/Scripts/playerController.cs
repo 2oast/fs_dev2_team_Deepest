@@ -54,10 +54,12 @@ public class PlayerController : MonoBehaviour, IDamage
     float staminaRegenTimer;
 
     bool isBlocking;
+    bool isCharging;
     Vector3 shieldDefaultLocalPos;
     bool weaponEquipped;
 
     float shootTimer;
+    float chargeTimer;
 
     float baseSpeed;
 
@@ -354,14 +356,28 @@ public class PlayerController : MonoBehaviour, IDamage
 
     void Attack(Weapon weapon)
     {
-        if (Input.GetButtonDown("Fire1"))
+        isCharging = Input.GetButton("Fire1");
+        animator.SetBool("IsChargingSwing", isCharging);
+
+        if (isCharging)
+            chargeTimer += Time.deltaTime;
+
+        if (Input.GetButtonUp("Fire1"))
         {
             switch (weapon.itemName)
             {
                 case "Sword":
-                    PlayerAnimatorManager.instance.PlayTargetAnimation(currentWeaponAnimator, "SwordSwing");
-                    stamina -= weapon.staminaDrain;
-                    updateStaminaUI();
+                    if(chargeTimer > 1)
+                    {
+                        PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "BigSwing");
+                        chargeTimer = 0;
+                    }
+                    else
+                    {
+                        PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "regSwing");
+                        chargeTimer = 0;
+
+                    }
                     break;
                 case "Gun":
                     break;
@@ -369,4 +385,7 @@ public class PlayerController : MonoBehaviour, IDamage
         }
        
     }
+
+
 }
+

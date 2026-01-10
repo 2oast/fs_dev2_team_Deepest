@@ -126,6 +126,7 @@ public class PlayerController : MonoBehaviour, IDamage
             isBlocking = false;
         OnInteract();
     }
+
     void movement()
     {
         if (controller.isGrounded)
@@ -200,8 +201,6 @@ public class PlayerController : MonoBehaviour, IDamage
             speed /= sprintMod;
         }
     }
-
-
 
     public void takeDamage(int amount)
     {
@@ -283,7 +282,6 @@ public class PlayerController : MonoBehaviour, IDamage
         shieldTransform.localPosition =
             Vector3.Lerp(shieldTransform.localPosition, target, Time.deltaTime * shieldMoveSpeed);
     }
-
 
     void OnInteract()
     {

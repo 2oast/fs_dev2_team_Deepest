@@ -9,16 +9,29 @@ public class InventoryManager : MonoBehaviour
 {
     public static InventoryManager instance;
 
+    [SerializeField] Transform contentParent;
+    [SerializeField] InventorySlot slotPrefab;
+    public InventorySlot selectedSlot;
+
+    public Image itemImage;
+    public Image headPieceImage;
+    public Image chestPieceImage;
+    public Image leggingsPieceImage;
+    public Image leftGauntletPieceImage;
+    public Image rightGauntletPieceImage;
+    public Image ringImage;
+    public Image weaponImage;
+
+    public TextMeshProUGUI itemDescriptionBox;
+
     public Item itemToBeCollected;
     public List<InventorySlot> slots;
-
-    public bool radioInInventory;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         instance = this;
-        Init();
+        slots = new List<InventorySlot>();
     }
 
     public void Init()
@@ -44,18 +57,9 @@ public class InventoryManager : MonoBehaviour
 
     public void AddItemToInventory(Item item)
     {
-        if (!InventoryFull())
-        {
-            for (int i = 0; i < slots.Count; i++)
-            {
-                if (slots[i].itemInSlot == null)
-                {
-                    slots[i].itemInSlot = item.item;
-                    slots[i].itemImageComp.sprite = item.item.itemIcon;
-                    slots[i].isFilled = true;
-                    return;
-                }
-            }
-        }
+        InventorySlot newSlot = Instantiate(slotPrefab, contentParent);
+
+        newSlot.Setup(item.item);
     }
 }
+

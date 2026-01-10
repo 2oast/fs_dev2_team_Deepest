@@ -13,7 +13,6 @@ public class Weapon : ItemData
 
 
 
-
     public override void Use(PlayerController player)
     {
         player.EquipWeapon(this);

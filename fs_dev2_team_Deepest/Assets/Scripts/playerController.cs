@@ -3,9 +3,11 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour, IDamage
 {
+    [Header("Components")]
     [SerializeField] CharacterController controller;
     [SerializeField] LayerMask ignoreLayer;
 
+    [Header("Player Stats")]
     [Range(1, 10)] public int HP;
     [Range(1, 5)][SerializeField] int speed;
     [Range(2, 5)][SerializeField] int sprintMod;
@@ -13,32 +15,39 @@ public class PlayerController : MonoBehaviour, IDamage
     [Range(1, 3)][SerializeField] int maxJumps;
     [Range(15, 50)][SerializeField] int gravity;
 
-
+    [Header("Stamina")]
     [SerializeField] float maxStamina = 100f;
     [SerializeField] float stamina;
     [SerializeField] float staminaDrainRate = 10f;
     [SerializeField] float staminaRegenRate = 5f;
     [SerializeField] float staminaRegenInterval = 0.5f;
 
+    [Header("Shield")]
     [SerializeField] Transform shieldTransform;
     [SerializeField] Transform armTransform;
     [SerializeField] Vector3 shieldBlockOffset = new Vector3(0.3f, 0.2f, 0f);
     [SerializeField] float shieldMoveSpeed = 10f;
     [SerializeField] float blockStaminaCost = 25f;
 
+    [Header("Shooting")]
     [SerializeField] int shootDamage;
     [SerializeField] int shootDist;
     [SerializeField] float shootRate;
 
+    [Header("Interaction")]
     [SerializeField] int interactDistance;
 
+    [Header("Audio")]
     [SerializeField] AudioSource audioSource;
     [SerializeField] AudioClip[] footstepClips;
     [SerializeField] float walkStepInterval = 0.5f;
     [SerializeField] float sprintStepInterval = 0.28f;
+    [SerializeField] AudioClip armorEquipClip;
 
+    [Header("References")]
     [SerializeField] MeshRenderer armMeshRenderer;
 
+    [Header("Animations")]
     [SerializeField] Animator currentWeaponAnimator;
     [SerializeField] Animator animator;
 
@@ -64,6 +73,9 @@ public class PlayerController : MonoBehaviour, IDamage
     float nextStepTime;
 
     public GameObject currentWeaponInstance;
+
+    public Armor currentArmor;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -205,7 +217,6 @@ public class PlayerController : MonoBehaviour, IDamage
 
     public void takeDamage(int amount)
     {
-
         float blockCost = maxStamina * (blockStaminaCost / 100f);
 
         if (isBlocking && stamina >= blockCost)
@@ -220,10 +231,32 @@ public class PlayerController : MonoBehaviour, IDamage
             if (stamina < blockCost)
                 isBlocking = false;
 
+            Debug.Log("[PlayerController] Blocked attack. No HP lost.");
             return;
         }
 
-        HP -= amount;
+        int finalDamage = amount;
+
+        if (currentArmor != null)
+        {
+            float pct = Mathf.Clamp(currentArmor.damageReductionPercent, 0f, 100f);
+            float factor = 1f - (pct / 100f);
+
+            finalDamage = Mathf.CeilToInt(amount * factor);
+            if (finalDamage < 0)
+                finalDamage = 0;
+
+            Debug.Log("[PlayerController] Armor " + currentArmor.itemName +
+                      " (" + pct + "% DR) reduced " + amount + " -> " + finalDamage);
+        }
+        else
+        {
+            Debug.Log("[PlayerController] No armor. Full damage: " + amount);
+        }
+
+        HP -= finalDamage;
+        Debug.Log("[PlayerController] Took " + finalDamage + " damage. HP now: " + HP);
+
         updatePlayerUI();
         StartCoroutine(flashRed());
 
@@ -353,6 +386,30 @@ public class PlayerController : MonoBehaviour, IDamage
         WeaponManager.instance.currentWeapon = weapon;
         currentWeaponAnimator = currentWeaponInstance.GetComponent<Animator>();
     }
+
+    public void EquipArmor(Armor armor)
+    {
+        currentArmor = armor;
+
+        if (ArmorManager.instance != null)
+        {
+            ArmorManager.instance.currentArmor = armor;
+        }
+
+        if (armor != null && armorEquipClip != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(armorEquipClip);
+        }
+
+        if (UImanager.instance != null)
+        {
+            if (armor != null)
+                UImanager.instance.ShowArmorIcon();
+            else
+                UImanager.instance.HideArmorIcon();
+        }
+    }
+
 
     void Attack(Weapon weapon)
     {

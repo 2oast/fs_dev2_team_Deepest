@@ -5,6 +5,7 @@ public class WeaponManager : MonoBehaviour
     public static WeaponManager instance;
 
     public Weapon currentWeapon;
+    public MagicRing currentRingEquipped;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()

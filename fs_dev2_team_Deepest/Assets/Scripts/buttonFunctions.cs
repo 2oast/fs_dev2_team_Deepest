@@ -72,6 +72,7 @@ public class ButtonFunctions : MonoBehaviour
                 break;
             case ItemType.Ring:
                 InventoryManager.instance.ringImage.sprite = InventoryManager.instance.pendingEquipSlot.itemInSlot.itemIcon;
+                InventoryManager.instance.pendingEquipSlot.itemInSlot.Use(GameManager.instance.playerControllerScript);
                 break;
         }
 
@@ -80,8 +81,6 @@ public class ButtonFunctions : MonoBehaviour
         InventoryManager.instance.selectedSlot = null;
         InventoryManager.instance.itemImage.sprite = null;
         InventoryManager.instance.YesOrNoPanel.SetActive(false);
-
-        
     }
 
 }

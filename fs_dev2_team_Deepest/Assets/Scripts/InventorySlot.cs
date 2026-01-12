@@ -96,7 +96,5 @@ public class InventorySlot : MonoBehaviour, ISubmitHandler, IPointerClickHandler
             InventoryManager.instance.itemDescriptionBox.text = null;
             InventoryManager.instance.YesOrNoPanel.SetActive(false);
         }
-        
-
     }
 }

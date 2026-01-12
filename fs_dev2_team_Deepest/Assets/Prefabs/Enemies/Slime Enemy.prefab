@@ -600,6 +600,7 @@ GameObject:
   - component: {fileID: 2423445424099201943}
   - component: {fileID: 3446193170021836999}
   - component: {fileID: 3195376820924939712}
+  - component: {fileID: 8825181211327914579}
   m_Layer: 6
   m_Name: Slime Enemy
   m_TagString: Enemy
@@ -637,6 +638,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8411f246ba1546c4a94822400ff6d9d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::enemyAI
+  maxHp: 0
   HP: 3
   model: {fileID: 3776034234933926513}
   agent: {fileID: 2423445424099201943}
@@ -653,6 +655,8 @@ MonoBehaviour:
   hurtSound: {fileID: 8300000, guid: d58a936f96a00f14489c33ace667bf93, type: 3}
   wanderRadius: 8
   wanderPause: 2
+  isStunned: 0
+  isGrabbed: 0
 --- !u!95 &8918523828580535918
 Animator:
   serializedVersion: 7
@@ -817,6 +821,33 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!54 &8825181211327914579
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8349067900450173218}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &8823831648343155313
 GameObject:
   m_ObjectHideFlags: 0

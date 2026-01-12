@@ -386,6 +386,10 @@ public class PlayerController : MonoBehaviour, IDamage
        
     }
 
+    public void EquipRing(MagicRing ring)
+    {
+        WeaponManager.instance.currentRingEquipped = ring;
+    }
 
 }
 

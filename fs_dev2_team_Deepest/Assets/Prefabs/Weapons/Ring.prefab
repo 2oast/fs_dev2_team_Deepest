@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 2684586696910507549}
   - component: {fileID: 2101166212446793560}
   - component: {fileID: 221487785576198254}
-  - component: {fileID: 8544576249055974454}
   m_Layer: 0
   m_Name: Ring
   m_TagString: Untagged
@@ -112,25 +111,3 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8544576249055974454
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 681839115793082027}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca58bab501b72aa4ea4cd77978e783d6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MagicRing
-  itemData: {fileID: 11400000, guid: bb4c4dedd9d015e448dee97eca0f1482, type: 2}
-  floatSpeed: 2
-  spinSpeed: 50
-  isReadyToCollect: 0
-  castingCost: 10
-  shootDist: 30
-  shootRate: 1
-  shootSound: {fileID: 8300000, guid: f4da3eaf7af5a9d4ba4d955b58921282, type: 3}
-  shootSpeed: 5000
-  shootEffect: {fileID: 18025331703054662, guid: 827da55f7d9a5124999dd01a01eb7a4a, type: 3}

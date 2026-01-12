@@ -1,7 +1,9 @@
 using UnityEngine;
 
-public class MagicRing : Item
+[CreateAssetMenu(fileName = "Magic Ring")]
+public class MagicRing : ItemData
 {
+    public SpellType spellType;
     [SerializeField] int castingCost;
     [SerializeField] int shootDist;
     [SerializeField] float shootRate;
@@ -9,4 +11,9 @@ public class MagicRing : Item
     public int shootSpeed;
 
     public GameObject shootEffect;
+
+    public override void Use(PlayerController player)
+    {
+        player.EquipRing(this);
+    }
 }

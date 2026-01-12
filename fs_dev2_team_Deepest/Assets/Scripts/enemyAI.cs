@@ -2,8 +2,9 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.AI;
 
-public class enemyAI : MonoBehaviour, IDamage
+public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport
 {
+    [SerializeField] int maxHp;
     [SerializeField] int HP;
     [SerializeField] Renderer model;
     [SerializeField] NavMeshAgent agent;
@@ -26,6 +27,8 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] float wanderRadius = 8f;
     [SerializeField] float wanderPause = 2f;
 
+    public bool isStunned;
+    public bool isGrabbed;
 
     Color colorOrig;
 
@@ -48,19 +51,31 @@ public class enemyAI : MonoBehaviour, IDamage
     // Update is called once per frame
     void Update()
     {
+        
         shootTimer += Time.deltaTime;
 
         if (GameManager.instance == null || GameManager.instance.player == null)
             return;
 
-        bool seeingPlayer = canSeePlayer();
-
-        if (!seeingPlayer)
+        if (HP < maxHp / 2)
         {
-            Wander();
+            isStunned = true;
         }
 
-        UpdateAnim();
+        if (agent != null)
+        {
+            bool seeingPlayer = canSeePlayer();
+            
+
+            if (!isStunned)
+            {
+                if (!seeingPlayer)
+                {
+                    Wander();
+                    UpdateAnim();
+                }
+            }
+        }
     }
 
     void UpdateAnim()
@@ -203,4 +218,28 @@ public class enemyAI : MonoBehaviour, IDamage
         model.material.color = colorOrig;
     }
 
+    
+
+    public void Teleport()
+    {
+    }
+
+    public void Grab(MagicController magicController)
+    {
+        isGrabbed = true;
+
+        if (agent != null)
+            agent.enabled = false;
+        Rigidbody rb = GetComponent<Rigidbody>();
+        rb.isKinematic = true;
+        magicController.enemyGrabbed = this;
+    }
+
+    public IEnumerator ReenableAgentAfterThrow(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (agent != null)
+            agent.enabled = true;
+    }
 }

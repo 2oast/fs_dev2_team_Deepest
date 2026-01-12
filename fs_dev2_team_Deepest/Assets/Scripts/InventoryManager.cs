@@ -29,6 +29,8 @@ public class InventoryManager : MonoBehaviour
     public Item itemToBeCollected;
     public List<InventorySlot> slots;
 
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -43,19 +45,6 @@ public class InventoryManager : MonoBehaviour
             slot.itemImageComp = slot.GetComponent<Image>();
         }
     }
-
-    bool InventoryFull()
-    {
-        foreach (InventorySlot slot in slots)
-        {
-            if (slot.itemInSlot == null)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
 
     public void AddItemToInventory(Item item)
     {

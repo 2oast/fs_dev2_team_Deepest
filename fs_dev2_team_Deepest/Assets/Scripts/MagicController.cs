@@ -30,13 +30,15 @@ public class MagicController : MonoBehaviour
     [SerializeField] float throwForce;
 
     [SerializeField] BoxCollider grabCollider;
+
+    public GameObject objectGrabbed;
     
 
     public enemyAI enemyGrabbed;
     [SerializeField] float grabTimer;
 
 
-    bool isTelegrabbing;
+    public bool isTelegrabbing;
     bool isPullingEnemy;
 
     private void Awake()
@@ -53,6 +55,7 @@ public class MagicController : MonoBehaviour
     {
         
     }
+    
 
     // Update is called once per frame
     void Update()
@@ -60,7 +63,7 @@ public class MagicController : MonoBehaviour
         //if i hold down the left mouse button and the an enemy is being grabbed, move the enemies transform towards me and enable the collider
         if(Input.GetButton("Fire2"))
         {
-            if(enemyGrabbed != null)
+            if(objectGrabbed != null)
             {
                 PullEnemyToHand();
             }
@@ -69,10 +72,10 @@ public class MagicController : MonoBehaviour
         animator.SetBool("IsTelegrabbing", isTelegrabbing);
 
         //if i let go while an enemy is being grabbed
-        if (Input.GetButtonUp("Fire2") && enemyGrabbed != null && isTelegrabbing)
+        if (Input.GetButtonUp("Fire2") && isTelegrabbing)
         {
-            PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "CastSpell");
-            Throw(enemyGrabbed);
+            PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "MagicCast");
+            Throw(objectGrabbed);
         }
 
         CastSpell();
@@ -104,7 +107,7 @@ public class MagicController : MonoBehaviour
                             ShootSpellRayCast(hit, spellType);
                         break;
                 }
-                PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "SpellCast");
+                PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "MagicCast");
             }
         }
     }
@@ -117,7 +120,7 @@ public class MagicController : MonoBehaviour
 
         if (spell == SpellType.TeleGrab)
         {
-            if (grab != null && enemy.isStunned)
+            if (grab != null)
             {
                 grab.Grab(this);
             }
@@ -138,38 +141,42 @@ public class MagicController : MonoBehaviour
         isTelegrabbing = false;
     }
 
-    void Throw(enemyAI enemy)
+    void Throw(GameObject obj)
     {
-        Rigidbody rb = enemy.GetComponent<Rigidbody>();
-        enemy.transform.SetParent(null);
-        rb.linearVelocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
-        rb.isKinematic = false;
+        Rigidbody rb = obj.GetComponent<Rigidbody>();
+
+        // stop pulling
+        objectGrabbed = null;
+        isTelegrabbing = false;
+
 
         rb.AddForce(Camera.main.transform.forward * throwForce, ForceMode.Impulse);
-        enemy.isGrabbed = false;
-        enemyGrabbed = null;
-        isTelegrabbing = false;
+
+        // update flags
+        Debug.Log("Enemy thrown");
     }
 
     void PullEnemyToHand()
     {
-        enemyGrabbed.transform.position = Vector3.MoveTowards(
-            enemyGrabbed.transform.position,
-            teleGrabLocation.position,
-            grabSpeed * Time.deltaTime
-        );
 
-        if (Vector3.Distance(enemyGrabbed.transform.position, teleGrabLocation.position) < 0.05f)
+        if (objectGrabbed == null) return; // early out
+
+        Rigidbody rb = objectGrabbed.GetComponent<Rigidbody>();
+        Vector3 targetPos = teleGrabLocation.position;
+        rb.MovePosition(Vector3.MoveTowards(rb.position, targetPos, grabSpeed * Time.fixedDeltaTime));
+
+        if (Vector3.Distance(rb.position, targetPos) < 0.05f)
         {
-            AttachEnemy(enemyGrabbed);
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            isTelegrabbing = true;
         }
     }
 
-    void AttachEnemy(enemyAI enemy)
+    void AttachEnemy(GameObject obj)
     {
         
-        Rigidbody rb = enemy.GetComponent<Rigidbody>();
+        Rigidbody rb = obj.GetComponent<Rigidbody>();
 
         if (rb)
         {
@@ -178,11 +185,10 @@ public class MagicController : MonoBehaviour
             rb.isKinematic = true;
         }
 
-        enemy.transform.SetParent(teleGrabLocation);
-        enemy.transform.localPosition = Vector3.zero;
-        enemy.transform.localRotation = Quaternion.identity;
-
-        enemy.isGrabbed = true;
+        obj.transform.SetParent(teleGrabLocation);
+        obj.transform.localPosition = Vector3.zero;
+        obj.transform.localRotation = Quaternion.identity;
+        rb.isKinematic = false;
         isTelegrabbing = true;
     }
 

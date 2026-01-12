@@ -7,7 +7,7 @@ public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport
     [SerializeField] int maxHp;
     [SerializeField] int HP;
     [SerializeField] Renderer model;
-    [SerializeField] NavMeshAgent agent;
+    public NavMeshAgent agent;
     [SerializeField] Animator anim;
 
     [SerializeField] int faceTargetSpeed;
@@ -62,7 +62,7 @@ public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport
             isStunned = true;
         }
 
-        if (agent != null)
+        if (agent!= null)
         {
             bool seeingPlayer = canSeePlayer();
             
@@ -116,6 +116,10 @@ public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport
 
     bool canSeePlayer()
     {
+        if(agent)
+        {
+
+        }
         playerDir = GameManager.instance.player.transform.position - transform.position;
         angleToPlayer = Vector3.Angle(transform.forward, playerDir);
 
@@ -231,8 +235,7 @@ public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport
         if (agent != null)
             agent.enabled = false;
         Rigidbody rb = GetComponent<Rigidbody>();
-        rb.isKinematic = true;
-        magicController.enemyGrabbed = this;
+        magicController.objectGrabbed = gameObject;
     }
 
     public IEnumerator ReenableAgentAfterThrow(float delay)

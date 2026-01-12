@@ -71,7 +71,7 @@ public class MagicController : MonoBehaviour
         //if i let go while an enemy is being grabbed
         if (Input.GetButtonUp("Fire2") && enemyGrabbed != null && isTelegrabbing)
         {
-            PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "CastSpell");
+            PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "MagicCast");
             Throw(enemyGrabbed);
         }
 
@@ -104,7 +104,7 @@ public class MagicController : MonoBehaviour
                             ShootSpellRayCast(hit, spellType);
                         break;
                 }
-                PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "SpellCast");
+                PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "MagicCast");
             }
         }
     }

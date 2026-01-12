@@ -13,14 +13,13 @@ public class UImanager : MonoBehaviour
     [Header("Armor UI")]
     public Image armorIcon;
 
-    private void Awake()
-    {
-        instance = this;
-    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
+        instance = this;
+
+
         if (armorIcon != null)
         {
             armorIcon.enabled = false;

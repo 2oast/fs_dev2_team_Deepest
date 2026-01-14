@@ -1,5 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
 
 public class UImanager : MonoBehaviour
 {
@@ -13,6 +16,32 @@ public class UImanager : MonoBehaviour
     [Header("Armor UI")]
     public Image armorIcon;
 
+    [Header("Level Up UI (TMP)")]
+    public TMP_Text levelUpText;
+    public float fadeInTime = 0.25f;
+    public float holdTime = 3.5f;
+    public float fadeOutTime = 0.25f;
+
+    [Header("Level Up Audio")]
+    public AudioSource levelUpAudioSource;
+    public AudioClip levelUpClip;
+
+    struct LevelUpRequest
+    {
+        public string skillName;
+        public int level;
+
+        public LevelUpRequest(string skillName, int level)
+        {
+            this.skillName = skillName;
+            this.level = level;
+        }
+    }
+
+    Queue<LevelUpRequest> levelUpQueue = new Queue<LevelUpRequest>();
+    bool isShowingLevelUp = false;
+    Coroutine levelUpRoutine;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
@@ -24,6 +53,17 @@ public class UImanager : MonoBehaviour
         {
             armorIcon.enabled = false;
             armorIcon.gameObject.SetActive(false);
+        }
+    }
+
+    private void Start()
+    {
+        if (levelUpText != null)
+        {
+            levelUpText.gameObject.SetActive(true);
+            Color c = levelUpText.color;
+            c.a = 0f;
+            levelUpText.color = c;
         }
     }
 
@@ -49,5 +89,70 @@ public class UImanager : MonoBehaviour
             armorIcon.enabled = false;
             armorIcon.gameObject.SetActive(false);
         }
+    }
+
+    public void ShowLevelUpMessage(string skillName, int newLevel)
+    {
+        if (levelUpText == null)
+            return;
+
+        levelUpQueue.Enqueue(new LevelUpRequest(skillName, newLevel));
+
+        if (!isShowingLevelUp)
+        {
+            levelUpRoutine = StartCoroutine(ProcessLevelUpQueue());
+        }
+    }
+
+    IEnumerator ProcessLevelUpQueue()
+    {
+        isShowingLevelUp = true;
+
+        while (levelUpQueue.Count > 0)
+        {
+            LevelUpRequest req = levelUpQueue.Dequeue();
+
+            levelUpText.text = req.skillName + " leveled up!  Lv " + req.level;
+
+            Color c = levelUpText.color;
+            c.a = 0f;
+            levelUpText.color = c;
+            levelUpText.gameObject.SetActive(true);
+
+            if (levelUpAudioSource != null && levelUpClip != null)
+            {
+                levelUpAudioSource.PlayOneShot(levelUpClip);
+            }
+
+            float t = 0f;
+            while (t < fadeInTime)
+            {
+                t += Time.deltaTime;
+                float a = Mathf.Lerp(0f, 1f, fadeInTime > 0f ? t / fadeInTime : 1f);
+                c.a = a;
+                levelUpText.color = c;
+                yield return null;
+            }
+
+            if (holdTime > 0f)
+                yield return new WaitForSeconds(holdTime);
+
+            t = 0f;
+            while (t < fadeOutTime)
+            {
+                t += Time.deltaTime;
+                float a = Mathf.Lerp(1f, 0f, fadeOutTime > 0f ? t / fadeOutTime : 1f);
+                c.a = a;
+                levelUpText.color = c;
+                yield return null;
+            }
+
+            c.a = 0f;
+            levelUpText.color = c;
+        }
+
+        levelUpText.gameObject.SetActive(true);
+        isShowingLevelUp = false;
+        levelUpRoutine = null;
     }
 }

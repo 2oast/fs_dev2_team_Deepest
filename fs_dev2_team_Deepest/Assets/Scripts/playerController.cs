@@ -9,8 +9,8 @@ public class PlayerController : MonoBehaviour, IDamage
 
     [Header("Player Stats")]
     [Range(1, 10)] public int HP;
-    [Range(1, 5)][SerializeField] int speed;
-    [Range(2, 5)][SerializeField] int sprintMod;
+    [Range(1, 5)][SerializeField] float speed;
+    [Range(2, 5)][SerializeField] float sprintMod;
     [Range(5, 20)][SerializeField] int JumpSpeed;
     [Range(1, 3)][SerializeField] int maxJumps;
     [Range(15, 50)][SerializeField] int gravity;
@@ -61,6 +61,8 @@ public class PlayerController : MonoBehaviour, IDamage
 
     bool isSprinting;
     float staminaRegenTimer;
+    float baseMaxStamina;
+    float currentSprintMultiplier = 1f;
 
     bool isBlocking;
     Vector3 shieldDefaultLocalPos;
@@ -82,6 +84,7 @@ public class PlayerController : MonoBehaviour, IDamage
     {
         HPOrig = HP;
         stamina = maxStamina;
+        baseMaxStamina = maxStamina;
         baseSpeed = speed;
         updatePlayerUI();
         updateStaminaUI();
@@ -96,6 +99,7 @@ public class PlayerController : MonoBehaviour, IDamage
         Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
 
         shootTimer += Time.deltaTime;
+
         if (!GameManager.instance.isPaused)
             movement();
 
@@ -103,6 +107,11 @@ public class PlayerController : MonoBehaviour, IDamage
         Blocking();
         UpdateShieldPosition();
         Footsteps();
+
+        if (SkillManager.instance != null && isSprinting && moveDir.sqrMagnitude > 0.1f && !GameManager.instance.isPaused)
+        {
+            SkillManager.instance.AddSprintXP(Time.deltaTime);
+        }
 
         if (isSprinting)
         {
@@ -131,11 +140,20 @@ public class PlayerController : MonoBehaviour, IDamage
                 staminaRegenTimer = 0f;
             }
         }
+
+        if (SkillManager.instance != null)
+        {
+            float staminaMult = SkillManager.instance.GetStaminaMaxMultiplier();
+            maxStamina = baseMaxStamina * staminaMult;
+            stamina = Mathf.Clamp(stamina, 0f, maxStamina);
+        }
+
         updateStaminaUI();
 
         float blockCost = maxStamina * (blockStaminaCost / 100f);
         if (stamina < blockCost && isBlocking)
             isBlocking = false;
+
         OnInteract();
     }
     void movement()
@@ -204,14 +222,24 @@ public class PlayerController : MonoBehaviour, IDamage
         if (Input.GetButtonDown("Sprint") && stamina > 0f && !isSprinting)
         {
             isSprinting = true;
-            speed *= sprintMod;
+
+            currentSprintMultiplier = sprintMod;
+
+            if (SkillManager.instance != null)
+            {
+                currentSprintMultiplier *= SkillManager.instance.GetSprintSpeedMultiplier();
+            }
+
+            speed *= currentSprintMultiplier;
         }
         else if ((Input.GetButtonUp("Sprint") || stamina <= 0f) && isSprinting)
         {
             isSprinting = false;
-            speed /= sprintMod;
+            speed /= currentSprintMultiplier;
+            currentSprintMultiplier = 1f;
         }
     }
+
 
 
 
@@ -219,6 +247,7 @@ public class PlayerController : MonoBehaviour, IDamage
     {
         float blockCost = maxStamina * (blockStaminaCost / 100f);
 
+        // --- Blocking check first ---
         if (isBlocking && stamina >= blockCost)
         {
             stamina -= blockCost;
@@ -239,23 +268,35 @@ public class PlayerController : MonoBehaviour, IDamage
 
         if (currentArmor != null)
         {
-            float pct = Mathf.Clamp(currentArmor.damageReductionPercent, 0f, 100f);
-            float factor = 1f - (pct / 100f);
+            float armorPct = Mathf.Clamp(currentArmor.damageReductionPercent, 0f, 100f);
 
+            float armorEffMult = 1f;
+            if (SkillManager.instance != null)
+            {
+                armorEffMult = SkillManager.instance.GetArmorEffectivenessMultiplier();
+            }
+
+            armorPct *= armorEffMult;
+            armorPct = Mathf.Clamp(armorPct, 0f, 90f);
+
+            float factor = 1f - (armorPct / 100f);
             finalDamage = Mathf.CeilToInt(amount * factor);
+        }
+
+        if (SkillManager.instance != null)
+        {
+            float toughMult = SkillManager.instance.GetToughnessDamageTakenMultiplier();
+            finalDamage = Mathf.CeilToInt(finalDamage * toughMult);
+
             if (finalDamage < 0)
                 finalDamage = 0;
 
-            Debug.Log("[PlayerController] Armor " + currentArmor.itemName +
-                      " (" + pct + "% DR) reduced " + amount + " -> " + finalDamage);
-        }
-        else
-        {
-            Debug.Log("[PlayerController] No armor. Full damage: " + amount);
+            if (finalDamage > 0)
+                SkillManager.instance.AddToughnessXP(finalDamage);
         }
 
         HP -= finalDamage;
-        Debug.Log("[PlayerController] Took " + finalDamage + " damage. HP now: " + HP);
+        Debug.Log("[PlayerController] Took " + finalDamage + " damage (base " + amount + "). HP now: " + HP);
 
         updatePlayerUI();
         StartCoroutine(flashRed());
@@ -266,9 +307,17 @@ public class PlayerController : MonoBehaviour, IDamage
         }
     }
 
+
     public void updatePlayerUI()
     {
-        UImanager.instance.playerHPBar.fillAmount = (float)HP / HPOrig;
+        float hpMax = HPOrig;
+
+        if (SkillManager.instance != null)
+        {
+            hpMax *= SkillManager.instance.GetToughnessHealthMultiplier();
+        }
+
+        UImanager.instance.playerHPBar.fillAmount = (float)HP / hpMax;
     }
 
     void updateStaminaUI()
@@ -413,12 +462,38 @@ public class PlayerController : MonoBehaviour, IDamage
 
     void Attack(Weapon weapon)
     {
+        if (weapon == null)
+            return;
+
         if (Input.GetButtonDown("Fire1"))
         {
+            if (SkillManager.instance != null)
+            {
+                if (weapon.itemName == "Sword")
+                {
+                    SkillManager.instance.AddMeleeXP(1f);
+                }
+                else if (weapon.itemName == "Gun")
+                {
+                    SkillManager.instance.AddRangedXP(1f);
+                }
+            }
+
             switch (weapon.itemName)
             {
                 case "Sword":
-                    PlayerAnimatorManager.instance.PlayTargetAnimation(currentWeaponAnimator, "SwordSwing");
+                    float swordSwingSpeed = 1f;
+                    if (SkillManager.instance != null)
+                    {
+                        swordSwingSpeed = SkillManager.instance.GetMeleeAttackSpeedMultiplier();
+                    }
+
+                    if (currentWeaponAnimator != null)
+                        currentWeaponAnimator.speed = swordSwingSpeed;
+
+                    if (PlayerAnimatorManager.instance != null && currentWeaponAnimator != null)
+                        PlayerAnimatorManager.instance.PlayTargetAnimation(currentWeaponAnimator, "SwordSwing");
+
                     stamina -= weapon.staminaDrain;
                     updateStaminaUI();
                     break;

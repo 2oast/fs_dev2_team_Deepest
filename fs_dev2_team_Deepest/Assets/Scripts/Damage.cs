@@ -4,7 +4,7 @@ using System.Collections;
 public class Damage : MonoBehaviour
 {
     enum damageType { moving, stationary, DOT, homing }
-    public enum ElementalType { Fire, Ice, Earth, Wind}
+    public enum ElementalType { Fire, Ice, Earth, Wind }
     public ElementalType elementalType;
     [SerializeField] damageType type;
     [SerializeField] Rigidbody rb;
@@ -27,7 +27,6 @@ public class Damage : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (type == damageType.homing)
@@ -36,7 +35,6 @@ public class Damage : MonoBehaviour
         }
     }
 
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.isTrigger)
@@ -44,20 +42,18 @@ public class Damage : MonoBehaviour
             return;
         }
 
-        IDamage dmg = other.GetComponent<IDamage>();
+        IDamage dmg = other.GetComponentInParent<IDamage>();
 
         if (dmg != null && type != damageType.DOT)
         {
-            dmg.takeDamage(damageAmount);
-
+            int finalDamage = ComputeFinalDamage();
+            dmg.takeDamage(finalDamage);
         }
 
         if (type == damageType.homing || type == damageType.moving)
         {
             Destroy(gameObject);
         }
-
-        
     }
 
     private void OnTriggerStay(Collider other)
@@ -67,7 +63,7 @@ public class Damage : MonoBehaviour
             return;
         }
 
-        IDamage dmg = other.GetComponent<IDamage>();
+        IDamage dmg = other.GetComponentInParent<IDamage>();
 
         if (dmg != null && type == damageType.DOT && !isDamaging)
         {
@@ -78,8 +74,30 @@ public class Damage : MonoBehaviour
     IEnumerator DamageOther(IDamage d)
     {
         isDamaging = true;
-        d.takeDamage(damageAmount);
+        int finalDamage = ComputeFinalDamage();
+        d.takeDamage(finalDamage);
         yield return new WaitForSeconds(damageRate);
         isDamaging = false;
+    }
+
+    int ComputeFinalDamage()
+    {
+        int finalDamage = damageAmount;
+
+        if (CompareTag("PlayerMelee") && SkillManager.instance != null)
+        {
+            float mult = SkillManager.instance.GetMeleeDamageMultiplier();
+            finalDamage = Mathf.CeilToInt(damageAmount * mult);
+        }
+        else if (CompareTag("PlayerRanged") && SkillManager.instance != null)
+        {
+            float mult = SkillManager.instance.GetRangedDamageMultiplier();
+            finalDamage = Mathf.CeilToInt(damageAmount * mult);
+        }
+
+        if (finalDamage < 0)
+            finalDamage = 0;
+
+        return finalDamage;
     }
 }

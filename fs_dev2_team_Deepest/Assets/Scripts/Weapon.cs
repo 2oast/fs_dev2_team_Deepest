@@ -13,6 +13,9 @@ public class Weapon : ItemData
     public WeaponType weaponType;
     public int damage;
 
+    [Header("Weight")]
+    public float weight = 5f;
+
     [Header("Gun Settings")]
     public Material bulletHoles;
     public ParticleSystem smoke;

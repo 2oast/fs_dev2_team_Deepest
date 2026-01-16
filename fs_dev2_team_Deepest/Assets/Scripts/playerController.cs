@@ -15,6 +15,15 @@ public class PlayerController : MonoBehaviour, IDamage
     [Range(1, 3)][SerializeField] int maxJumps;
     [Range(15, 50)][SerializeField] int gravity;
 
+    [Header("Encumbrance / Weight")]
+    [SerializeField] float baseWeightLimit = 20f;
+    [SerializeField] float weightPerStaminaLevel = 2f;
+    [SerializeField] float encumberedSpeedMultiplier = 0.6f;
+    [SerializeField] float encumberedStaminaCostMultiplier = 1.5f;
+
+    float currentWeight;
+    bool isEncumbered;
+
     [Header("Stamina")]
     [SerializeField] float maxStamina = 100f;
     [SerializeField] float stamina;
@@ -55,8 +64,6 @@ public class PlayerController : MonoBehaviour, IDamage
     [SerializeField] bool isPoisoned;
     Coroutine poisonCoroutine;
 
-
-
     Vector3 moveDir;
     Vector3 playerVel;
 
@@ -82,7 +89,6 @@ public class PlayerController : MonoBehaviour, IDamage
 
     public Armor currentArmor;
 
-
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -96,12 +102,14 @@ public class PlayerController : MonoBehaviour, IDamage
             shieldDefaultLocalPos = shieldTransform.localPosition;
     }
 
-    // Update is called once per frame
     void Update()
     {
         Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
 
         shootTimer += Time.deltaTime;
+
+        UpdateEncumbrance();
+
         if (!GameManager.instance.isPaused)
             movement();
 
@@ -113,6 +121,10 @@ public class PlayerController : MonoBehaviour, IDamage
         if (isSprinting)
         {
             float drainPerSec = maxStamina * (staminaDrainRate / 100f);
+
+            if (isEncumbered)
+                drainPerSec *= encumberedStaminaCostMultiplier;
+
             stamina -= drainPerSec * Time.deltaTime;
             stamina = Mathf.Clamp(stamina, 0f, maxStamina);
 
@@ -139,9 +151,10 @@ public class PlayerController : MonoBehaviour, IDamage
         }
         updateStaminaUI();
 
-        float blockCost = maxStamina * (blockStaminaCost / 100f);
+        float blockCost = GetBlockCost();
         if (stamina < blockCost && isBlocking)
             isBlocking = false;
+
         OnInteract();
     }
 
@@ -158,12 +171,17 @@ public class PlayerController : MonoBehaviour, IDamage
         }
 
         moveDir = Input.GetAxis("Horizontal") * transform.right + Input.GetAxis("Vertical") * transform.forward;
-        controller.Move(moveDir * speed * Time.deltaTime);
+
+        float moveSpeed = speed;
+        if (isEncumbered)
+            moveSpeed *= encumberedSpeedMultiplier;
+
+        controller.Move(moveDir * moveSpeed * Time.deltaTime);
 
         jump();
         controller.Move(playerVel * Time.deltaTime);
 
-        if(WeaponManager.instance.currentWeapon != null)
+        if (WeaponManager.instance.currentWeapon != null)
         {
             Attack(WeaponManager.instance.currentWeapon);
         }
@@ -222,7 +240,7 @@ public class PlayerController : MonoBehaviour, IDamage
 
     public void takeDamage(int amount)
     {
-        float blockCost = maxStamina * (blockStaminaCost / 100f);
+        float blockCost = GetBlockCost();
 
         if (isBlocking && stamina >= blockCost)
         {
@@ -298,14 +316,13 @@ public class PlayerController : MonoBehaviour, IDamage
 
         bool blockInput = Input.GetButton("Fire2");
 
-        float blockCost = maxStamina * (blockStaminaCost / 100f);
-
+        float blockCost = GetBlockCost();
         bool hasEnoughStamina = stamina >= blockCost;
 
         if (blockInput && hasEnoughStamina)
             isBlocking = true;
         else
-            isBlocking = false; ;
+            isBlocking = false;
     }
 
     void UpdateShieldPosition()
@@ -340,9 +357,7 @@ public class PlayerController : MonoBehaviour, IDamage
                     }
                 }
             }
-
         }
-
     }
 
     void shoot()
@@ -354,7 +369,6 @@ public class PlayerController : MonoBehaviour, IDamage
 
             }
         }
-
     }
 
     public void EquipWeapon(Weapon weapon)
@@ -408,7 +422,6 @@ public class PlayerController : MonoBehaviour, IDamage
         }
     }
 
-
     void Attack(Weapon weapon)
     {
         isCharging = Input.GetButton("Fire1");
@@ -422,7 +435,7 @@ public class PlayerController : MonoBehaviour, IDamage
             switch (weapon.itemName)
             {
                 case "Sword":
-                    if(chargeTimer > 1)
+                    if (chargeTimer > 1)
                     {
                         PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "BigSwing");
                         chargeTimer = 0;
@@ -431,14 +444,12 @@ public class PlayerController : MonoBehaviour, IDamage
                     {
                         PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "regSwing");
                         chargeTimer = 0;
-
                     }
                     break;
                 case "Gun":
                     break;
             }
         }
-       
     }
 
     public void EquipRing(MagicRing ring)
@@ -488,5 +499,41 @@ public class PlayerController : MonoBehaviour, IDamage
         isPoisoned = false;
         Debug.Log("Poison cured.");
     }
+
+    void UpdateEncumbrance()
+    {
+        currentWeight = 0f;
+
+        if (WeaponManager.instance != null && WeaponManager.instance.currentWeapon != null)
+        {
+            currentWeight += WeaponManager.instance.currentWeapon.weight;
+        }
+
+        if (ArmorManager.instance != null && ArmorManager.instance.currentArmor != null)
+        {
+            currentWeight += ArmorManager.instance.currentArmor.weight;
+        }
+
+        int staminaLevel = 0;
+        if (SkillManager.instance != null)
+        {
+            staminaLevel = SkillManager.instance.sprintLevel;
+        }
+
+        float weightLimit = baseWeightLimit + staminaLevel * weightPerStaminaLevel;
+
+        isEncumbered = currentWeight > weightLimit;
+    }
+
+    float GetBlockCost()
+    {
+        float cost = maxStamina * (blockStaminaCost / 100f);
+
+        if (isEncumbered)
+            cost *= encumberedStaminaCostMultiplier;
+
+        return cost;
+    }
 }
+
 

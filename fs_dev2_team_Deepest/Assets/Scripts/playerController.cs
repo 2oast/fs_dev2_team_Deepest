@@ -63,6 +63,9 @@ public class PlayerController : MonoBehaviour, IDamage
     [Header("Status Effects")]
     [SerializeField] bool isPoisoned;
     Coroutine poisonCoroutine;
+    [SerializeField] float poisonRemainingTime;
+    [SerializeField] float poisonTotalDuration;
+    float poisonEndTime;
 
     Vector3 moveDir;
     Vector3 playerVel;
@@ -154,6 +157,16 @@ public class PlayerController : MonoBehaviour, IDamage
         float blockCost = GetBlockCost();
         if (stamina < blockCost && isBlocking)
             isBlocking = false;
+
+        if (isPoisoned)
+        {
+            poisonRemainingTime = Mathf.Max(0f, poisonEndTime - Time.time);
+
+            if (UImanager.instance != null)
+            {
+                UImanager.instance.UpdatePoisonUI(poisonRemainingTime, poisonTotalDuration);
+            }
+        }
 
         OnInteract();
     }
@@ -464,28 +477,41 @@ public class PlayerController : MonoBehaviour, IDamage
             StopCoroutine(poisonCoroutine);
         }
 
-        poisonCoroutine = StartCoroutine(PoisonRoutine(duration, interval, damagePerTick));
-    }
-
-    IEnumerator PoisonRoutine(float duration, float interval, int damagePerTick)
-    {
         isPoisoned = true;
 
-        float elapsed = 0f;
+        poisonTotalDuration = duration;
+        poisonEndTime = Time.time + duration;
+        poisonRemainingTime = duration;
 
-        while (elapsed < duration)
+        if (UImanager.instance != null)
+        {
+            UImanager.instance.ShowPoisonUI(poisonTotalDuration);
+            UImanager.instance.UpdatePoisonUI(poisonRemainingTime, poisonTotalDuration);
+        }
+
+        poisonCoroutine = StartCoroutine(PoisonRoutine(interval, damagePerTick));
+    }
+
+    IEnumerator PoisonRoutine(float interval, int damagePerTick)
+    {
+        while (Time.time < poisonEndTime)
         {
             if (HP <= 0 || GameManager.instance == null)
                 break;
 
             takeDamage(damagePerTick);
-
             yield return new WaitForSeconds(interval);
-            elapsed += interval;
         }
 
         isPoisoned = false;
         poisonCoroutine = null;
+        poisonRemainingTime = 0f;
+        poisonTotalDuration = 0f;
+
+        if (UImanager.instance != null)
+        {
+            UImanager.instance.HidePoisonUI();
+        }
     }
 
     public void CurePoison()
@@ -497,6 +523,15 @@ public class PlayerController : MonoBehaviour, IDamage
         }
 
         isPoisoned = false;
+        poisonRemainingTime = 0f;
+        poisonTotalDuration = 0f;
+        poisonEndTime = 0f;
+
+        if (UImanager.instance != null)
+        {
+            UImanager.instance.HidePoisonUI();
+        }
+
         Debug.Log("Poison cured.");
     }
 

@@ -13,6 +13,11 @@ public class UImanager : MonoBehaviour
     public Image playerStaminaBar;
     public GameObject playerDamageScreen;
 
+    [Header("Status")]
+    public GameObject poisonPanel;
+    public Image poisonFillImage;
+    public TextMeshProUGUI poisonTimerText;
+
     [Header("Armor UI")]
     public Image armorIcon;
 
@@ -70,7 +75,7 @@ public class UImanager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public void ShowArmorIcon()
@@ -154,5 +159,36 @@ public class UImanager : MonoBehaviour
         levelUpText.gameObject.SetActive(true);
         isShowingLevelUp = false;
         levelUpRoutine = null;
+    }
+
+    public void ShowPoisonUI(float duration)
+    {
+        if (poisonPanel != null)
+            poisonPanel.SetActive(true);
+
+        UpdatePoisonUI(duration, duration);
+    }
+
+    public void UpdatePoisonUI(float remaining, float total)
+    {
+        if (poisonPanel == null)
+            return;
+
+        if (poisonTimerText != null)
+        {
+            int secs = Mathf.CeilToInt(remaining);
+            poisonTimerText.text = secs + "s";
+        }
+
+        if (poisonFillImage != null && total > 0f)
+        {
+            poisonFillImage.fillAmount = Mathf.Clamp01(remaining / total);
+        }
+    }
+
+    public void HidePoisonUI()
+    {
+        if (poisonPanel != null)
+            poisonPanel.SetActive(false);
     }
 }

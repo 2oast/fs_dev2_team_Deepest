@@ -67,7 +67,7 @@ MonoBehaviour:
   destroyTime: 5
   target: {fileID: 0}
   applyDotOnHit: 1
-  dotDuration: 50
+  dotDuration: 20
   dotTickInterval: 5
   dotDamagePerTick: 1
 --- !u!23 &6446272498825424512

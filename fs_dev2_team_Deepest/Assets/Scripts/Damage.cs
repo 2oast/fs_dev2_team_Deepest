@@ -19,6 +19,12 @@ public class Damage : MonoBehaviour
     [SerializeField] Transform target;
     public Transform Target { get { return target; } set { target = value; } }
 
+    [Header("Poison")]
+    [SerializeField] bool applyDotOnHit = false;
+    [SerializeField] float dotDuration = 50f;
+    [SerializeField] float dotTickInterval = 5f;
+    [SerializeField] int dotDamagePerTick = 1;
+
     void Start()
     {
         if (type == damageType.moving || type == damageType.homing)
@@ -46,8 +52,16 @@ public class Damage : MonoBehaviour
 
         if (dmg != null && type != damageType.DOT)
         {
-            int finalDamage = ComputeFinalDamage();
-            dmg.takeDamage(finalDamage);
+            dmg.takeDamage(damageAmount);
+
+            if (applyDotOnHit && other.CompareTag("Player"))
+            {
+                PlayerController pc = GameManager.instance != null ? GameManager.instance.playerControllerScript : null;
+                if (pc != null)
+                {
+                    pc.ApplyPoison(dotDuration, dotTickInterval, dotDamagePerTick);
+                }
+            }
         }
 
         if (type == damageType.homing || type == damageType.moving)
@@ -65,7 +79,7 @@ public class Damage : MonoBehaviour
 
         IDamage dmg = other.GetComponentInParent<IDamage>();
 
-        if (dmg != null && type == damageType.DOT && !isDamaging)
+        if (dmg != null && type == damageType.DOT && !isDamaging && !applyDotOnHit)
         {
             StartCoroutine(DamageOther(dmg));
         }
@@ -74,8 +88,7 @@ public class Damage : MonoBehaviour
     IEnumerator DamageOther(IDamage d)
     {
         isDamaging = true;
-        int finalDamage = ComputeFinalDamage();
-        d.takeDamage(finalDamage);
+        d.takeDamage(damageAmount);
         yield return new WaitForSeconds(damageRate);
         isDamaging = false;
     }

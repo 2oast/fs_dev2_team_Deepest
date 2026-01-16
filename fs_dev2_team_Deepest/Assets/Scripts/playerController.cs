@@ -51,6 +51,10 @@ public class PlayerController : MonoBehaviour, IDamage
     [SerializeField] Animator currentWeaponAnimator;
     [SerializeField] Animator animator;
 
+    [Header("Status Effects")]
+    [SerializeField] bool isPoisoned;
+    Coroutine poisonCoroutine;
+
 
 
     Vector3 moveDir;
@@ -355,34 +359,28 @@ public class PlayerController : MonoBehaviour, IDamage
 
     public void EquipWeapon(Weapon weapon)
     {
-
         if (currentWeaponInstance != null &&
-                WeaponManager.instance.currentWeapon == weapon)
+            WeaponManager.instance.currentWeapon == weapon)
         {
             Destroy(currentWeaponInstance);
             currentWeaponInstance = null;
             WeaponManager.instance.currentWeapon = null;
-
-            //armMeshRenderer.enabled = false;
             currentWeaponAnimator = null;
             return;
         }
 
-        // Different weapon or nothing equipped
         if (currentWeaponInstance != null)
         {
             Destroy(currentWeaponInstance);
             currentWeaponInstance = null;
         }
 
-        //armMeshRenderer.enabled = true;
-
-        // Always instantiate a new scene object
         currentWeaponInstance = Instantiate(
             weapon.modelPrefab,
             armTransform,
             false
         );
+
         WeaponManager.instance.currentWeapon = weapon;
         currentWeaponAnimator = currentWeaponInstance.GetComponent<Animator>();
     }
@@ -448,5 +446,47 @@ public class PlayerController : MonoBehaviour, IDamage
         WeaponManager.instance.currentRingEquipped = ring;
     }
 
+    public void ApplyPoison(float duration, float interval, int damagePerTick)
+    {
+        if (poisonCoroutine != null)
+        {
+            StopCoroutine(poisonCoroutine);
+        }
+
+        poisonCoroutine = StartCoroutine(PoisonRoutine(duration, interval, damagePerTick));
+    }
+
+    IEnumerator PoisonRoutine(float duration, float interval, int damagePerTick)
+    {
+        isPoisoned = true;
+
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            if (HP <= 0 || GameManager.instance == null)
+                break;
+
+            takeDamage(damagePerTick);
+
+            yield return new WaitForSeconds(interval);
+            elapsed += interval;
+        }
+
+        isPoisoned = false;
+        poisonCoroutine = null;
+    }
+
+    public void CurePoison()
+    {
+        if (poisonCoroutine != null)
+        {
+            StopCoroutine(poisonCoroutine);
+            poisonCoroutine = null;
+        }
+
+        isPoisoned = false;
+        Debug.Log("Poison cured.");
+    }
 }
 

@@ -54,25 +54,43 @@ public class ButtonFunctions : MonoBehaviour
 
     public void EquipFromMenu()
     {
-        switch (InventoryManager.instance.pendingEquipSlot.itemInSlot.itemType)
+        var slot = InventoryManager.instance.pendingEquipSlot;
+
+        if (slot == null || slot.itemInSlot == null)
+            return;
+
+        ItemData item = slot.itemInSlot;
+
+        switch (item.itemType)
         {
             case ItemType.Weapon:
-                InventoryManager.instance.weaponImage.sprite = InventoryManager.instance.pendingEquipSlot.itemInSlot.itemIcon;
-                InventoryManager.instance.pendingEquipSlot.itemInSlot.Use(GameManager.instance.playerControllerScript);
+                InventoryManager.instance.weaponImage.sprite = item.itemIcon;
+                item.Use(GameManager.instance.playerControllerScript);
                 break;
+
             case ItemType.ChestPiece:
-                InventoryManager.instance.chestPieceImage.sprite = InventoryManager.instance.pendingEquipSlot.itemInSlot.itemIcon;
+                InventoryManager.instance.chestPieceImage.sprite = item.itemIcon;
+                item.Use(GameManager.instance.playerControllerScript);
                 break;
+
             case ItemType.Leggings:
-                InventoryManager.instance.leggingsPieceImage.sprite = InventoryManager.instance.pendingEquipSlot.itemInSlot.itemIcon;
+                InventoryManager.instance.leggingsPieceImage.sprite = item.itemIcon;
+                item.Use(GameManager.instance.playerControllerScript);
                 break;
+
             case ItemType.Gauntlets:
-                InventoryManager.instance.leftGauntletPieceImage.sprite = InventoryManager.instance.pendingEquipSlot.itemInSlot.itemIcon;
-                InventoryManager.instance.rightGauntletPieceImage.sprite = InventoryManager.instance.pendingEquipSlot.itemInSlot.itemIcon;
+                InventoryManager.instance.leftGauntletPieceImage.sprite = item.itemIcon;
+                InventoryManager.instance.rightGauntletPieceImage.sprite = item.itemIcon;
+                item.Use(GameManager.instance.playerControllerScript);
                 break;
+
             case ItemType.Ring:
-                InventoryManager.instance.ringImage.sprite = InventoryManager.instance.pendingEquipSlot.itemInSlot.itemIcon;
-                InventoryManager.instance.pendingEquipSlot.itemInSlot.Use(GameManager.instance.playerControllerScript);
+                InventoryManager.instance.ringImage.sprite = item.itemIcon;
+                item.Use(GameManager.instance.playerControllerScript);
+                break;
+
+            case ItemType.Consumable:
+                slot.UseItem();
                 break;
         }
 

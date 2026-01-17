@@ -13,7 +13,7 @@ public class EnemyAI : MonoBehaviour, IDamage
 
     [Header("General")]
     [SerializeField] EnemyType enemyType;
-    [SerializeField] int HP = 50;
+    public int HP = 50;
     [SerializeField] Renderer model;
     [SerializeField] NavMeshAgent agent;
     [SerializeField] Animator anim;

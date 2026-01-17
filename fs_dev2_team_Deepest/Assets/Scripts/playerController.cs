@@ -67,6 +67,9 @@ public class PlayerController : MonoBehaviour, IDamage
     [SerializeField] float poisonTotalDuration;
     float poisonEndTime;
 
+    public bool IsPoisoned => isPoisoned;
+    public float PoisonRemainingTime => poisonRemainingTime;
+
     Vector3 moveDir;
     Vector3 playerVel;
 
@@ -198,6 +201,17 @@ public class PlayerController : MonoBehaviour, IDamage
         {
             Attack(WeaponManager.instance.currentWeapon);
         }
+    }
+
+    public float CurrentStamina
+    {
+        get { return stamina; }
+    }
+
+    public void SetStamina(float value)
+    {
+        stamina = Mathf.Clamp(value, 0f, maxStamina);
+        updateStaminaUI();
     }
 
     void Footsteps()
@@ -535,6 +549,28 @@ public class PlayerController : MonoBehaviour, IDamage
         Debug.Log("Poison cured.");
     }
 
+    public void RestorePoisonFromSave(float remainingTime, float interval, int damagePerTick)
+    {
+        CurePoison();
+
+        if (remainingTime <= 0f)
+            return;
+
+        isPoisoned = true;
+
+        poisonTotalDuration = remainingTime;
+        poisonEndTime = Time.time + remainingTime;
+        poisonRemainingTime = remainingTime;
+
+        if (UImanager.instance != null)
+        {
+            UImanager.instance.ShowPoisonUI(poisonTotalDuration);
+            UImanager.instance.UpdatePoisonUI(poisonRemainingTime, poisonTotalDuration);
+        }
+
+        poisonCoroutine = StartCoroutine(PoisonRoutine(interval, damagePerTick));
+    }
+
     void UpdateEncumbrance()
     {
         currentWeight = 0f;
@@ -570,5 +606,6 @@ public class PlayerController : MonoBehaviour, IDamage
         return cost;
     }
 }
+
 
 

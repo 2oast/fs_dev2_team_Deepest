@@ -100,5 +100,32 @@ public class ButtonFunctions : MonoBehaviour
         InventoryManager.instance.itemImage.sprite = null;
         InventoryManager.instance.YesOrNoPanel.SetActive(false);
     }
+    public void SaveGame()
+    {
+        if (SaveManager.instance != null)
+        {
+            SaveManager.instance.SaveGame();
+        }
+        else
+        {
+            Debug.LogWarning("SaveGame button pressed, but SaveManager.instance is null.");
+        }
+    }
 
+    public void LoadGame()
+    {
+        if (SaveManager.instance != null)
+        {
+            SaveManager.instance.LoadGame();
+
+            if (GameManager.instance != null)
+            {
+                GameManager.instance.ResetAfterLoad();
+            }
+        }
+        else
+        {
+            Debug.LogWarning("LoadGame button pressed, but SaveManager.instance is null.");
+        }
+    }
 }

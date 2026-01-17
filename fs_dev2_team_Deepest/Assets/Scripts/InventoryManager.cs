@@ -49,8 +49,29 @@ public class InventoryManager : MonoBehaviour
     public void AddItemToInventory(Item item)
     {
         InventorySlot newSlot = Instantiate(slotPrefab, contentParent);
-
         newSlot.Setup(item.item);
+        slots.Add(newSlot);
+    }
+
+    public void AddItemFromData(ItemData itemData)
+    {
+        InventorySlot newSlot = Instantiate(slotPrefab, contentParent);
+        newSlot.Setup(itemData);
+        slots.Add(newSlot);
+    }
+
+    public void ClearInventorySlots()
+    {
+        if (slots == null)
+            return;
+
+        for (int i = 0; i < slots.Count; i++)
+        {
+            if (slots[i] != null)
+                Destroy(slots[i].gameObject);
+        }
+
+        slots.Clear();
     }
 }
 

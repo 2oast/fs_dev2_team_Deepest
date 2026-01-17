@@ -1,13 +1,15 @@
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class ButtonFunctions : MonoBehaviour
 {
+    [Header("Scenes")]
+    [SerializeField] string titleSceneName = "TitleScreen";
+
     public void CollectItem()
     {
         InventoryManager.instance.AddItemToInventory(InventoryManager.instance.itemToBeCollected);
-        
+
         Destroy(InventoryManager.instance.itemToBeCollected.gameObject);
         InventoryManager.instance.itemToBeCollected = null;
         GameManager.instance.pickupText.text = "";
@@ -45,11 +47,8 @@ public class ButtonFunctions : MonoBehaviour
 
     public void Quit()
     {
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-            Application.Quit();
-#endif
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(titleSceneName);
     }
 
     public void EquipFromMenu()
@@ -100,6 +99,7 @@ public class ButtonFunctions : MonoBehaviour
         InventoryManager.instance.itemImage.sprite = null;
         InventoryManager.instance.YesOrNoPanel.SetActive(false);
     }
+
     public void SaveGame()
     {
         if (SaveManager.instance != null)
@@ -129,3 +129,4 @@ public class ButtonFunctions : MonoBehaviour
         }
     }
 }
+

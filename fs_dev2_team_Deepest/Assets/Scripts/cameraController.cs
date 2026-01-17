@@ -5,6 +5,8 @@ public class CameraController : MonoBehaviour
     [SerializeField] int sens;
     [SerializeField] int lockVertMin, lockVertMax;
     [SerializeField] bool invertY;
+    [SerializeField] Transform parentTransform;
+
 
     float camRotX;
 
@@ -35,7 +37,7 @@ public class CameraController : MonoBehaviour
         transform.localRotation = Quaternion.Euler(camRotX, 0, 0);
 
         // rotate the player on the Y axis
-        transform.parent.Rotate(Vector3.up * mouseX);
+        parentTransform.Rotate(Vector3.up * mouseX);
 
     }
 }

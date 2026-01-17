@@ -3,28 +3,42 @@ using UnityEngine;
 public class WeaponAnimationEvents : MonoBehaviour
 {
     BoxCollider weaponCol;
+    TrailRenderer trailRenderer;
+    
 
     public void EnableCollder()
     {
-        weaponCol = GetComponent<BoxCollider>();
+        weaponCol = GetComponentInChildren<BoxCollider>();
         weaponCol.enabled = true;
     }
 
     public void DisableCollider()
     {
-        weaponCol = GetComponent<BoxCollider>();
+        weaponCol = GetComponentInChildren<BoxCollider>();
         weaponCol.enabled = false;
     }
 
-    private void OnTriggerEnter(Collider other)
+    public void ActivateTrail()
     {
-        if (other.isTrigger)
-        {
-            return;
-        }
+        trailRenderer = GetComponentInChildren<TrailRenderer>();
+        trailRenderer.enabled = true;
+    }
 
+    public void DeactivateTrail()
+    {
+        trailRenderer = GetComponentInChildren<TrailRenderer>();
+        trailRenderer.enabled = false;
+    }
+
+    private void OnColliderEnter(Collider other)
+    {
         IDamage dmg = other.GetComponent<IDamage>();
         if(dmg!= null)
         dmg.takeDamage(WeaponManager.instance.currentWeapon.damage);
+
+        IDestructible destruct = other.GetComponent<IDestructible>();
+        if(destruct!= null)
+        destruct.Destruct();
     }
+
 }

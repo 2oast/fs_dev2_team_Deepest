@@ -173,4 +173,11 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(.1f);
         flashScreen.gameObject.SetActive(false);
     }
+
+    public IEnumerator HitStop(float duration)
+    {
+        Time.timeScale = .2f;
+        yield return new WaitForSecondsRealtime(duration);
+        Time.timeScale = 1;
+    }
 }

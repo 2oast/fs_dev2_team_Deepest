@@ -21,13 +21,23 @@ public class MagicController : MonoBehaviour
     [SerializeField] GameObject teleportPref;
     [SerializeField] GameObject shieldPref;
 
+    [SerializeField] GameObject throwPref;
+
     [SerializeField] Transform teleGrabLocation;
     [SerializeField] Transform magicHandTransform;
+
+    [SerializeField] AudioSource audSource;
+    [SerializeField] AudioClip grabClip;
+    [SerializeField] AudioClip throwClip;
 
     [SerializeField] float grabDistance;
     [SerializeField] float grabSpeed;
     [SerializeField] float teleportSpeed;
     [SerializeField] float throwForce;
+
+    float originalCamFov;
+    [SerializeField] float grabFov;
+    [SerializeField] float moveInSpeed;
 
     [SerializeField] BoxCollider grabCollider;
 
@@ -42,6 +52,8 @@ public class MagicController : MonoBehaviour
     bool isPullingEnemy;
     bool isDonePunching;
 
+    private GameObject currentPrefInstance;
+
     private void Awake()
     {
         spellPrefabsDic = new Dictionary<SpellType, GameObject>()
@@ -54,6 +66,7 @@ public class MagicController : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        originalCamFov = Camera.main.fieldOfView;
     }
 
 
@@ -78,6 +91,9 @@ public class MagicController : MonoBehaviour
         }
 
         CastSpell();
+
+        float targetFov = isTelegrabbing ? grabFov : originalCamFov;
+        Camera.main.fieldOfView = Mathf.MoveTowards(Camera.main.fieldOfView, targetFov, Time.deltaTime * moveInSpeed);
     }
 
     public void CastSpell()
@@ -96,9 +112,16 @@ public class MagicController : MonoBehaviour
                 switch (spellType)
                 {
                     case SpellType.TeleGrab:
-                        //Instantiate(prefab, teleGrabLocation);
                         if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, grabDistance))
+                        {
                             ShootSpellRayCast(hit, spellType);
+                            if(objectGrabbed != null)
+                            {
+                                GameObject effect = Instantiate(prefab, teleGrabLocation);
+                                currentPrefInstance = effect;
+                                audSource.PlayOneShot(grabClip);
+                            }
+                        }
                         break;
                     case SpellType.Teleport:
                         //Instantiate(prefab, magicHandTransform);
@@ -106,7 +129,7 @@ public class MagicController : MonoBehaviour
                             ShootSpellRayCast(hit, spellType);
                         break;
                 }
-                PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "MagicCast");
+                PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "MagicCast", .1f);
             }
         }
     }
@@ -145,20 +168,21 @@ public class MagicController : MonoBehaviour
         Rigidbody rb = obj.GetComponent<Rigidbody>();
         objectGrabbed.transform.SetParent(null);
 
-        // stop pulling
         objectGrabbed = null;
         isTelegrabbing = false;
-        //StartCoroutine(CameraPunch());
 
         rb.AddForce(Camera.main.transform.forward * throwForce, ForceMode.Impulse);
 
-        // update flags
-        Debug.Log("Enemy thrown");
+        audSource.PlayOneShot(throwClip);
+        GameObject effect = Instantiate(throwPref, teleGrabLocation);
+        Destroy(effect, 3);
+        Destroy(currentPrefInstance);
+
     }
 
     void PullEnemyToHand()
     {
-
+        
         if (objectGrabbed == null) return; // early out
 
         Rigidbody rb = objectGrabbed.GetComponent<Rigidbody>();
@@ -188,35 +212,8 @@ public class MagicController : MonoBehaviour
         obj.transform.localRotation = Quaternion.identity;
         rb.isKinematic = false;
         isTelegrabbing = true;
-        StartCoroutine(CameraPunch());
     }
 
-    IEnumerator CameraPunch()
-    {
-        float startFov = Camera.main.fieldOfView;
-        float targetFov = 50f;
-        float duration = 0.4f;
-        float t = 0f;
-
-        while (t < 1f)
-        {
-            t += Time.deltaTime / duration;
-            Camera.main.fieldOfView = Mathf.Lerp(startFov, targetFov, t);
-            yield return null;
-        }
-
-        yield return new WaitUntil(() => !isTelegrabbing);
-
-        startFov = Camera.main.fieldOfView;
-        targetFov = 60f;
-        t = 0f;
-
-        while (t < 1f)
-        {
-            t += Time.deltaTime / duration;
-            Camera.main.fieldOfView = Mathf.Lerp(startFov, targetFov, t);
-            yield return null;
-        }
-    }
+    
 
 }

@@ -12,6 +12,7 @@ public class UImanager : MonoBehaviour
     public Image playerHPBar;
     public Image playerStaminaBar;
     public GameObject playerDamageScreen;
+    public Image chargeMeter;
 
     [Header("Armor UI")]
     public Image armorIcon;
@@ -25,6 +26,9 @@ public class UImanager : MonoBehaviour
     [Header("Level Up Audio")]
     public AudioSource levelUpAudioSource;
     public AudioClip levelUpClip;
+
+    [Header("DamageUI")]
+    public GameObject floatingText;
 
     struct LevelUpRequest
     {
@@ -154,5 +158,10 @@ public class UImanager : MonoBehaviour
         levelUpText.gameObject.SetActive(true);
         isShowingLevelUp = false;
         levelUpRoutine = null;
+    }
+
+    public void FillChargeMeter(float chargeTimer)
+    {
+        chargeMeter.fillAmount = chargeTimer;
     }
 }

@@ -50,12 +50,12 @@ public class EnemyStateManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-       // if(!enemy.isStunned)
-       // {
+       if(!enemy.isStunned)
+       {
             shootTimer += Time.deltaTime;
 
             currentState.UpdateState(this);
-      //  }
+       }
         
     }
 

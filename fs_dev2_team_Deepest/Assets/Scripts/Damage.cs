@@ -46,6 +46,8 @@ public class Damage : MonoBehaviour
 
         if (dmg != null && type != damageType.DOT)
         {
+            int baseDamage = GameManager.instance.playerControllerScript.chargeAttack ? WeaponManager.instance.currentWeapon.damage * 2 : WeaponManager.instance.currentWeapon.damage;
+
             int finalDamage = ComputeFinalDamage();
             dmg.takeDamage(finalDamage);
         }
@@ -54,6 +56,10 @@ public class Damage : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        IDestructible destruct = other.GetComponent<IDestructible>();
+        if (destruct != null)
+            destruct.Destruct();
     }
 
     private void OnTriggerStay(Collider other)
@@ -82,17 +88,19 @@ public class Damage : MonoBehaviour
 
     int ComputeFinalDamage()
     {
-        int finalDamage = damageAmount;
+        int baseDamage = GameManager.instance.playerControllerScript.chargeAttack ? WeaponManager.instance.currentWeapon.damage * 2 : WeaponManager.instance.currentWeapon.damage;
+
+        int finalDamage = baseDamage;
 
         if (CompareTag("PlayerMelee") && SkillManager.instance != null)
         {
             float mult = SkillManager.instance.GetMeleeDamageMultiplier();
-            finalDamage = Mathf.CeilToInt(damageAmount * mult);
+            finalDamage = Mathf.CeilToInt(baseDamage * mult);
         }
         else if (CompareTag("PlayerRanged") && SkillManager.instance != null)
         {
             float mult = SkillManager.instance.GetRangedDamageMultiplier();
-            finalDamage = Mathf.CeilToInt(damageAmount * mult);
+            finalDamage = Mathf.CeilToInt(baseDamage * mult);
         }
 
         if (finalDamage < 0)
@@ -100,4 +108,6 @@ public class Damage : MonoBehaviour
 
         return finalDamage;
     }
+
+    
 }

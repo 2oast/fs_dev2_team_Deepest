@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour, IDamage
     [SerializeField] LayerMask ignoreLayer;
 
     [Header("Player Stats")]
-    [Range(1, 10)] public int HP;
+    [Range(1, 500)] public int HP;
     [Range(1, 5)][SerializeField] int speed;
     [Range(2, 5)][SerializeField] int sprintMod;
     [Range(5, 20)][SerializeField] int JumpSpeed;
@@ -43,6 +43,7 @@ public class PlayerController : MonoBehaviour, IDamage
     [SerializeField] float walkStepInterval = 0.5f;
     [SerializeField] float sprintStepInterval = 0.28f;
     [SerializeField] AudioClip armorEquipClip;
+    [SerializeField] AudioClip swordSwingClip;
 
     [Header("References")]
     [SerializeField] MeshRenderer armMeshRenderer;
@@ -50,6 +51,7 @@ public class PlayerController : MonoBehaviour, IDamage
     [Header("Animations")]
     [SerializeField] Animator currentWeaponAnimator;
     [SerializeField] Animator animator;
+    [SerializeField] Animator camAnimator;
 
 
 
@@ -64,11 +66,12 @@ public class PlayerController : MonoBehaviour, IDamage
 
     bool isBlocking;
     bool isCharging;
+    public bool chargeAttack;
     Vector3 shieldDefaultLocalPos;
     bool weaponEquipped;
 
     float shootTimer;
-    float chargeTimer;
+    [Range(0, 1)]float chargeTimer;
 
     float baseSpeed;
 
@@ -105,6 +108,7 @@ public class PlayerController : MonoBehaviour, IDamage
         Blocking();
         UpdateShieldPosition();
         Footsteps();
+        UImanager.instance.FillChargeMeter(chargeTimer);
 
         if (isSprinting)
         {
@@ -188,7 +192,7 @@ public class PlayerController : MonoBehaviour, IDamage
         if (Time.time >= nextStepTime)
         {
             AudioClip clip = footstepClips[Random.Range(0, footstepClips.Length)];
-            audioSource.PlayOneShot(clip);
+            audioSource.PlayOneShot(clip, 0.3f);
             nextStepTime = Time.time + interval;
         }
     }
@@ -417,21 +421,23 @@ public class PlayerController : MonoBehaviour, IDamage
         animator.SetBool("IsChargingSwing", isCharging);
 
         if (isCharging)
-            chargeTimer += Time.deltaTime;
+            chargeTimer += Time.deltaTime / 3;
 
-        if (Input.GetButtonUp("Fire1"))
+
+        if (Input.GetButtonUp("Fire1") && !GameManager.instance.isInteracting)
         {
             switch (weapon.itemName)
             {
                 case "Sword":
-                    if(chargeTimer > 1)
+                    if(chargeTimer > .5f)
                     {
-                        PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "BigSwing");
+                        PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "BigSwing",.3f);
                         chargeTimer = 0;
                     }
                     else
                     {
-                        PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "regSwing");
+                        PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "regSwing", .3f);
+                        PlayerAnimatorManager.instance.PlayTargetAnimation(camAnimator, "CamSwing", .25f);
                         chargeTimer = 0;
 
                     }

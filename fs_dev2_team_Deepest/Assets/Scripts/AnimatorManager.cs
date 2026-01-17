@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class AnimatorManager : MonoBehaviour
 {
-    public void PlayTargetAnimation(Animator animator, string animationName)
+    public void PlayTargetAnimation(Animator animator, string animationName, float crossFade)
     {
         animator.Play(animationName);
-        animator.CrossFade(animationName, .1f);
+        animator.CrossFade(animationName, crossFade);
     }
 }

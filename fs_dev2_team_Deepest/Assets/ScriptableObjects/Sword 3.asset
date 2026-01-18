@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d13b45e5583ee743949bbfbf35a750d, type: 3}
+  m_Name: Sword 3
+  m_EditorClassIdentifier: Assembly-CSharp::Weapon
+  itemType: 0
+  itemName: Gold Sword
+  isStackable: 0
+  isRadio: 0
+  maxStack: 0
+  itemIcon: {fileID: 21300000, guid: 1c174608f4a544942b937fd69267a739, type: 3}
+  modelPrefab: {fileID: 3218188306531829914, guid: e853d2e8a78212b47bc9ac2aa1fa09eb, type: 3}
+  description: 
+  weaponType: 0
+  damage: 9
+  weight: 5
+  bulletHoles: {fileID: 0}
+  smoke: {fileID: 0}
+  staminaDrain: 3

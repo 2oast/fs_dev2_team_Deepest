@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1e54a7da18ea7a4ebd69babb490e79b, type: 3}
+  m_Name: Armor 2
+  m_EditorClassIdentifier: Assembly-CSharp::Armor
+  itemType: 2
+  itemName: Iron Chestpiece
+  isStackable: 0
+  isRadio: 0
+  maxStack: 0
+  itemIcon: {fileID: 21300000, guid: 79ab010b946b4b74b96b4f1c03f08bb1, type: 3}
+  modelPrefab: {fileID: 7115888426771639665, guid: 269096e730ec2cf459d467cd5cdb1539, type: 3}
+  description: 
+  damageReductionPercent: 25
+  weight: 8

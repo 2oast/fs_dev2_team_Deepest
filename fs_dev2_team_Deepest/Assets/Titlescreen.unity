@@ -347,6 +347,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Titlescreencanvas
       objectReference: {fileID: 0}
+    - target: {fileID: 5996452357638206586, guid: 3369fb97278c550488c20f9ac3b22fa6, type: 3}
+      propertyPath: m_UiScaleMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5996452357638206586, guid: 3369fb97278c550488c20f9ac3b22fa6, type: 3}
+      propertyPath: m_ReferenceResolution.x
+      value: 1920
+      objectReference: {fileID: 0}
+    - target: {fileID: 5996452357638206586, guid: 3369fb97278c550488c20f9ac3b22fa6, type: 3}
+      propertyPath: m_ReferenceResolution.y
+      value: 1080
+      objectReference: {fileID: 0}
     - target: {fileID: 8831895445919965784, guid: 3369fb97278c550488c20f9ac3b22fa6, type: 3}
       propertyPath: m_Pivot.x
       value: 0

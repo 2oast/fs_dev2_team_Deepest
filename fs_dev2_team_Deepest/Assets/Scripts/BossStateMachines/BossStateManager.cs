@@ -3,10 +3,10 @@ using UnityEngine;
 
 public class BossStateManager : MonoBehaviour
 {
-
+    //States
     BossBaseState currentState;
     public BossBaseState nextState;
-
+  
     public ChangeLocationState changeLocationState = new ChangeLocationState();
     public ChargeAttackState chargeAttackState = new ChargeAttackState();
     public SpecialAttackState specialAttackState = new SpecialAttackState();
@@ -14,25 +14,24 @@ public class BossStateManager : MonoBehaviour
     public StunnedState stunnedState = new StunnedState();
 
     public Dictionary<int, BossBaseState> stateTypeDic;
+    [Header("Materials")]
     public List<Material> mats;
-
     public Material stunMat;
     public Material redMat;
-
     public Renderer model;
 
-
+    [Header("Numbers")]
     public float turnSpeed;
     public float moveSpeed;
     public int randomState;
+    public int index;
+    public float waitTimer = 0;
 
+    [Header("Transforms")]
     public Transform[] locations;
     public Transform[] rockSpawnLocations;
     public Transform nextPos;
     public Transform centerPos;
-    public int index;
-    public float waitTimer = 0;
-    
 
     [Header("Projectile settings")]
     public float shootTimer;
@@ -43,14 +42,16 @@ public class BossStateManager : MonoBehaviour
     public Transform aimTarget;
     public float projectileSpeed = 20f;
 
+    [Header("Colliders")]
     public BoxCollider hitCollider;
     public BoxCollider damageCollider;
     public BoxCollider rockCollider;
 
+    [Header("References")]
     public BossStats boss;
-
     public Animator animator;
 
+    [Header("Flags")]
     public bool isMoving;
     public bool isStunned;
 

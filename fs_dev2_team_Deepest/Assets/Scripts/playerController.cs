@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.Rendering;
 
 public class PlayerController : MonoBehaviour, IDamage
 {
@@ -14,6 +15,11 @@ public class PlayerController : MonoBehaviour, IDamage
     [Range(5, 20)][SerializeField] int JumpSpeed;
     [Range(1, 3)][SerializeField] int maxJumps;
     [Range(15, 50)][SerializeField] int gravity;
+    float currentWeight;
+    public float chargeTimer;
+    float staminaRegenTimer;
+    int jumpCount;
+    int HPOrig;
 
     [Header("Encumbrance / Weight")]
     [SerializeField] float baseWeightLimit = 20f;
@@ -21,8 +27,6 @@ public class PlayerController : MonoBehaviour, IDamage
     [SerializeField] float encumberedSpeedMultiplier = 0.6f;
     [SerializeField] float encumberedStaminaCostMultiplier = 1.5f;
 
-    float currentWeight;
-    bool isEncumbered;
 
     [Header("Stamina")]
     [SerializeField] float maxStamina = 100f;
@@ -34,14 +38,7 @@ public class PlayerController : MonoBehaviour, IDamage
     [Header("Shield")]
     [SerializeField] Transform shieldTransform;
     [SerializeField] Transform armTransform;
-    [SerializeField] Vector3 shieldBlockOffset = new Vector3(0.3f, 0.2f, 0f);
-    [SerializeField] float shieldMoveSpeed = 10f;
     [SerializeField] float blockStaminaCost = 25f;
-
-    [Header("Shooting")]
-    [SerializeField] int shootDamage;
-    [SerializeField] int shootDist;
-    [SerializeField] float shootRate;
 
     [Header("Interaction")]
     [SerializeField] int interactDistance;
@@ -55,9 +52,10 @@ public class PlayerController : MonoBehaviour, IDamage
 
     [Header("References")]
     [SerializeField] MeshRenderer armMeshRenderer;
+    public GameObject currentWeaponInstance;
+    public Armor currentArmor;
 
     [Header("Animations")]
-    [SerializeField] Animator currentWeaponAnimator;
     [SerializeField] Animator animator;
 
     [Header("Status Effects")]
@@ -66,66 +64,53 @@ public class PlayerController : MonoBehaviour, IDamage
     [SerializeField] float poisonRemainingTime;
     [SerializeField] float poisonTotalDuration;
     float poisonEndTime;
-
-    public bool IsPoisoned => isPoisoned;
+    
     public float PoisonRemainingTime => poisonRemainingTime;
 
+    [Header("Vectors")]
     Vector3 moveDir;
     Vector3 playerVel;
 
-    int jumpCount;
-    int HPOrig;
-
+    [Header("Flags")]
+    public bool IsPoisoned => isPoisoned;
     bool isSprinting;
-    float staminaRegenTimer;
-
     bool isBlocking;
     bool isCharging;
-    Vector3 shieldDefaultLocalPos;
-    bool weaponEquipped;
-
-    float shootTimer;
-    float chargeTimer;
-
-    float baseSpeed;
+    bool isEncumbered;
+    public bool chargeAttack;
 
     float nextStepTime;
 
-    public GameObject currentWeaponInstance;
+    
 
-    public Armor currentArmor;
-
-    public bool chargeAttack;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         HPOrig = HP;
         stamina = maxStamina;
-        baseSpeed = speed;
         updatePlayerUI();
         updateStaminaUI();
 
-        if (shieldTransform != null)
-            shieldDefaultLocalPos = shieldTransform.localPosition;
+       
     }
 
     void Update()
     {
-        Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
+        //Timers
         speed = Mathf.Clamp(speed, 5, 25);
-        shootTimer += Time.deltaTime;
+        chargeTimer = Mathf.Clamp(chargeTimer, 0, 1);
 
         UpdateEncumbrance();
 
+        //functionality
         if (!GameManager.instance.isPaused)
             movement();
 
         sprint();
-        Blocking();
-        UpdateShieldPosition();
         Footsteps();
 
+        //sprinting
         if (isSprinting)
         {
             float drainPerSec = maxStamina * (staminaDrainRate / 100f);
@@ -335,39 +320,6 @@ public class PlayerController : MonoBehaviour, IDamage
         UImanager.instance.playerDamageScreen.SetActive(false);
     }
 
-    void Blocking()
-    {
-        if (GameManager.instance.isPaused)
-        {
-            isBlocking = false;
-            return;
-        }
-
-        bool blockInput = Input.GetButton("Fire2");
-
-        float blockCost = GetBlockCost();
-        bool hasEnoughStamina = stamina >= blockCost;
-
-        if (blockInput && hasEnoughStamina)
-            isBlocking = true;
-        else
-            isBlocking = false;
-    }
-
-    void UpdateShieldPosition()
-    {
-        if (shieldTransform == null)
-            return;
-
-        Vector3 target = shieldDefaultLocalPos;
-
-        if (isBlocking)
-            target = shieldDefaultLocalPos + shieldBlockOffset;
-
-        shieldTransform.localPosition =
-            Vector3.Lerp(shieldTransform.localPosition, target, Time.deltaTime * shieldMoveSpeed);
-    }
-
     void OnInteract()
     {
         if (!GameManager.instance.isPaused)
@@ -389,17 +341,6 @@ public class PlayerController : MonoBehaviour, IDamage
         }
     }
 
-    void shoot()
-    {
-        if (!GameManager.instance.isPaused)
-        {
-            if (shootTimer > 3)
-            {
-
-            }
-        }
-    }
-
     public void EquipWeapon(Weapon weapon)
     {
         if (currentWeaponInstance != null &&
@@ -408,7 +349,6 @@ public class PlayerController : MonoBehaviour, IDamage
             Destroy(currentWeaponInstance);
             currentWeaponInstance = null;
             WeaponManager.instance.currentWeapon = null;
-            currentWeaponAnimator = null;
             return;
         }
 
@@ -425,7 +365,6 @@ public class PlayerController : MonoBehaviour, IDamage
         );
 
         WeaponManager.instance.currentWeapon = weapon;
-        currentWeaponAnimator = currentWeaponInstance.GetComponent<Animator>();
     }
 
     public void EquipArmor(Armor armor)
@@ -464,7 +403,7 @@ public class PlayerController : MonoBehaviour, IDamage
             switch (weapon.itemName)
             {
                 case "Sword":
-                    if (chargeTimer > 1)
+                    if (chargeTimer > .5f)
                     {
                         PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "BigSwing", .5f);
                         chargeTimer = 0;

@@ -18,47 +18,43 @@ public class MagicController : MonoBehaviour
 
     Dictionary<SpellType, GameObject> spellPrefabsDic;
 
+    [Header("SpellPrefabs")]
     [SerializeField] GameObject teleGrabPref;
     [SerializeField] GameObject teleportPref;
     [SerializeField] GameObject shieldPref;
     [SerializeField] GameObject speedPref;
-
     [SerializeField] GameObject throwPref;
 
+    [Header("Transforms")]
     [SerializeField] Transform teleGrabLocation;
     [SerializeField] Transform magicHandTransform;
 
+    [Header("Sound")]
     [SerializeField] AudioSource audSource;
     [SerializeField] AudioClip grabClip;
     [SerializeField] AudioClip throwClip;
 
+    [Header("Floats")]
     [SerializeField] float grabDistance;
     [SerializeField] float grabSpeed;
     [SerializeField] float teleportSpeed;
     [SerializeField] float throwForce;
     [SerializeField] float speedDuration;
-
+    [SerializeField] float grabTimer;
+    [SerializeField] float speedTimer;
     float originalCamFov;
     [SerializeField] float grabFov;
     [SerializeField] float moveInSpeed;
 
+    [Header("References")]
     [SerializeField] BoxCollider grabCollider;
-
     public GameObject objectGrabbed;
-
-
     public enemyAI enemyGrabbed;
-    [SerializeField] float grabTimer;
-    [SerializeField] float speedTimer;
-
-
+    
+    [Header("flags")]
     public bool isTelegrabbing;
-    bool isPullingEnemy;
-    bool isDonePunching;
     bool isTeleporting;
     public bool isBoosting;
-
-    private GameObject currentPrefInstance;
 
     private void Awake()
     {
@@ -199,11 +195,6 @@ public class MagicController : MonoBehaviour
                 StartCoroutine(TeleportToEnemy(.5f, hit));
             }
         }
-    }
-
-    void Teleport(enemyAI enemy)
-    {
-        isTelegrabbing = false;
     }
 
     void Throw(GameObject obj)

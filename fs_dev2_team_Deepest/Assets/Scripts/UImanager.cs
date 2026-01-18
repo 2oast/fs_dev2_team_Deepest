@@ -11,6 +11,7 @@ public class UImanager : MonoBehaviour
     [Header("Player UI")]
     public Image playerHPBar;
     public Image playerStaminaBar;
+    public Image chargeMeter;
     public GameObject playerDamageScreen;
 
     [Header("Status")]
@@ -77,7 +78,7 @@ public class UImanager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        FillChargeMeter();
     }
 
     public void ShowArmorIcon()
@@ -192,5 +193,10 @@ public class UImanager : MonoBehaviour
     {
         if (poisonPanel != null)
             poisonPanel.SetActive(false);
+    }
+
+    public void FillChargeMeter()
+    {
+        chargeMeter.fillAmount += GameManager.instance.playerControllerScript.chargeTimer;
     }
 }

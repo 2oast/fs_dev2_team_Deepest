@@ -22,6 +22,35 @@ public class SaveManager : MonoBehaviour
         }
     }
 
+    public static void DeleteSaveFile()
+    {
+        string path = Path.Combine(Application.persistentDataPath, "savegame.json");
+
+        if (File.Exists(path))
+        {
+            File.Delete(path);
+            Debug.Log("Save file deleted at: " + path);
+        }
+        else
+        {
+            Debug.Log("No save file to delete at: " + path);
+        }
+    }
+
+    public void DeleteSave()
+    {
+        if (File.Exists(SavePath))
+        {
+            File.Delete(SavePath);
+            Debug.Log("Save file deleted at: " + SavePath);
+        }
+        else
+        {
+            Debug.Log("No save file to delete at: " + SavePath);
+        }
+    }
+
+    // ---------------- SAVE ----------------
     public void SaveGame()
     {
         GameData data = new GameData();
@@ -79,6 +108,7 @@ public class SaveManager : MonoBehaviour
         Debug.Log("Game saved to: " + SavePath);
     }
 
+    // ---------------- LOAD ----------------
     public void LoadGame()
     {
         if (!File.Exists(SavePath))
@@ -202,3 +232,5 @@ public class SaveManager : MonoBehaviour
         Debug.Log("Game loaded from: " + SavePath);
     }
 }
+
+

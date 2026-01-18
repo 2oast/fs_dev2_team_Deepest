@@ -1,25 +1,28 @@
+using System.Collections;
 using UnityEngine;
 
 public class GameSceneLoader : MonoBehaviour
 {
-    void Start()
+    IEnumerator Start()
     {
-        if (TitleScreenManager.loadFromSave)
-        {
-            TitleScreenManager.loadFromSave = false;
+        if (!TitleScreenManager.loadFromSave)
+            yield break;
 
-            if (SaveManager.instance != null)
-            {
-                SaveManager.instance.LoadGame();
-            }
-            else
-            {
-                Debug.LogWarning("SaveManager.instance is null, cannot load game.");
-            }
+        TitleScreenManager.loadFromSave = false;
+
+        while (SaveManager.instance == null ||
+               GameManager.instance == null ||
+               GameManager.instance.playerControllerScript == null)
+        {
+            yield return null;
         }
-        else
-        {
 
+        SaveManager.instance.LoadGame();
+
+        if (GameManager.instance != null)
+        {
+            GameManager.instance.ResetAfterLoad();
         }
     }
 }
+

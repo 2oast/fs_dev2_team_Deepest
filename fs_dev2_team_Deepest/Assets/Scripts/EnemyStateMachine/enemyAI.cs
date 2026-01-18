@@ -53,6 +53,7 @@ public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport
 
     public void takeDamage(int amount)
     {
+        PlayerAnimatorManager.instance.PlayTargetAnimation(anim, "enemySquash", .5f);
 
         if(HP <= maxHp / 2)
         {
@@ -67,22 +68,17 @@ public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport
         audioSource.PlayOneShot(hurtSound, .5f);
         if (HP <= 0)
         {
-            StartCoroutine(SquashStretch(
-        new Vector3(1.2f, 0.7f, 1.2f),
-         0.08f,
-         0.12f
-         ));
             audioSource.pitch = Random.Range(.5f, 1);
             audioSource.PlayOneShot(hurtSound);
+            GameObject floatText = Instantiate(UImanager.instance.floatingText, floatTextTrans);
+            TextMesh text = floatText.GetComponent<TextMesh>();
+            text.text = amount.ToString();
+            Destroy(floatText, 1f);
+            StartCoroutine(GameManager.instance.HitStop(.1f));
             StartCoroutine(FadeOut(1));
         }
         else
         {
-            StartCoroutine(SquashStretch(
-        new Vector3(1.2f, 0.7f, 1.2f),
-         0.08f,
-         0.12f
-         ));
             GameObject floatText = Instantiate(UImanager.instance.floatingText, floatTextTrans);
             TextMesh text = floatText.GetComponent<TextMesh>();
             text.text = amount.ToString();
@@ -144,30 +140,6 @@ public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport
         Destroy(gameObject);
     }
 
-    public IEnumerator SquashStretch(
-    Vector3 squashScale,
-    float squashTime,
-    float returnTime
-)
-    {
-        Transform t = meshTrans; // NOT the root if it has physics
-        Vector3 originalScale = t.localScale;
-
-        float timer = 0f;
-        while (timer < squashTime)
-        {
-            timer += Time.deltaTime;
-            t.localScale = Vector3.Lerp(originalScale, squashScale, timer / squashTime);
-            yield return null;
-        }
-
-        timer = 0f;
-        while (timer < returnTime)
-        {
-            timer += Time.deltaTime;
-            t.localScale = Vector3.Lerp(squashScale, originalScale, timer / returnTime);
-            yield return null;
-        }
-    }
+    
 
 }

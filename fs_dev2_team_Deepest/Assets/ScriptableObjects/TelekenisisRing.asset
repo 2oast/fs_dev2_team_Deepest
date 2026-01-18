@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TelekenisisRing
   m_EditorClassIdentifier: Assembly-CSharp::MagicRing
   itemType: 1
-  itemName: Telekinesis
+  itemName: Telekinesis Ring
   isStackable: 0
   isRadio: 0
   maxStack: 1

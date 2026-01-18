@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1e54a7da18ea7a4ebd69babb490e79b, type: 3}
   m_Name: Armor 1
   m_EditorClassIdentifier: Assembly-CSharp::Armor
+  itemType: 2
   itemName: Armor
   isStackable: 0
   isRadio: 0

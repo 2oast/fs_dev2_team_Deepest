@@ -8,7 +8,8 @@ public enum SpellType
 {
     TeleGrab,
     Teleport,
-    Shield
+    Shield,
+    Speed
 }
 
 public class MagicController : MonoBehaviour
@@ -20,6 +21,7 @@ public class MagicController : MonoBehaviour
     [SerializeField] GameObject teleGrabPref;
     [SerializeField] GameObject teleportPref;
     [SerializeField] GameObject shieldPref;
+    [SerializeField] GameObject speedPref;
 
     [SerializeField] GameObject throwPref;
 
@@ -34,6 +36,7 @@ public class MagicController : MonoBehaviour
     [SerializeField] float grabSpeed;
     [SerializeField] float teleportSpeed;
     [SerializeField] float throwForce;
+    [SerializeField] float speedDuration;
 
     float originalCamFov;
     [SerializeField] float grabFov;
@@ -46,11 +49,14 @@ public class MagicController : MonoBehaviour
 
     public enemyAI enemyGrabbed;
     [SerializeField] float grabTimer;
+    [SerializeField] float speedTimer;
 
 
     public bool isTelegrabbing;
     bool isPullingEnemy;
     bool isDonePunching;
+    bool isTeleporting;
+    public bool isBoosting;
 
     private GameObject currentPrefInstance;
 
@@ -60,7 +66,8 @@ public class MagicController : MonoBehaviour
         {
             {SpellType.TeleGrab, teleGrabPref},
             {SpellType.Teleport, teleportPref},
-            {SpellType.Shield, shieldPref}
+            {SpellType.Shield, shieldPref},
+            {SpellType.Speed,  speedPref}
         };
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -90,10 +97,30 @@ public class MagicController : MonoBehaviour
             Throw(objectGrabbed);
         }
 
+       
+
         CastSpell();
 
-        float targetFov = isTelegrabbing ? grabFov : originalCamFov;
-        Camera.main.fieldOfView = Mathf.MoveTowards(Camera.main.fieldOfView, targetFov, Time.deltaTime * moveInSpeed);
+        float targetFov = originalCamFov;
+
+        if (isBoosting)
+            targetFov = grabFov / 2f;
+        else if (isTeleporting)
+            targetFov = grabFov;
+        else if (isTelegrabbing)
+            targetFov = grabFov;
+
+        Camera.main.fieldOfView = Mathf.MoveTowards(
+            Camera.main.fieldOfView,
+            targetFov,
+            Time.deltaTime * moveInSpeed);
+
+        if(isTelegrabbing && objectGrabbed == null)
+        {
+            isTelegrabbing = false;
+            teleGrabPref.SetActive(false);
+        }
+
     }
 
     public void CastSpell()
@@ -115,18 +142,27 @@ public class MagicController : MonoBehaviour
                         if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, grabDistance))
                         {
                             ShootSpellRayCast(hit, spellType);
-                            if(objectGrabbed != null)
-                            {
-                                GameObject effect = Instantiate(prefab, teleGrabLocation);
-                                currentPrefInstance = effect;
+                            //if(objectGrabbed != null)
+                            //{
+                            //    GameObject telegrabeffect = Instantiate(prefab, teleGrabLocation);
+                            //    currentPrefInstance = telegrabeffect;
                                 audSource.PlayOneShot(grabClip);
-                            }
+                           // }
                         }
                         break;
                     case SpellType.Teleport:
-                        //Instantiate(prefab, magicHandTransform);
+                        GameObject effect = Instantiate(prefab, teleGrabLocation);
                         if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, grabDistance))
                             ShootSpellRayCast(hit, spellType);
+                        if(effect != null)
+                        {
+                            Destroy(effect, 1);
+                        }
+                        break;
+                    case SpellType.Speed:
+                        if(!isBoosting)
+                        StartCoroutine(SpeedBoost(2));
+                        Debug.Log("BOOSTING");
                         break;
                 }
                 PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "MagicCast", .1f);
@@ -144,7 +180,15 @@ public class MagicController : MonoBehaviour
         {
             if (grab != null)
             {
-                grab.Grab(this);
+                if(enemy != null && enemy.isStunned)
+                {
+                    grab.Grab(this);
+                }
+                else if(enemy == null)
+                {
+                    grab.Grab(this);
+                }
+
             }
         }
 
@@ -152,8 +196,7 @@ public class MagicController : MonoBehaviour
         {
             if (teleport != null)
             {
-                Teleport(enemy);
-                teleport.Teleport();
+                StartCoroutine(TeleportToEnemy(.5f, hit));
             }
         }
     }
@@ -176,14 +219,14 @@ public class MagicController : MonoBehaviour
         audSource.PlayOneShot(throwClip);
         GameObject effect = Instantiate(throwPref, teleGrabLocation);
         Destroy(effect, 3);
-        Destroy(currentPrefInstance);
+        teleGrabPref.SetActive(false);//Destroy(currentPrefInstance);
 
     }
 
     void PullEnemyToHand()
     {
         
-        if (objectGrabbed == null) return; // early out
+        if (objectGrabbed == null) return;
 
         Rigidbody rb = objectGrabbed.GetComponent<Rigidbody>();
         Vector3 targetPos = teleGrabLocation.position;
@@ -212,8 +255,53 @@ public class MagicController : MonoBehaviour
         obj.transform.localRotation = Quaternion.identity;
         rb.isKinematic = false;
         isTelegrabbing = true;
+        teleGrabPref.SetActive(true);
     }
 
-    
+    IEnumerator TeleportToEnemy(float duration, RaycastHit hit)
+    {
+        isTeleporting = true;
+
+        var controller = GameManager.instance.playerControllerScript.controller;
+
+        Vector3 start = transform.position;
+        Vector3 target = hit.collider.transform.position
+                         - transform.forward;
+
+        float t = 0f;
+
+        while (t < 1f)
+        {
+            t += Time.deltaTime / duration;
+
+            // Ease out (snappy start, smooth stop)
+            float easedT = 1f - Mathf.Pow(1f - t, 3f);
+
+            Vector3 nextPos = Vector3.Lerp(start, target, easedT);
+            controller.Move(nextPos - transform.position);
+
+            yield return null;
+        }
+
+        isTeleporting = false;
+    }
+
+    IEnumerator SpeedBoost(float duration)
+    {
+
+        isBoosting = true;
+        speedPref.SetActive(true);
+        var player = GameManager.instance.playerControllerScript;
+
+        int originalSpeed = player.speed;
+        player.speed = 25;
+
+        yield return new WaitForSeconds(duration);
+
+        player.speed = 5;
+        speedPref.SetActive(false);
+
+        isBoosting = false;
+    }
 
 }

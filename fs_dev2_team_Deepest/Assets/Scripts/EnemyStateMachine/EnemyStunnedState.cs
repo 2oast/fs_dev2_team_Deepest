@@ -14,6 +14,6 @@ public class EnemyStunnedState : EnemyBaseState
 
     public override void UpdateState(EnemyStateManager manager)
     {
-        throw new System.NotImplementedException();
+        
     }
 }

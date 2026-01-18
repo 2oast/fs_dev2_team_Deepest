@@ -50,6 +50,9 @@ public class EnemyStateManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!agent.enabled)
+            return;
+
        if(!enemy.isStunned)
        {
             shootTimer += Time.deltaTime;

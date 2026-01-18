@@ -23,4 +23,4 @@ MonoBehaviour:
   damage: 5
   bulletHoles: {fileID: 0}
   smoke: {fileID: 0}
-  staminaDrain: 5
+  staminaDrain: 20

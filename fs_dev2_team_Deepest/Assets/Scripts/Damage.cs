@@ -46,7 +46,6 @@ public class Damage : MonoBehaviour
 
         if (dmg != null && type != damageType.DOT)
         {
-            int baseDamage = GameManager.instance.playerControllerScript.chargeAttack ? WeaponManager.instance.currentWeapon.damage * 2 : WeaponManager.instance.currentWeapon.damage;
 
             int finalDamage = ComputeFinalDamage();
             dmg.takeDamage(finalDamage);
@@ -88,19 +87,18 @@ public class Damage : MonoBehaviour
 
     int ComputeFinalDamage()
     {
-        int baseDamage = GameManager.instance.playerControllerScript.chargeAttack ? WeaponManager.instance.currentWeapon.damage * 2 : WeaponManager.instance.currentWeapon.damage;
 
-        int finalDamage = baseDamage;
+        int finalDamage = damageAmount;
 
         if (CompareTag("PlayerMelee") && SkillManager.instance != null)
         {
             float mult = SkillManager.instance.GetMeleeDamageMultiplier();
-            finalDamage = Mathf.CeilToInt(baseDamage * mult);
+            finalDamage = Mathf.CeilToInt(damageAmount * mult);
         }
         else if (CompareTag("PlayerRanged") && SkillManager.instance != null)
         {
             float mult = SkillManager.instance.GetRangedDamageMultiplier();
-            finalDamage = Mathf.CeilToInt(baseDamage * mult);
+            finalDamage = Mathf.CeilToInt(damageAmount * mult);
         }
 
         if (finalDamage < 0)

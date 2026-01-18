@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5780682744631025028}
   - component: {fileID: 820060800802717449}
   m_Layer: 0
-  m_Name: RingPickup (1)
+  m_Name: telgrabRingPickup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -28,7 +28,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7980812491738048629}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -293.3701, y: 17.728, z: -2.0100002}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -124,7 +124,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e786a3e1c8ba2d44e948a851eb92edea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Item
-  itemData: {fileID: 11400000, guid: bb4c4dedd9d015e448dee97eca0f1482, type: 2}
+  item: {fileID: 11400000, guid: cb07dd105446ee34091e6ee4ee264ce0, type: 2}
   floatSpeed: 2
   spinSpeed: 50
-  itemRenderer: {fileID: 96633230122738530}
+  isFloating: 0
+  isReadyToCollect: 0
+  originalPos: {x: 0, y: 0, z: 0}
+  originalRot: {x: 0, y: 0, z: 0, w: 0}
+  grabPosition: {fileID: 0}

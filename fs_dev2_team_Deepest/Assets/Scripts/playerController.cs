@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour, IDamage
     [Range(1, 3)][SerializeField] int maxJumps;
     [Range(15, 50)][SerializeField] int gravity;
     float currentWeight;
-    public float chargeTimer;
+    [Range(0,1)]public float chargeTimer;
     float staminaRegenTimer;
     int jumpCount;
     int HPOrig;
@@ -99,14 +99,14 @@ public class PlayerController : MonoBehaviour, IDamage
     {
         //Timers
         speed = Mathf.Clamp(speed, 5, 25);
-        chargeTimer = Mathf.Clamp(chargeTimer, 0, 1);
+        chargeTimer = Mathf.Clamp01(chargeTimer);
 
         UpdateEncumbrance();
 
         //functionality
         if (!GameManager.instance.isPaused)
             movement();
-
+        UImanager.instance.FillChargeMeter(chargeTimer);
         sprint();
         Footsteps();
 
@@ -396,27 +396,25 @@ public class PlayerController : MonoBehaviour, IDamage
         animator.SetBool("IsChargingSwing", isCharging);
 
         if (isCharging)
-            chargeTimer += Time.deltaTime;
+            chargeTimer += Time.deltaTime / 3;
 
-        if (Input.GetButtonUp("Fire1"))
+        if (Input.GetButtonUp("Fire1") && !GameManager.instance.isInteracting)
         {
-            switch (weapon.itemName)
+            switch (weapon.itemType)
             {
-                case "Sword":
-                    if (chargeTimer > .5f)
+                case ItemType.Weapon:
+                    if (chargeTimer > .7f)
                     {
                         PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "BigSwing", .5f);
-                        chargeTimer = 0;
                     }
-                    else
+                    else if(chargeTimer < .7f)
                     {
                         PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "regSwing",.5f);
-                        chargeTimer = 0;
                     }
                     break;
-                case "Gun":
-                    break;
             }
+            chargeTimer = 0;
+
         }
     }
 

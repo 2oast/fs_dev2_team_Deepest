@@ -78,7 +78,6 @@ public class UImanager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        FillChargeMeter();
     }
 
     public void ShowArmorIcon()
@@ -195,8 +194,8 @@ public class UImanager : MonoBehaviour
             poisonPanel.SetActive(false);
     }
 
-    public void FillChargeMeter()
+    public void FillChargeMeter(float chargeTimer)
     {
-        chargeMeter.fillAmount += GameManager.instance.playerControllerScript.chargeTimer;
+        chargeMeter.fillAmount = chargeTimer;
     }
 }

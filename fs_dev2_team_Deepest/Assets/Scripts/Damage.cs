@@ -87,6 +87,10 @@ public class Damage : MonoBehaviour
 
     int ComputeFinalDamage()
     {
+        if(GameManager.instance.playerControllerScript.chargeAttack)
+        {
+            damageAmount *= 2;
+        }
 
         int finalDamage = damageAmount;
 

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: -7950675163720189381}
   - component: {fileID: -1961952428742110894}
   m_Layer: 7
-  m_Name: SwordPivot 2
+  m_Name: SwordPivot 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -71,7 +71,7 @@ MonoBehaviour:
   elementalType: 0
   type: 1
   rb: {fileID: 0}
-  damageAmount: 8
+  damageAmount: 4
   damageRate: 0
   speed: 0
   destroyTime: 0
@@ -313,7 +313,7 @@ PrefabInstance:
     - target: {fileID: 6383603570489942206, guid: a395dba5b307777418161f71dc46946a, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 76ec0f7c7d6c188409b0ddd47bd763d8, type: 2}
+      objectReference: {fileID: 2100000, guid: fa5baed6be3065a459482872af5d2796, type: 2}
     m_RemovedComponents:
     - {fileID: 9012596227491881412, guid: a395dba5b307777418161f71dc46946a, type: 3}
     - {fileID: 3424472158768393938, guid: a395dba5b307777418161f71dc46946a, type: 3}

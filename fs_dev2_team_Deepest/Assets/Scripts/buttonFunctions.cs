@@ -1,13 +1,15 @@
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class ButtonFunctions : MonoBehaviour
 {
+    [Header("Scenes")]
+    [SerializeField] string titleSceneName = "TitleScreen";
+
     public void CollectItem()
     {
         InventoryManager.instance.AddItemToInventory(InventoryManager.instance.itemToBeCollected);
-        
+
         Destroy(InventoryManager.instance.itemToBeCollected.gameObject);
         InventoryManager.instance.itemToBeCollected = null;
         GameManager.instance.pickupText.text = "";
@@ -45,34 +47,49 @@ public class ButtonFunctions : MonoBehaviour
 
     public void Quit()
     {
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-            Application.Quit();
-#endif
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(titleSceneName);
     }
 
     public void EquipFromMenu()
     {
-        switch (InventoryManager.instance.pendingEquipSlot.itemInSlot.itemType)
+        var slot = InventoryManager.instance.pendingEquipSlot;
+
+        if (slot == null || slot.itemInSlot == null)
+            return;
+
+        ItemData item = slot.itemInSlot;
+
+        switch (item.itemType)
         {
             case ItemType.Weapon:
-                InventoryManager.instance.weaponImage.sprite = InventoryManager.instance.pendingEquipSlot.itemInSlot.itemIcon;
-                InventoryManager.instance.pendingEquipSlot.itemInSlot.Use(GameManager.instance.playerControllerScript);
+                InventoryManager.instance.weaponImage.sprite = item.itemIcon;
+                item.Use(GameManager.instance.playerControllerScript);
                 break;
+
             case ItemType.ChestPiece:
-                InventoryManager.instance.chestPieceImage.sprite = InventoryManager.instance.pendingEquipSlot.itemInSlot.itemIcon;
+                InventoryManager.instance.chestPieceImage.sprite = item.itemIcon;
+                item.Use(GameManager.instance.playerControllerScript);
                 break;
+
             case ItemType.Leggings:
-                InventoryManager.instance.leggingsPieceImage.sprite = InventoryManager.instance.pendingEquipSlot.itemInSlot.itemIcon;
+                InventoryManager.instance.leggingsPieceImage.sprite = item.itemIcon;
+                item.Use(GameManager.instance.playerControllerScript);
                 break;
+
             case ItemType.Gauntlets:
-                InventoryManager.instance.leftGauntletPieceImage.sprite = InventoryManager.instance.pendingEquipSlot.itemInSlot.itemIcon;
-                InventoryManager.instance.rightGauntletPieceImage.sprite = InventoryManager.instance.pendingEquipSlot.itemInSlot.itemIcon;
+                InventoryManager.instance.leftGauntletPieceImage.sprite = item.itemIcon;
+                InventoryManager.instance.rightGauntletPieceImage.sprite = item.itemIcon;
+                item.Use(GameManager.instance.playerControllerScript);
                 break;
+
             case ItemType.Ring:
-                InventoryManager.instance.ringImage.sprite = InventoryManager.instance.pendingEquipSlot.itemInSlot.itemIcon;
-                InventoryManager.instance.pendingEquipSlot.itemInSlot.Use(GameManager.instance.playerControllerScript);
+                InventoryManager.instance.ringImage.sprite = item.itemIcon;
+                item.Use(GameManager.instance.playerControllerScript);
+                break;
+
+            case ItemType.Consumable:
+                slot.UseItem();
                 break;
         }
 
@@ -83,4 +100,33 @@ public class ButtonFunctions : MonoBehaviour
         InventoryManager.instance.YesOrNoPanel.SetActive(false);
     }
 
+    public void SaveGame()
+    {
+        if (SaveManager.instance != null)
+        {
+            SaveManager.instance.SaveGame();
+        }
+        else
+        {
+            Debug.LogWarning("SaveGame button pressed, but SaveManager.instance is null.");
+        }
+    }
+
+    public void LoadGame()
+    {
+        if (SaveManager.instance != null)
+        {
+            SaveManager.instance.LoadGame();
+
+            if (GameManager.instance != null)
+            {
+                GameManager.instance.ResetAfterLoad();
+            }
+        }
+        else
+        {
+            Debug.LogWarning("LoadGame button pressed, but SaveManager.instance is null.");
+        }
+    }
 }
+

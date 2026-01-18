@@ -40,7 +40,6 @@ public class GameManager : MonoBehaviour
     [Header("Camera Stuff")]
     GameObject currentCam;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
         instance = this;
@@ -56,8 +55,6 @@ public class GameManager : MonoBehaviour
             playerControllerScript = player.GetComponent<PlayerController>();
             cameraControllerScript = player.GetComponentInChildren<CameraController>();
         }
-
-
     }
 
     private void Update()
@@ -74,7 +71,6 @@ public class GameManager : MonoBehaviour
             {
                 StateUnpause();
             }
-
         }
 
         if (Input.GetKeyDown(KeyCode.I))
@@ -90,7 +86,6 @@ public class GameManager : MonoBehaviour
                 StateUnpause();
             }
         }
-
     }
 
     public void SwitchCamera(GameObject newCamera)
@@ -107,7 +102,6 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator TransitionScreen(float duration, Transform target)
     {
-
         Image img = loadingScreen.GetComponent<Image>();
         Color c = img.color;
         CharacterController cc = playerControllerScript.GetComponent<CharacterController>();
@@ -135,7 +129,6 @@ public class GameManager : MonoBehaviour
             img.color = c;
             yield return null;
         }
-
     }
 
     public void StatePause()
@@ -166,7 +159,6 @@ public class GameManager : MonoBehaviour
         menuActive.SetActive(true);
     }
 
-
     public IEnumerator ScreenFlash()
     {
         flashScreen.gameObject.SetActive(true);
@@ -174,10 +166,16 @@ public class GameManager : MonoBehaviour
         flashScreen.gameObject.SetActive(false);
     }
 
-    public IEnumerator HitStop(float duration)
+    public void ResetAfterLoad()
     {
-        Time.timeScale = .2f;
-        yield return new WaitForSecondsRealtime(duration);
-        Time.timeScale = 1;
+        StateUnpause();
+
+        isInteracting = false;
+
+        if (inventoryScreen != null)
+            inventoryScreen.SetActive(false);
+
+        if (radioUI != null)
+            radioUI.SetActive(false);
     }
 }

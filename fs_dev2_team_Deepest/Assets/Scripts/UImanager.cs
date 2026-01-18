@@ -12,7 +12,11 @@ public class UImanager : MonoBehaviour
     public Image playerHPBar;
     public Image playerStaminaBar;
     public GameObject playerDamageScreen;
-    public Image chargeMeter;
+
+    [Header("Status")]
+    public GameObject poisonPanel;
+    public Image poisonFillImage;
+    public TextMeshProUGUI poisonTimerText;
 
     [Header("Armor UI")]
     public Image armorIcon;
@@ -26,9 +30,6 @@ public class UImanager : MonoBehaviour
     [Header("Level Up Audio")]
     public AudioSource levelUpAudioSource;
     public AudioClip levelUpClip;
-
-    [Header("DamageUI")]
-    public GameObject floatingText;
 
     struct LevelUpRequest
     {
@@ -74,7 +75,7 @@ public class UImanager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public void ShowArmorIcon()
@@ -160,8 +161,34 @@ public class UImanager : MonoBehaviour
         levelUpRoutine = null;
     }
 
-    public void FillChargeMeter(float chargeTimer)
+    public void ShowPoisonUI(float duration)
     {
-        chargeMeter.fillAmount = chargeTimer;
+        if (poisonPanel != null)
+            poisonPanel.SetActive(true);
+
+        UpdatePoisonUI(duration, duration);
+    }
+
+    public void UpdatePoisonUI(float remaining, float total)
+    {
+        if (poisonPanel == null)
+            return;
+
+        if (poisonTimerText != null)
+        {
+            int secs = Mathf.CeilToInt(remaining);
+            poisonTimerText.text = secs + "s";
+        }
+
+        if (poisonFillImage != null && total > 0f)
+        {
+            poisonFillImage.fillAmount = Mathf.Clamp01(remaining / total);
+        }
+    }
+
+    public void HidePoisonUI()
+    {
+        if (poisonPanel != null)
+            poisonPanel.SetActive(false);
     }
 }

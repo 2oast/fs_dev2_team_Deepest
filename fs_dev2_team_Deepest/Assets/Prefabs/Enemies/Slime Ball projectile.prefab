@@ -66,6 +66,10 @@ MonoBehaviour:
   speed: 5
   destroyTime: 5
   target: {fileID: 0}
+  applyDotOnHit: 1
+  dotDuration: 20
+  dotTickInterval: 5
+  dotDamagePerTick: 1
 --- !u!23 &6446272498825424512
 MeshRenderer:
   m_ObjectHideFlags: 0

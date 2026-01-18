@@ -7,6 +7,9 @@ public class Armor : ItemData
     [Tooltip("Percent damage reduction (e.g. 20 = 20% less damage).")]
     public float damageReductionPercent = 25f;
 
+    [Header("Weight")]
+    public float weight = 10f;
+
     public override void Use(PlayerController player)
     {
         player.EquipArmor(this);

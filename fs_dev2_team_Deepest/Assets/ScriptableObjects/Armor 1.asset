@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: Armor 1
   m_EditorClassIdentifier: Assembly-CSharp::Armor
   itemType: 2
-  itemName: Armor
+  itemName: Makeshift Chestpiece
   isStackable: 0
   isRadio: 0
   maxStack: 0
   itemIcon: {fileID: 21300000, guid: 79ab010b946b4b74b96b4f1c03f08bb1, type: 3}
   modelPrefab: {fileID: 7115888426771639665, guid: f39e39bdb6f649f4089fede18774d45f, type: 3}
   description: 
-  damageReductionPercent: 25
+  damageReductionPercent: 10
+  weight: 4

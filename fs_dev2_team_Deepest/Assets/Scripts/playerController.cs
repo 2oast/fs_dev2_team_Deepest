@@ -4,16 +4,25 @@ using System.Collections;
 public class PlayerController : MonoBehaviour, IDamage
 {
     [Header("Components")]
-    public CharacterController controller;
+    [SerializeField] CharacterController controller;
     [SerializeField] LayerMask ignoreLayer;
 
     [Header("Player Stats")]
-    [Range(1, 500)] public int HP;
-    [Range(5, 25)] public int speed = 5;
+    [Range(1, 10)] public int HP;
+    [Range(1, 5)][SerializeField] int speed;
     [Range(2, 5)][SerializeField] int sprintMod;
     [Range(5, 20)][SerializeField] int JumpSpeed;
     [Range(1, 3)][SerializeField] int maxJumps;
     [Range(15, 50)][SerializeField] int gravity;
+
+    [Header("Encumbrance / Weight")]
+    [SerializeField] float baseWeightLimit = 20f;
+    [SerializeField] float weightPerStaminaLevel = 2f;
+    [SerializeField] float encumberedSpeedMultiplier = 0.6f;
+    [SerializeField] float encumberedStaminaCostMultiplier = 1.5f;
+
+    float currentWeight;
+    bool isEncumbered;
 
     [Header("Stamina")]
     [SerializeField] float maxStamina = 100f;
@@ -43,7 +52,6 @@ public class PlayerController : MonoBehaviour, IDamage
     [SerializeField] float walkStepInterval = 0.5f;
     [SerializeField] float sprintStepInterval = 0.28f;
     [SerializeField] AudioClip armorEquipClip;
-    [SerializeField] AudioClip swordSwingClip;
 
     [Header("References")]
     [SerializeField] MeshRenderer armMeshRenderer;
@@ -51,9 +59,16 @@ public class PlayerController : MonoBehaviour, IDamage
     [Header("Animations")]
     [SerializeField] Animator currentWeaponAnimator;
     [SerializeField] Animator animator;
-    [SerializeField] Animator camAnimator;
 
+    [Header("Status Effects")]
+    [SerializeField] bool isPoisoned;
+    Coroutine poisonCoroutine;
+    [SerializeField] float poisonRemainingTime;
+    [SerializeField] float poisonTotalDuration;
+    float poisonEndTime;
 
+    public bool IsPoisoned => isPoisoned;
+    public float PoisonRemainingTime => poisonRemainingTime;
 
     Vector3 moveDir;
     Vector3 playerVel;
@@ -66,12 +81,11 @@ public class PlayerController : MonoBehaviour, IDamage
 
     bool isBlocking;
     bool isCharging;
-    public bool chargeAttack;
     Vector3 shieldDefaultLocalPos;
     bool weaponEquipped;
 
     float shootTimer;
-    [Range(0, 1)]float chargeTimer;
+    float chargeTimer;
 
     float baseSpeed;
 
@@ -80,7 +94,6 @@ public class PlayerController : MonoBehaviour, IDamage
     public GameObject currentWeaponInstance;
 
     public Armor currentArmor;
-
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -95,14 +108,14 @@ public class PlayerController : MonoBehaviour, IDamage
             shieldDefaultLocalPos = shieldTransform.localPosition;
     }
 
-    // Update is called once per frame
     void Update()
     {
-
-        speed = Mathf.Clamp(speed, 5, 25);
         Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
 
         shootTimer += Time.deltaTime;
+
+        UpdateEncumbrance();
+
         if (!GameManager.instance.isPaused)
             movement();
 
@@ -110,11 +123,14 @@ public class PlayerController : MonoBehaviour, IDamage
         Blocking();
         UpdateShieldPosition();
         Footsteps();
-        UImanager.instance.FillChargeMeter(chargeTimer);
 
         if (isSprinting)
         {
             float drainPerSec = maxStamina * (staminaDrainRate / 100f);
+
+            if (isEncumbered)
+                drainPerSec *= encumberedStaminaCostMultiplier;
+
             stamina -= drainPerSec * Time.deltaTime;
             stamina = Mathf.Clamp(stamina, 0f, maxStamina);
 
@@ -141,9 +157,20 @@ public class PlayerController : MonoBehaviour, IDamage
         }
         updateStaminaUI();
 
-        float blockCost = maxStamina * (blockStaminaCost / 100f);
+        float blockCost = GetBlockCost();
         if (stamina < blockCost && isBlocking)
             isBlocking = false;
+
+        if (isPoisoned)
+        {
+            poisonRemainingTime = Mathf.Max(0f, poisonEndTime - Time.time);
+
+            if (UImanager.instance != null)
+            {
+                UImanager.instance.UpdatePoisonUI(poisonRemainingTime, poisonTotalDuration);
+            }
+        }
+
         OnInteract();
     }
 
@@ -160,15 +187,31 @@ public class PlayerController : MonoBehaviour, IDamage
         }
 
         moveDir = Input.GetAxis("Horizontal") * transform.right + Input.GetAxis("Vertical") * transform.forward;
-        controller.Move(moveDir * speed * Time.deltaTime);
+
+        float moveSpeed = speed;
+        if (isEncumbered)
+            moveSpeed *= encumberedSpeedMultiplier;
+
+        controller.Move(moveDir * moveSpeed * Time.deltaTime);
 
         jump();
         controller.Move(playerVel * Time.deltaTime);
 
-        if(WeaponManager.instance.currentWeapon != null)
+        if (WeaponManager.instance.currentWeapon != null)
         {
             Attack(WeaponManager.instance.currentWeapon);
         }
+    }
+
+    public float CurrentStamina
+    {
+        get { return stamina; }
+    }
+
+    public void SetStamina(float value)
+    {
+        stamina = Mathf.Clamp(value, 0f, maxStamina);
+        updateStaminaUI();
     }
 
     void Footsteps()
@@ -194,7 +237,7 @@ public class PlayerController : MonoBehaviour, IDamage
         if (Time.time >= nextStepTime)
         {
             AudioClip clip = footstepClips[Random.Range(0, footstepClips.Length)];
-            audioSource.PlayOneShot(clip, 0.3f);
+            audioSource.PlayOneShot(clip);
             nextStepTime = Time.time + interval;
         }
     }
@@ -224,7 +267,7 @@ public class PlayerController : MonoBehaviour, IDamage
 
     public void takeDamage(int amount)
     {
-        float blockCost = maxStamina * (blockStaminaCost / 100f);
+        float blockCost = GetBlockCost();
 
         if (isBlocking && stamina >= blockCost)
         {
@@ -300,14 +343,13 @@ public class PlayerController : MonoBehaviour, IDamage
 
         bool blockInput = Input.GetButton("Fire2");
 
-        float blockCost = maxStamina * (blockStaminaCost / 100f);
-
+        float blockCost = GetBlockCost();
         bool hasEnoughStamina = stamina >= blockCost;
 
         if (blockInput && hasEnoughStamina)
             isBlocking = true;
         else
-            isBlocking = false; ;
+            isBlocking = false;
     }
 
     void UpdateShieldPosition()
@@ -342,9 +384,7 @@ public class PlayerController : MonoBehaviour, IDamage
                     }
                 }
             }
-
         }
-
     }
 
     void shoot()
@@ -356,39 +396,32 @@ public class PlayerController : MonoBehaviour, IDamage
 
             }
         }
-
     }
 
     public void EquipWeapon(Weapon weapon)
     {
-
         if (currentWeaponInstance != null &&
-                WeaponManager.instance.currentWeapon == weapon)
+            WeaponManager.instance.currentWeapon == weapon)
         {
             Destroy(currentWeaponInstance);
             currentWeaponInstance = null;
             WeaponManager.instance.currentWeapon = null;
-
-            //armMeshRenderer.enabled = false;
             currentWeaponAnimator = null;
             return;
         }
 
-        // Different weapon or nothing equipped
         if (currentWeaponInstance != null)
         {
             Destroy(currentWeaponInstance);
             currentWeaponInstance = null;
         }
 
-        //armMeshRenderer.enabled = true;
-
-        // Always instantiate a new scene object
         currentWeaponInstance = Instantiate(
             weapon.modelPrefab,
             armTransform,
             false
         );
+
         WeaponManager.instance.currentWeapon = weapon;
         currentWeaponAnimator = currentWeaponInstance.GetComponent<Animator>();
     }
@@ -416,40 +449,34 @@ public class PlayerController : MonoBehaviour, IDamage
         }
     }
 
-
     void Attack(Weapon weapon)
     {
         isCharging = Input.GetButton("Fire1");
         animator.SetBool("IsChargingSwing", isCharging);
 
         if (isCharging)
-            chargeTimer += Time.deltaTime / 3;
+            chargeTimer += Time.deltaTime;
 
-
-        if (Input.GetButtonUp("Fire1") && !GameManager.instance.isInteracting)
+        if (Input.GetButtonUp("Fire1"))
         {
             switch (weapon.itemName)
             {
                 case "Sword":
-                    if(chargeTimer > .5f)
+                    if (chargeTimer > 1)
                     {
-                        PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "BigSwing",.3f);
+                        PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "BigSwing");
                         chargeTimer = 0;
-                        stamina -= WeaponManager.instance.currentWeapon.staminaDrain;
                     }
                     else
                     {
-                        PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "regSwing", .3f);
-                        PlayerAnimatorManager.instance.PlayTargetAnimation(camAnimator, "CamSwing", .25f);
+                        PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "regSwing");
                         chargeTimer = 0;
-                        stamina -= WeaponManager.instance.currentWeapon.staminaDrain;
                     }
                     break;
                 case "Gun":
                     break;
             }
         }
-       
     }
 
     public void EquipRing(MagicRing ring)
@@ -457,5 +484,128 @@ public class PlayerController : MonoBehaviour, IDamage
         WeaponManager.instance.currentRingEquipped = ring;
     }
 
+    public void ApplyPoison(float duration, float interval, int damagePerTick)
+    {
+        if (poisonCoroutine != null)
+        {
+            StopCoroutine(poisonCoroutine);
+        }
+
+        isPoisoned = true;
+
+        poisonTotalDuration = duration;
+        poisonEndTime = Time.time + duration;
+        poisonRemainingTime = duration;
+
+        if (UImanager.instance != null)
+        {
+            UImanager.instance.ShowPoisonUI(poisonTotalDuration);
+            UImanager.instance.UpdatePoisonUI(poisonRemainingTime, poisonTotalDuration);
+        }
+
+        poisonCoroutine = StartCoroutine(PoisonRoutine(interval, damagePerTick));
+    }
+
+    IEnumerator PoisonRoutine(float interval, int damagePerTick)
+    {
+        while (Time.time < poisonEndTime)
+        {
+            if (HP <= 0 || GameManager.instance == null)
+                break;
+
+            takeDamage(damagePerTick);
+            yield return new WaitForSeconds(interval);
+        }
+
+        isPoisoned = false;
+        poisonCoroutine = null;
+        poisonRemainingTime = 0f;
+        poisonTotalDuration = 0f;
+
+        if (UImanager.instance != null)
+        {
+            UImanager.instance.HidePoisonUI();
+        }
+    }
+
+    public void CurePoison()
+    {
+        if (poisonCoroutine != null)
+        {
+            StopCoroutine(poisonCoroutine);
+            poisonCoroutine = null;
+        }
+
+        isPoisoned = false;
+        poisonRemainingTime = 0f;
+        poisonTotalDuration = 0f;
+        poisonEndTime = 0f;
+
+        if (UImanager.instance != null)
+        {
+            UImanager.instance.HidePoisonUI();
+        }
+
+        Debug.Log("Poison cured.");
+    }
+
+    public void RestorePoisonFromSave(float remainingTime, float interval, int damagePerTick)
+    {
+        CurePoison();
+
+        if (remainingTime <= 0f)
+            return;
+
+        isPoisoned = true;
+
+        poisonTotalDuration = remainingTime;
+        poisonEndTime = Time.time + remainingTime;
+        poisonRemainingTime = remainingTime;
+
+        if (UImanager.instance != null)
+        {
+            UImanager.instance.ShowPoisonUI(poisonTotalDuration);
+            UImanager.instance.UpdatePoisonUI(poisonRemainingTime, poisonTotalDuration);
+        }
+
+        poisonCoroutine = StartCoroutine(PoisonRoutine(interval, damagePerTick));
+    }
+
+    void UpdateEncumbrance()
+    {
+        currentWeight = 0f;
+
+        if (WeaponManager.instance != null && WeaponManager.instance.currentWeapon != null)
+        {
+            currentWeight += WeaponManager.instance.currentWeapon.weight;
+        }
+
+        if (ArmorManager.instance != null && ArmorManager.instance.currentArmor != null)
+        {
+            currentWeight += ArmorManager.instance.currentArmor.weight;
+        }
+
+        int staminaLevel = 0;
+        if (SkillManager.instance != null)
+        {
+            staminaLevel = SkillManager.instance.sprintLevel;
+        }
+
+        float weightLimit = baseWeightLimit + staminaLevel * weightPerStaminaLevel;
+
+        isEncumbered = currentWeight > weightLimit;
+    }
+
+    float GetBlockCost()
+    {
+        float cost = maxStamina * (blockStaminaCost / 100f);
+
+        if (isEncumbered)
+            cost *= encumberedStaminaCostMultiplier;
+
+        return cost;
+    }
 }
+
+
 

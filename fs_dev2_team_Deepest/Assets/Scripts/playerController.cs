@@ -607,6 +607,24 @@ public class PlayerController : MonoBehaviour, IDamage
 
         return cost;
     }
+
+    public int MaxHP
+    {
+        get { return HPOrig; }
+    }
+
+    public void Heal(int amount)
+    {
+        if (amount <= 0)
+            return;
+
+        HP += amount;
+        if (HP > HPOrig)
+            HP = HPOrig;
+
+        updatePlayerUI();
+    }
+
 }
 
 

@@ -46,12 +46,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
   spawnMode: 1
   enemyPrefabs:
-  - {fileID: 1081245388409681396, guid: e1540e94a15ad1340804c4aaa3b16d66, type: 3}
+  - {fileID: 1584732854050827483, guid: 1baa555620bedaf4ba44d2d6c8139459, type: 3}
   - {fileID: 1373969052776184111, guid: 2b30b0da5b02ebf42a32adfdefdf6b8a, type: 3}
   - {fileID: 6141668934721492652, guid: 27a1de8cb34b6ed40a891fb57d040334, type: 3}
   singleTypeIndex: 0
-  enemiesToSpawn: 3
+  enemiesToSpawn: 5
   spawnDelay: 5
   activateDistance: 25
   deactivateDistance: 30
-  spawnRadius: 5
+  spawnRadius: 15

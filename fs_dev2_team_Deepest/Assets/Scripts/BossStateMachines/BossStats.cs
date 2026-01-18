@@ -86,4 +86,11 @@ public class BossStats : MonoBehaviour, IDamage
         model.material.color = colorOrig;
 
     }
+
+    public IEnumerator HitStop(float duration)
+    {
+        Time.timeScale = .3f;
+        yield return new WaitForSecondsRealtime(duration);
+        Time.timeScale = 1;
+    }
 }

@@ -4,12 +4,12 @@ using System.Collections;
 public class PlayerController : MonoBehaviour, IDamage
 {
     [Header("Components")]
-    [SerializeField] CharacterController controller;
+    public CharacterController controller;
     [SerializeField] LayerMask ignoreLayer;
 
     [Header("Player Stats")]
     [Range(1, 10)] public int HP;
-    [Range(1, 5)][SerializeField] int speed;
+    [Range(5, 25)]public int speed;
     [Range(2, 5)][SerializeField] int sprintMod;
     [Range(5, 20)][SerializeField] int JumpSpeed;
     [Range(1, 3)][SerializeField] int maxJumps;
@@ -95,6 +95,8 @@ public class PlayerController : MonoBehaviour, IDamage
 
     public Armor currentArmor;
 
+    public bool chargeAttack;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -111,7 +113,7 @@ public class PlayerController : MonoBehaviour, IDamage
     void Update()
     {
         Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
-
+        speed = Mathf.Clamp(speed, 5, 25);
         shootTimer += Time.deltaTime;
 
         UpdateEncumbrance();
@@ -464,12 +466,12 @@ public class PlayerController : MonoBehaviour, IDamage
                 case "Sword":
                     if (chargeTimer > 1)
                     {
-                        PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "BigSwing");
+                        PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "BigSwing", .5f);
                         chargeTimer = 0;
                     }
                     else
                     {
-                        PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "regSwing");
+                        PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "regSwing",.5f);
                         chargeTimer = 0;
                     }
                     break;

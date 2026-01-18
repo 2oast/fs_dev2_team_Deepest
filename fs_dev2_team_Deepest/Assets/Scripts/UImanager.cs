@@ -31,6 +31,8 @@ public class UImanager : MonoBehaviour
     public AudioSource levelUpAudioSource;
     public AudioClip levelUpClip;
 
+    public GameObject floatingText;
+
     struct LevelUpRequest
     {
         public string skillName;

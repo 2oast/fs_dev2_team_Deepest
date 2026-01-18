@@ -178,4 +178,11 @@ public class GameManager : MonoBehaviour
         if (radioUI != null)
             radioUI.SetActive(false);
     }
+
+    public IEnumerator HitStop(float duration)
+    {
+        Time.timeScale = .3f;
+        yield return new WaitForSecondsRealtime(duration);
+        Time.timeScale = 1;
+    }
 }

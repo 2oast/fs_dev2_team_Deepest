@@ -87,10 +87,5 @@ public class BossStats : MonoBehaviour, IDamage
 
     }
 
-    public IEnumerator HitStop(float duration)
-    {
-        Time.timeScale = .3f;
-        yield return new WaitForSecondsRealtime(duration);
-        Time.timeScale = 1;
-    }
+    
 }

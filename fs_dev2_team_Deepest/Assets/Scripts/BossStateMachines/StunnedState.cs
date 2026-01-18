@@ -5,6 +5,7 @@ public class StunnedState : BossBaseState
 {
     public override void EnterState(BossStateManager manager)
     {
+        manager.isMoving = false;
         manager.waitTimer = 0;
         manager.isStunned = true;
         manager.mats.Add(manager.stunMat);

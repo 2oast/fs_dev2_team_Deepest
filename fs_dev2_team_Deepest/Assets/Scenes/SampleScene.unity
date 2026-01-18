@@ -4414,6 +4414,10 @@ PrefabInstance:
       value: Spider
       objectReference: {fileID: 0}
     - target: {fileID: 7411850787788746118, guid: 97dab3124f1b3884789f7f033ab69bd8, type: 3}
+      propertyPath: redMat
+      value: 
+      objectReference: {fileID: 2100000, guid: 4ea8f24041f7ccc439e5bcd11d5767c0, type: 2}
+    - target: {fileID: 7411850787788746118, guid: 97dab3124f1b3884789f7f033ab69bd8, type: 3}
       propertyPath: aimTarget
       value: 
       objectReference: {fileID: 9171176421886849766}

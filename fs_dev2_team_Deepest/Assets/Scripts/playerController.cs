@@ -106,7 +106,6 @@ public class PlayerController : MonoBehaviour, IDamage
         //functionality
         if (!GameManager.instance.isPaused)
             movement();
-        UImanager.instance.FillChargeMeter(chargeTimer);
         sprint();
         Footsteps();
 
@@ -159,6 +158,11 @@ public class PlayerController : MonoBehaviour, IDamage
         }
 
         OnInteract();
+
+        if (WeaponManager.instance.currentWeapon != null)
+        {
+            Attack(WeaponManager.instance.currentWeapon);
+        }
     }
 
     void movement()
@@ -184,10 +188,7 @@ public class PlayerController : MonoBehaviour, IDamage
         jump();
         controller.Move(playerVel * Time.deltaTime);
 
-        if (WeaponManager.instance.currentWeapon != null)
-        {
-            Attack(WeaponManager.instance.currentWeapon);
-        }
+       
     }
 
     public float CurrentStamina
@@ -397,23 +398,26 @@ public class PlayerController : MonoBehaviour, IDamage
 
         if (isCharging)
             chargeTimer += Time.deltaTime / 3;
+        UImanager.instance.FillChargeMeter(chargeTimer);
 
         if (Input.GetButtonUp("Fire1") && !GameManager.instance.isInteracting)
         {
             switch (weapon.itemType)
             {
                 case ItemType.Weapon:
-                    if (chargeTimer > .7f)
+                    if (chargeTimer > .5f)
                     {
-                        PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "BigSwing", .5f);
+                        animator.SetTrigger("bigSwing");
+                        chargeTimer = 0;
                     }
-                    else if(chargeTimer < .7f)
+                    else
                     {
-                        PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "regSwing",.5f);
+                        animator.SetTrigger("regSwing");
+
+                        chargeTimer = 0;
                     }
                     break;
             }
-            chargeTimer = 0;
 
         }
     }

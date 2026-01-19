@@ -41,7 +41,7 @@ public class Item : MonoBehaviour, IInteractable
 
         if (isReadyToCollect)
         {
-            PickupMessage(this.name);
+            PickupMessage(item.itemName);
         }
     }
 

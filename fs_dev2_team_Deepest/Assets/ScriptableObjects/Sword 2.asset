@@ -18,7 +18,7 @@ MonoBehaviour:
   isRadio: 0
   maxStack: 0
   itemIcon: {fileID: 21300000, guid: 19ff6e27faa944747ae530b87b8da954, type: 3}
-  modelPrefab: {fileID: 3218188306531829914, guid: 127014144b98acd47bce0a3e50b66def, type: 3}
+  modelPrefab: {fileID: 3218188306531829914, guid: 8f26fa0bdc470e34fa54d64596dd835a, type: 3}
   description: 
   weaponType: 0
   damage: 6

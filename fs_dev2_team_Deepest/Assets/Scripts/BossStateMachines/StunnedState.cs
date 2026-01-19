@@ -1,4 +1,4 @@
-using UnityEditor.Analytics;
+﻿using UnityEditor.Analytics;
 using UnityEngine;
 
 public class StunnedState : BossBaseState
@@ -28,8 +28,10 @@ public class StunnedState : BossBaseState
         {
             manager.damageCollider.enabled = false;
             manager.isStunned = false;
-            manager.mats.Remove(manager.stunMat);
+
+            manager.mats.RemoveAt(1); // ← THIS is the key
             manager.model.materials = manager.mats.ToArray();
+
             manager.SwitchState(manager.changeLocationState);
         }
     }

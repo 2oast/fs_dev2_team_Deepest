@@ -10,7 +10,6 @@ public class BossStateManager : MonoBehaviour
     public ChangeLocationState changeLocationState = new ChangeLocationState();
     public ChargeAttackState chargeAttackState = new ChargeAttackState();
     public SpecialAttackState specialAttackState = new SpecialAttackState();
-    public WebAttackState webAttackState = new WebAttackState();
     public StunnedState stunnedState = new StunnedState();
 
     public Dictionary<int, BossBaseState> stateTypeDic;
@@ -64,8 +63,7 @@ public class BossStateManager : MonoBehaviour
         stateTypeDic = new Dictionary<int, BossBaseState>()
         {
             {1, chargeAttackState },
-            {2, webAttackState },
-            {3, specialAttackState }
+            {2, specialAttackState }
         };
 
         currentState = changeLocationState;

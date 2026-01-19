@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     [Header("Menu's")]
     public GameObject menuActive;
     [SerializeField] GameObject menuPause;
-    [SerializeField] GameObject menuWin;
+    public GameObject menuWin;
     [SerializeField] GameObject menuLose;
     public GameObject inventoryScreen;
     public GameObject radioUI;

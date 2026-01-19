@@ -1,10 +1,12 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Audio;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
+
 
 public class BossStats : MonoBehaviour, IDamage
 {
+    [SerializeField] int maxHP;
     [SerializeField] int health;
     [SerializeField] AudioSource audioSource;
     [SerializeField] AudioClip spitSound;
@@ -14,6 +16,7 @@ public class BossStats : MonoBehaviour, IDamage
 
     Color colorOrig;
 
+    [SerializeField] Image bossHealthBar;
 
     public Material redMat;
 
@@ -26,7 +29,7 @@ public class BossStats : MonoBehaviour, IDamage
 
     public void takeDamage(int amount)
     {
-
+       
         health -= amount;
         audioSource.PlayOneShot(hurtSound, .5f);
         if (health <= 0)
@@ -87,5 +90,8 @@ public class BossStats : MonoBehaviour, IDamage
 
     }
 
-    
+    private void Update()
+    {
+        bossHealthBar.fillAmount = (float)health / maxHP;
+    }
 }

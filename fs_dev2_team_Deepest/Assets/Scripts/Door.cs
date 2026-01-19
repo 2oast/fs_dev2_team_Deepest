@@ -12,7 +12,14 @@ public class Door : MonoBehaviour, IInteractable
 
     public void Interact()
     {
-        
+        if(isOpen)
+        {
+            isOpen = false;
+        }
+        else
+        {
+            isOpen = true;
+        }
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

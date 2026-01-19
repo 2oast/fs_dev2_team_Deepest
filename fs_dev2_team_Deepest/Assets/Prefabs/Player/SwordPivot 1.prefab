@@ -10,11 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 8235897480087652368}
   - component: {fileID: 3874621270346451329}
-  - component: {fileID: -7950675163720189381}
   - component: {fileID: -1961952428742110894}
+  - component: {fileID: 3834885105268736145}
   m_Layer: 7
   m_Name: SwordPivot 1
-  m_TagString: Untagged
+  m_TagString: PlayerMelee
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -56,26 +56,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.68, y: 1.82, z: 0.27}
   m_Center: {x: 0, y: 1.52, z: 0}
---- !u!114 &-7950675163720189381
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3218188306531829914}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 878c78f771a7d81448d5fc14b2ba8dd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Damage
-  elementalType: 0
-  type: 1
-  rb: {fileID: 0}
-  damageAmount: 4
-  damageRate: 0
-  speed: 0
-  destroyTime: 0
-  target: {fileID: 0}
 --- !u!54 &-1961952428742110894
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -103,6 +83,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &3834885105268736145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3218188306531829914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe4cf535c54ac6248a78113ce9f7317c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SwordDamage
 --- !u!1 &7540810619280195198
 GameObject:
   m_ObjectHideFlags: 0

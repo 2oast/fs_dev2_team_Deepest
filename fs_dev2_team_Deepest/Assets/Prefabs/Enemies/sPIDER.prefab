@@ -611,7 +611,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -1007,6 +1007,8 @@ GameObject:
   - component: {fileID: 2680099601987164985}
   - component: {fileID: 7223760989162439044}
   - component: {fileID: 1612565385400210407}
+  - component: {fileID: 4525632028482897687}
+  - component: {fileID: 1616327428154572288}
   m_Layer: 0
   m_Name: sPIDER
   m_TagString: Untagged
@@ -1080,11 +1082,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BossStateManager
   mats: []
   stunMat: {fileID: 2100000, guid: e172deda5f26db84183c6fdf939ade44, type: 2}
-  redMat: {fileID: 0}
+  redMat: {fileID: 2100000, guid: 4ea8f24041f7ccc439e5bcd11d5767c0, type: 2}
   model: {fileID: 5766059944671299470}
   turnSpeed: 20
   moveSpeed: 35
   randomState: 0
+  index: 0
+  waitTimer: 0
   locations:
   - {fileID: 0}
   - {fileID: 0}
@@ -1098,8 +1102,6 @@ MonoBehaviour:
   - {fileID: 0}
   nextPos: {fileID: 0}
   centerPos: {fileID: 0}
-  index: 0
-  waitTimer: 0
   shootTimer: 0
   shootRate: 3
   bullet: {fileID: 5680288379689500935, guid: 491159fe3bdfa124599613b6b70712a5, type: 3}
@@ -1108,7 +1110,7 @@ MonoBehaviour:
   aimTarget: {fileID: 0}
   projectileSpeed: 200
   hitCollider: {fileID: 7532579276386858391}
-  damageCollider: {fileID: 8803884115759103317}
+  damageCollider: {fileID: 1616327428154572288}
   rockCollider: {fileID: 4285572208329297740}
   boss: {fileID: 2680099601987164985}
   animator: {fileID: 1963540746128125014}
@@ -1126,11 +1128,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce37bf556f85bf54c9a0cb0e8c28eafd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossStats
+  maxHP: 0
   health: 30
   audioSource: {fileID: 7223760989162439044}
   spitSound: {fileID: 8300000, guid: 9ebe109be1d920142b2bda77856a5b53, type: 3}
   hurtSound: {fileID: 8300000, guid: d58a936f96a00f14489c33ace667bf93, type: 3}
   floatTextTrans: {fileID: 541120362888365391}
+  bossHealthBar: {fileID: 0}
   redMat: {fileID: 2100000, guid: 4ea8f24041f7ccc439e5bcd11d5767c0, type: 2}
   model: {fileID: 5766059944671299470}
 --- !u!82 &7223760989162439044
@@ -1257,6 +1261,39 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &4525632028482897687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4051742147399386306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c16959e3eb092414eaa270faf3bb3ab0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GetStunned
+--- !u!65 &1616327428154572288
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4051742147399386306}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1.51}
+  m_Center: {x: 0, y: 0, z: 0.07}
 --- !u!1 &4052751926059238293
 GameObject:
   m_ObjectHideFlags: 0
@@ -1741,6 +1778,7 @@ GameObject:
   - component: {fileID: 5948210730446327080}
   - component: {fileID: 4706625775690843107}
   - component: {fileID: 8803884115759103317}
+  - component: {fileID: 4888474117371139528}
   m_Layer: 0
   m_Name: DamageCollider
   m_TagString: Untagged
@@ -1840,6 +1878,33 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0.0000019073486, y: 0, z: -0.000015258789}
+--- !u!54 &4888474117371139528
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5077984114488774096}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &5089401965403050760
 GameObject:
   m_ObjectHideFlags: 0
@@ -1967,11 +2032,15 @@ MonoBehaviour:
   elementalType: 0
   type: 1
   rb: {fileID: 0}
-  damageAmount: 10
+  damageAmount: 2
   damageRate: 0
   speed: 0
   destroyTime: 0
   target: {fileID: 0}
+  appliesPoison: 0
+  poisonDuration: 5
+  poisonInterval: 1
+  poisonDamagePerTick: 1
 --- !u!1 &5170162878520793581
 GameObject:
   m_ObjectHideFlags: 0

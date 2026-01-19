@@ -21,7 +21,7 @@ public class SpecialAttackState : BossBaseState
         manager.faceTarget(GameManager.instance.player.transform.position);
         manager.waitTimer += Time.deltaTime;
 
-        if(manager.waitTimer >= 5 && manager.shootTimer > manager.shootRate)
+        if(manager.waitTimer >= 2 && manager.shootTimer > manager.shootRate)
         {
             manager.animator.SetTrigger("SpecialAttack");
 

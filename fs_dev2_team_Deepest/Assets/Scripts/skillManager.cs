@@ -106,7 +106,7 @@ public class SkillManager : MonoBehaviour
     public float GetMeleeDamageMultiplier()
     {
         float t = Level01(meleeLevel);
-        return Mathf.Lerp(1f, 1.4f, t);
+        return Mathf.Lerp(1f, 3f, t);
     }
 
     public float GetRangedDamageMultiplier()

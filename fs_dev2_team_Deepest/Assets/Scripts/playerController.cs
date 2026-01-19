@@ -121,6 +121,10 @@ public class PlayerController : MonoBehaviour, IDamage
             stamina = Mathf.Clamp(stamina, 0f, maxStamina);
 
             staminaRegenTimer = 0f;
+            if (SkillManager.instance != null)
+            {
+                SkillManager.instance.AddSprintXP(Time.deltaTime * 2f);
+            }
         }
         else
         {
@@ -294,10 +298,14 @@ public class PlayerController : MonoBehaviour, IDamage
 
         HP -= finalDamage;
         Debug.Log("[PlayerController] Took " + finalDamage + " damage. HP now: " + HP);
-
+        if (SkillManager.instance != null && finalDamage > 0)
+        {
+            SkillManager.instance.AddToughnessXP(finalDamage);
+        }
         updatePlayerUI();
         StartCoroutine(flashRed());
 
+       
         if (HP <= 0)
         {
             GameManager.instance.YouLose();

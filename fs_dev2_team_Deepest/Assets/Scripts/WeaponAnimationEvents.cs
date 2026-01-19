@@ -1,10 +1,20 @@
+using Unity.VisualScripting;
 using UnityEngine;
+using System.Collections.Generic;
+
 
 public class WeaponAnimationEvents : MonoBehaviour
 {
     BoxCollider weaponCol;
     TrailRenderer trailRenderer;
-    
+
+    private void Update()
+    {
+        if (WeaponManager.instance.currentWeapon == null)
+            return;
+
+        weaponCol = WeaponManager.instance.currentWeapon.modelPrefab.GetComponent<BoxCollider>();
+    }
 
     public void EnableCollder()
     {
@@ -30,15 +40,6 @@ public class WeaponAnimationEvents : MonoBehaviour
         trailRenderer.enabled = false;
     }
 
-    private void OnColliderEnter(Collider other)
-    {
-        IDamage dmg = other.GetComponent<IDamage>();
-        if(dmg!= null)
-        dmg.takeDamage(WeaponManager.instance.currentWeapon.damage);
-
-        IDestructible destruct = other.GetComponent<IDestructible>();
-        if(destruct!= null)
-        destruct.Destruct();
-    }
+    
 
 }

@@ -18,6 +18,11 @@ public class Damage : MonoBehaviour
 
     [SerializeField] Transform target;
     public Transform Target { get { return target; } set { target = value; } }
+    [Header("Poison")]
+    [SerializeField] bool appliesPoison = false;
+    [SerializeField] float poisonDuration = 5f;
+    [SerializeField] float poisonInterval = 1f;
+    [SerializeField] int poisonDamagePerTick = 1;
 
     void Start()
     {
@@ -49,7 +54,17 @@ public class Damage : MonoBehaviour
 
             int finalDamage = ComputeFinalDamage();
             dmg.takeDamage(finalDamage);
+            if (appliesPoison)
+            {
+                PlayerController player = other.GetComponentInParent<PlayerController>();
+                if (player != null)
+                {
+                    player.ApplyPoison(poisonDuration, poisonInterval, poisonDamagePerTick);
+                }
+            }
         }
+
+
 
         if (type == damageType.homing || type == damageType.moving)
         {
@@ -87,11 +102,6 @@ public class Damage : MonoBehaviour
 
     int ComputeFinalDamage()
     {
-        if(GameManager.instance.playerControllerScript.chargeAttack)
-        {
-            damageAmount *= 2;
-        }
-
         int finalDamage = damageAmount;
 
         if (CompareTag("PlayerMelee") && SkillManager.instance != null)

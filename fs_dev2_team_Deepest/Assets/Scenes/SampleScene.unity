@@ -9259,17 +9259,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8fa5143051527e949b0ae174c8430414, type: 3}
---- !u!114 &2113809332 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3590136699628487506, guid: 499606a742e420642a036abe53a3a224, type: 3}
-  m_PrefabInstance: {fileID: 2113446534854581864}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
 --- !u!1001 &2117995663
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9498,22 +9487,6 @@ PrefabInstance:
       propertyPath: playerControllerScript
       value: 
       objectReference: {fileID: 9171176421886849760}
-    - target: {fileID: 6195536259689283597, guid: 499606a742e420642a036abe53a3a224, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6358094424668481793, guid: 499606a742e420642a036abe53a3a224, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -2.9793396
-      objectReference: {fileID: 0}
-    - target: {fileID: 6358094424668481793, guid: 499606a742e420642a036abe53a3a224, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -18.284058
-      objectReference: {fileID: 0}
-    - target: {fileID: 6446109667836058045, guid: 499606a742e420642a036abe53a3a224, type: 3}
-      propertyPath: poisonFillImage
-      value: 
-      objectReference: {fileID: 2113809332}
     - target: {fileID: 6446109667836058045, guid: 499606a742e420642a036abe53a3a224, type: 3}
       propertyPath: levelUpAudioSource
       value: 
@@ -10166,10 +10139,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1120038227719514485, guid: a2b991193564f2342adc73205b54447b, type: 3}
-      propertyPath: HP
-      value: 10
-      objectReference: {fileID: 0}
     - target: {fileID: 2849109446407833199, guid: a2b991193564f2342adc73205b54447b, type: 3}
       propertyPath: m_Name
       value: Player (1)

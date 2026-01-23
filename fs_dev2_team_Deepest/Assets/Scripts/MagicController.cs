@@ -282,7 +282,7 @@ public class MagicController : MonoBehaviour
 
         isBoosting = true;
         speedPref.SetActive(true);
-        var player = GameManager.instance.playerControllerScript;
+        var player = GameManager.instance.playerControllerScript.playerMovement;
 
         int originalSpeed = player.speed;
         player.speed = 25;

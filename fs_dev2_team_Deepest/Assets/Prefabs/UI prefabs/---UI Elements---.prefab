@@ -1937,7 +1937,7 @@ MonoBehaviour:
   chargeMeter: {fileID: 6760904043191063819}
   playerDamageScreen: {fileID: 1778205901495559257}
   poisonPanel: {fileID: 4504766612682942624}
-  poisonFillImage: {fileID: 0}
+  poisonFillImage: {fileID: 3590136699628487506}
   poisonTimerText: {fileID: 5413553507667391389}
   armorIcon: {fileID: 0}
   levelUpText: {fileID: 1158902432044985876}
@@ -8812,11 +8812,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7391554776613819828, guid: 3eec936f645d2d04bbd2b53360ff2dd4, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 328.82495
+      value: -2.9793396
       objectReference: {fileID: 0}
     - target: {fileID: 7391554776613819828, guid: 3eec936f645d2d04bbd2b53360ff2dd4, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -540
+      value: -18.284058
       objectReference: {fileID: 0}
     - target: {fileID: 7391554776613819828, guid: 3eec936f645d2d04bbd2b53360ff2dd4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -8963,6 +8963,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1895419329726265838, guid: cbe43925997629b4ea9605b4391a755c, type: 3}
   m_PrefabInstance: {fileID: 4605429874092426861}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3590136699628487506 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1025550089620505919, guid: cbe43925997629b4ea9605b4391a755c, type: 3}
+  m_PrefabInstance: {fileID: 4605429874092426861}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4504766612682942624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
 --- !u!1 &4504766612682942624 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 102988282362719949, guid: cbe43925997629b4ea9605b4391a755c, type: 3}

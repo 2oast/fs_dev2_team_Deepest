@@ -27,8 +27,9 @@ public class GameManager : MonoBehaviour
 
     [Header("Player")]
     public PlayerController playerControllerScript;
-    public CameraController cameraControllerScript;
+    public PlayerCam cameraControllerScript;
     public GameObject player;
+    public GameObject cam;
     public GameObject radioObj;
 
     float timeScaleOrig;
@@ -53,7 +54,7 @@ public class GameManager : MonoBehaviour
         if (player != null)
         {
             playerControllerScript = player.GetComponent<PlayerController>();
-            cameraControllerScript = player.GetComponentInChildren<CameraController>();
+            cameraControllerScript = cam.GetComponent<PlayerCam>();
         }
     }
 
@@ -181,7 +182,7 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator HitStop(float duration)
     {
-        Time.timeScale = .3f;
+        Time.timeScale = 0f;
         yield return new WaitForSecondsRealtime(duration);
         Time.timeScale = 1;
     }

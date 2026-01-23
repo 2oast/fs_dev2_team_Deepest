@@ -34,7 +34,6 @@ public class CameraController : MonoBehaviour
         camRotX = Mathf.Clamp(camRotX, lockVertMin, lockVertMax);
 
         //rotate the camera on the X axis
-        transform.localRotation = Quaternion.Euler(camRotX, 0, 0);
 
         // rotate the player on the Y axis
         parentTransform.Rotate(Vector3.up * mouseX);

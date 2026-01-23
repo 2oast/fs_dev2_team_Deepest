@@ -7,30 +7,22 @@ public class PlayerController : MonoBehaviour, IDamage
     [Header("Components")]
     public CharacterController controller;
     [SerializeField] LayerMask ignoreLayer;
+    public PlayerMovement playerMovement;
+
+    [Header("Attacking")]
+    float comboWindowTimer;
+    string nextSwing;
 
     [Header("Player Stats")]
-    [Range(1, 10)] public int HP;
-    [Range(5, 25)]public int speed;
-    [Range(2, 5)][SerializeField] int sprintMod;
-    [Range(5, 20)][SerializeField] int JumpSpeed;
-    [Range(1, 3)][SerializeField] int maxJumps;
-    [Range(15, 50)][SerializeField] int gravity;
+    public int HP;
     float currentWeight;
     [Range(0,1)]public float chargeTimer;
     float staminaRegenTimer;
-    int jumpCount;
     int HPOrig;
-
-    [Header("Encumbrance / Weight")]
-    [SerializeField] float baseWeightLimit = 20f;
-    [SerializeField] float weightPerStaminaLevel = 2f;
-    [SerializeField] float encumberedSpeedMultiplier = 0.6f;
-    [SerializeField] float encumberedStaminaCostMultiplier = 1.5f;
-
 
     [Header("Stamina")]
     [SerializeField] float maxStamina = 100f;
-    [SerializeField] float stamina;
+    public float stamina;
     [SerializeField] float staminaDrainRate = 10f;
     [SerializeField] float staminaRegenRate = 5f;
     [SerializeField] float staminaRegenInterval = 0.5f;
@@ -45,10 +37,8 @@ public class PlayerController : MonoBehaviour, IDamage
 
     [Header("Audio")]
     [SerializeField] AudioSource audioSource;
-    [SerializeField] AudioClip[] footstepClips;
-    [SerializeField] float walkStepInterval = 0.5f;
-    [SerializeField] float sprintStepInterval = 0.28f;
     [SerializeField] AudioClip armorEquipClip;
+    [SerializeField] AudioClip swordSwing;
 
     [Header("References")]
     [SerializeField] MeshRenderer armMeshRenderer;
@@ -67,55 +57,41 @@ public class PlayerController : MonoBehaviour, IDamage
     
     public float PoisonRemainingTime => poisonRemainingTime;
 
-    [Header("Vectors")]
-    Vector3 moveDir;
-    Vector3 playerVel;
-
     [Header("Flags")]
     public bool IsPoisoned => isPoisoned;
-    bool isSprinting;
     bool isBlocking;
     bool isCharging;
-    bool isEncumbered;
     public bool chargeAttack;
-
-    float nextStepTime;
-
-    
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        playerMovement = GetComponent<PlayerMovement>();
         HPOrig = HP;
         stamina = maxStamina;
         updatePlayerUI();
         updateStaminaUI();
-
-       
     }
+
+    
 
     void Update()
     {
-        //Timers
-        speed = Mathf.Clamp(speed, 5, 25);
+        animator.SetBool("SwordEquipped", WeaponManager.instance.currentWeapon != null);
+
         chargeTimer = Mathf.Clamp01(chargeTimer);
 
         UpdateEncumbrance();
 
-        //functionality
-        if (!GameManager.instance.isPaused)
-            movement();
-        sprint();
-        Footsteps();
 
         //sprinting
-        if (isSprinting)
+        if (playerMovement.isSprinting)
         {
             float drainPerSec = maxStamina * (staminaDrainRate / 100f);
 
-            if (isEncumbered)
-                drainPerSec *= encumberedStaminaCostMultiplier;
+            if (playerMovement.isEncumbered)
+                drainPerSec *= playerMovement.encumberedStaminaCostMultiplier;
 
             stamina -= drainPerSec * Time.deltaTime;
             stamina = Mathf.Clamp(stamina, 0f, maxStamina);
@@ -147,10 +123,6 @@ public class PlayerController : MonoBehaviour, IDamage
         }
         updateStaminaUI();
 
-        float blockCost = GetBlockCost();
-        if (stamina < blockCost && isBlocking)
-            isBlocking = false;
-
         if (isPoisoned)
         {
             poisonRemainingTime = Mathf.Max(0f, poisonEndTime - Time.time);
@@ -169,32 +141,9 @@ public class PlayerController : MonoBehaviour, IDamage
         }
     }
 
-    void movement()
-    {
-        if (controller.isGrounded)
-        {
-            playerVel = Vector3.zero;
-            jumpCount = 0;
-        }
-        else
-        {
-            playerVel.y -= gravity * Time.deltaTime;
-        }
+   
 
-        moveDir = Input.GetAxis("Horizontal") * transform.right + Input.GetAxis("Vertical") * transform.forward;
-
-        float moveSpeed = speed;
-        if (isEncumbered)
-            moveSpeed *= encumberedSpeedMultiplier;
-
-        controller.Move(moveDir * moveSpeed * Time.deltaTime);
-
-        jump();
-        controller.Move(playerVel * Time.deltaTime);
-
-       
-    }
-
+    #region UI
     public float CurrentStamina
     {
         get { return stamina; }
@@ -206,76 +155,8 @@ public class PlayerController : MonoBehaviour, IDamage
         updateStaminaUI();
     }
 
-    void Footsteps()
-    {
-        if (GameManager.instance != null && GameManager.instance.isPaused)
-            return;
-
-        if (audioSource == null || footstepClips == null || footstepClips.Length == 0)
-            return;
-
-        if (!controller.isGrounded)
-            return;
-
-        bool moving =
-            Mathf.Abs(Input.GetAxis("Horizontal")) > 0.1f ||
-            Mathf.Abs(Input.GetAxis("Vertical")) > 0.1f;
-
-        if (!moving)
-            return;
-
-        float interval = isSprinting ? sprintStepInterval : walkStepInterval;
-
-        if (Time.time >= nextStepTime)
-        {
-            AudioClip clip = footstepClips[Random.Range(0, footstepClips.Length)];
-            audioSource.PlayOneShot(clip);
-            nextStepTime = Time.time + interval;
-        }
-    }
-
-    void jump()
-    {
-        if (Input.GetButtonDown("Jump") && jumpCount < maxJumps)
-        {
-            playerVel.y = JumpSpeed;
-            jumpCount++;
-        }
-    }
-
-    void sprint()
-    {
-        if (Input.GetButtonDown("Sprint") && stamina > 0f && !isSprinting)
-        {
-            isSprinting = true;
-            speed *= sprintMod;
-        }
-        else if ((Input.GetButtonUp("Sprint") || stamina <= 0f) && isSprinting)
-        {
-            isSprinting = false;
-            speed /= sprintMod;
-        }
-    }
-
     public void takeDamage(int amount)
     {
-        float blockCost = GetBlockCost();
-
-        if (isBlocking && stamina >= blockCost)
-        {
-            stamina -= blockCost;
-            if (stamina < 0f)
-                stamina = 0f;
-
-            staminaRegenTimer = 0f;
-            updateStaminaUI();
-
-            if (stamina < blockCost)
-                isBlocking = false;
-
-            Debug.Log("[PlayerController] Blocked attack. No HP lost.");
-            return;
-        }
 
         int finalDamage = amount;
 
@@ -328,6 +209,27 @@ public class PlayerController : MonoBehaviour, IDamage
         yield return new WaitForSeconds(0.1f);
         UImanager.instance.playerDamageScreen.SetActive(false);
     }
+
+    public int MaxHP
+    {
+        get { return HPOrig; }
+    }
+
+    public void Heal(int amount)
+    {
+        if (amount <= 0)
+            return;
+
+        HP += amount;
+        if (HP > HPOrig)
+            HP = HPOrig;
+
+        updatePlayerUI();
+    }
+
+    #endregion
+
+    #region WeaponAndInteraction
 
     void OnInteract()
     {
@@ -399,6 +301,23 @@ public class PlayerController : MonoBehaviour, IDamage
         }
     }
 
+    void HandleCombo()
+    {
+
+        switch (nextSwing)
+        {
+            case null:
+                nextSwing = "Swing1";
+                break;
+            case "Swing1":
+                nextSwing = "Swing2";
+                break;
+            case "Swing2":
+                nextSwing = "Swing1";
+                break;
+        }
+    }
+
     void Attack(Weapon weapon)
     {
         isCharging = Input.GetButton("Fire1");
@@ -408,25 +327,12 @@ public class PlayerController : MonoBehaviour, IDamage
             chargeTimer += Time.deltaTime / 3;
         UImanager.instance.FillChargeMeter(chargeTimer);
 
-        if (Input.GetButtonUp("Fire1") && !GameManager.instance.isInteracting)
+        if (Input.GetButtonDown("Fire1") && !GameManager.instance.isInteracting)
         {
-            switch (weapon.itemType)
-            {
-                case ItemType.Weapon:
-                    if (chargeTimer > .5f)
-                    {
-                        animator.SetTrigger("bigSwing");
-                        chargeTimer = 0;
-                    }
-                    else
-                    {
-                        animator.SetTrigger("regSwing");
-
-                        chargeTimer = 0;
-                    }
-                    break;
-            }
-
+            HandleCombo();
+            PlayerAnimatorManager.instance.PlayTargetAnimation(animator, nextSwing, 0f);
+            audioSource.pitch = Random.Range(.7f, 1.2f);
+            audioSource.PlayOneShot(swordSwing);
         }
     }
 
@@ -435,6 +341,9 @@ public class PlayerController : MonoBehaviour, IDamage
         WeaponManager.instance.currentRingEquipped = ring;
     }
 
+    #endregion
+
+    #region StatusEffects
     public void ApplyPoison(float duration, float interval, int damagePerTick)
     {
         if (poisonCoroutine != null)
@@ -542,37 +451,13 @@ public class PlayerController : MonoBehaviour, IDamage
             staminaLevel = SkillManager.instance.sprintLevel;
         }
 
-        float weightLimit = baseWeightLimit + staminaLevel * weightPerStaminaLevel;
+        float weightLimit = playerMovement.baseWeightLimit + staminaLevel * playerMovement.weightPerStaminaLevel;
 
-        isEncumbered = currentWeight > weightLimit;
+        playerMovement.isEncumbered = currentWeight > weightLimit;
     }
 
-    float GetBlockCost()
-    {
-        float cost = maxStamina * (blockStaminaCost / 100f);
+    #endregion
 
-        if (isEncumbered)
-            cost *= encumberedStaminaCostMultiplier;
-
-        return cost;
-    }
-
-    public int MaxHP
-    {
-        get { return HPOrig; }
-    }
-
-    public void Heal(int amount)
-    {
-        if (amount <= 0)
-            return;
-
-        HP += amount;
-        if (HP > HPOrig)
-            HP = HPOrig;
-
-        updatePlayerUI();
-    }
 
 }
 

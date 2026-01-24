@@ -113,7 +113,7 @@ Material:
     - _Metallic: 0
     - _OVERLAY: 1
     - _OcclusionStrength: 1
-    - _OutlineThickness: 0.47
+    - _OutlineThickness: 0
     - _Parallax: 0.005
     - _QueueControl: 0
     - _QueueOffset: 50

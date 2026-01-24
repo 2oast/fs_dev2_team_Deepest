@@ -13,6 +13,7 @@ public class UImanager : MonoBehaviour
     public Image playerStaminaBar;
     public Image chargeMeter;
     public GameObject playerDamageScreen;
+    [SerializeField] GameObject damageFlashScreen;
 
     [Header("Status")]
     public GameObject poisonPanel;
@@ -197,5 +198,13 @@ public class UImanager : MonoBehaviour
     public void FillChargeMeter(float chargeTimer)
     {
         chargeMeter.fillAmount = chargeTimer;
+    }
+
+    public IEnumerator DamageFlash()
+    {
+        damageFlashScreen.SetActive(true);
+        yield return new WaitForSeconds(.1f);
+        damageFlashScreen.SetActive(false);
+
     }
 }

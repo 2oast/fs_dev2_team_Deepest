@@ -243,6 +243,7 @@ GameObject:
   - component: {fileID: 360565000641430565}
   - component: {fileID: 7722572895842875221}
   - component: {fileID: 5979114421437551714}
+  - component: {fileID: 6092150841632411387}
   m_Layer: 6
   m_Name: Slime Enemy 2
   m_TagString: Enemy
@@ -534,6 +535,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.02, y: 0.02, z: 0.02}
   m_Center: {x: 0, y: 0.008, z: 0}
+--- !u!114 &6092150841632411387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1584732854050827483}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfbc8a4e7768a804f8d88837d45f3988, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightningChain
+  chainRadius: 5
+  chainLightningDamage: 5
+  chainLightningPref: {fileID: 7834434380170384362, guid: 68101499d07aced4aa0ded4acb624942, type: 3}
 --- !u!1 &2031354480462241696
 GameObject:
   m_ObjectHideFlags: 0

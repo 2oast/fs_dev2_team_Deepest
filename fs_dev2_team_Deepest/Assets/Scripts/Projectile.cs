@@ -2,6 +2,7 @@ using UnityEditor.Analytics;
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
+using UnityEditor;
 
 public class Projectile : MonoBehaviour
 {
@@ -14,15 +15,15 @@ public class Projectile : MonoBehaviour
         IDamage dmg = other.GetComponent<IDamage>();
         IExplode exp = other.GetComponent<IExplode>();
 
-        GameObject explosion = Instantiate(explosionPref);
+        GameObject explosion = Instantiate(explosionPref, other.transform);
 
+        
         if (exp != null)
             exp.Explode();
 
         if(dmg != null && !other.CompareTag("Player"))
         {
             dmg.takeDamage(damage);
-            Destroy(gameObject);
         }
 
         Rigidbody rb = other.GetComponent<Rigidbody>();
@@ -47,8 +48,11 @@ public class Projectile : MonoBehaviour
                 break;
 
         }
+
+        
+
     }
-    
+
     IEnumerator ReenableAgent(NavMeshAgent agent, Rigidbody rb)
     {
         yield return new WaitForSeconds(1f);

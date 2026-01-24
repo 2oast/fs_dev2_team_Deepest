@@ -20,7 +20,7 @@ public class KickBack : MonoBehaviour
     {
         Rigidbody rb = other.GetComponent<Rigidbody>();
 
-        Vector3 dir = (other.transform.position - transform.position).normalized;
+        Vector3 dir = (other.transform.position - GameManager.instance.player.transform.position).normalized;
         NavMeshAgent agent = other.GetComponent<NavMeshAgent>();
 
         if(rb != null)

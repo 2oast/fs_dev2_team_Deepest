@@ -2,11 +2,12 @@ using UnityEngine;
 
 public class SwordDamage : MonoBehaviour
 {
+    [SerializeField] GameObject hitEffect;
+
     private void OnTriggerEnter(Collider other)
     {
         IDamage dmg = other.GetComponent<IDamage>();
         int finalDamage = ComputeFinalDamage();
-
         if (SkillManager.instance != null)
         {
             if (CompareTag("PlayerMelee"))
@@ -18,8 +19,9 @@ public class SwordDamage : MonoBehaviour
                 SkillManager.instance.AddRangedXP(finalDamage);
             }
         }
-        
 
+        GameObject hit = Instantiate(hitEffect, other.transform);
+        Destroy(hit, 2);
         if (dmg != null && !other.CompareTag("Player"))
             dmg.takeDamage(finalDamage);
 

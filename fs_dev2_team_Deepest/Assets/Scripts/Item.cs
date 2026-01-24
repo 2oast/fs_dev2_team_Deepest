@@ -27,6 +27,7 @@ public class Item : MonoBehaviour, IInteractable
     {
         originalPos = transform.position;
         originalRot = transform.rotation;
+        
     }
 
     void Update()

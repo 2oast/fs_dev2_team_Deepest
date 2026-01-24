@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class WeaponAnimationEvents : MonoBehaviour
 {
-    BoxCollider weaponCol;
+    [SerializeField] BoxCollider weaponCol;
     TrailRenderer trailRenderer;
 
     private void Update()
@@ -13,18 +13,15 @@ public class WeaponAnimationEvents : MonoBehaviour
         if (WeaponManager.instance.currentWeapon == null)
             return;
 
-        weaponCol = WeaponManager.instance.currentWeapon.modelPrefab.GetComponent<BoxCollider>();
     }
 
     public void EnableCollder()
     {
-        weaponCol = GetComponentInChildren<BoxCollider>();
         weaponCol.enabled = true;
     }
 
     public void DisableCollider()
     {
-        weaponCol = GetComponentInChildren<BoxCollider>();
         weaponCol.enabled = false;
     }
 

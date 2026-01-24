@@ -18,8 +18,9 @@ public class SwordDamage : MonoBehaviour
                 SkillManager.instance.AddRangedXP(finalDamage);
             }
         }
+        
 
-        if (dmg != null)
+        if (dmg != null && !other.CompareTag("Player"))
             dmg.takeDamage(finalDamage);
 
         IDestructible destruct = other.GetComponent<IDestructible>();

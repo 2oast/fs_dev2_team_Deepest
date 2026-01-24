@@ -28,5 +28,30 @@ public class GameData
     public bool isPoisoned;
     public float poisonTimeRemaining;
 
+    [Serializable]
+    public class BridgeState
+    {
+        public string id;
+        public bool isExtended;
+    }
+
+    [Serializable]
+    public class CrateState
+    {
+        public string id;
+        public bool isBroken;
+    }
+
+    [Serializable]
+    public class PickupState
+    {
+        public string id;
+        public bool isCollected;
+    }
+
+    public List<BridgeState> bridges = new List<BridgeState>();
+    public List<CrateState> crates = new List<CrateState>();
+    public List<PickupState> pickups = new List<PickupState>();
+
 }
 

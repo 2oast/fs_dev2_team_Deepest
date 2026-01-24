@@ -2,41 +2,71 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    [SerializeField] int sens;
-    [SerializeField] int lockVertMin, lockVertMax;
+    [Header("Look")]
+    [SerializeField] int sens = 100;
+    [SerializeField] int lockVertMin = -60;
+    [SerializeField] int lockVertMax = 60;
     [SerializeField] bool invertY;
     [SerializeField] Transform parentTransform;
 
-
     float camRotX;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [Header("Camera Shake")]
+    [SerializeField] float shakeReturnSpeed = 25f;
+
+    Vector3 defaultLocalPos;
+    float shakeTimer;
+    float shakeIntensity;
+
     void Start()
     {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+
+        defaultLocalPos = transform.localPosition;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        //get input
+        Look();
+        HandleShake();
+    }
+
+    void Look()
+    {
         float mouseX = Input.GetAxisRaw("Mouse X") * sens * Time.deltaTime;
         float mouseY = Input.GetAxisRaw("Mouse Y") * sens * Time.deltaTime;
 
-        // use the invert Y
         if (invertY)
             camRotX += mouseY;
         else
             camRotX -= mouseY;
 
-        // clamp the camera on the X axis
         camRotX = Mathf.Clamp(camRotX, lockVertMin, lockVertMax);
 
-        //rotate the camera on the X axis
-
-        // rotate the player on the Y axis
+        transform.localRotation = Quaternion.Euler(camRotX, 0f, 0f);
         parentTransform.Rotate(Vector3.up * mouseX);
+    }
 
+    public void Shake(float duration, float intensity)
+    {
+        shakeTimer = duration;
+        shakeIntensity = intensity;
+    }
+
+    void HandleShake()
+    {
+        if (shakeTimer > 0f)
+        {
+            shakeTimer -= Time.deltaTime;
+
+            Vector3 offset = Random.insideUnitSphere * shakeIntensity;
+            transform.localPosition = defaultLocalPos + offset;
+        }
+        else
+        {
+            transform.localPosition =
+                Vector3.Lerp(transform.localPosition, defaultLocalPos, Time.deltaTime * shakeReturnSpeed);
+        }
     }
 }

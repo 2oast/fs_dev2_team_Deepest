@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour, IDamage
     [Header("Player Stats")]
     public int HP;
     float currentWeight;
-    [Range(0,1)]public float chargeTimer;
+    [Range(0, 1)] public float chargeTimer;
     float staminaRegenTimer;
     int HPOrig;
 
@@ -54,7 +54,7 @@ public class PlayerController : MonoBehaviour, IDamage
     [SerializeField] float poisonRemainingTime;
     [SerializeField] float poisonTotalDuration;
     float poisonEndTime;
-    
+
     public float PoisonRemainingTime => poisonRemainingTime;
 
     [Header("Flags")]
@@ -62,7 +62,6 @@ public class PlayerController : MonoBehaviour, IDamage
     bool isBlocking;
     bool isCharging;
     public bool chargeAttack;
-
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -74,8 +73,6 @@ public class PlayerController : MonoBehaviour, IDamage
         updateStaminaUI();
     }
 
-    
-
     void Update()
     {
         animator.SetBool("SwordEquipped", WeaponManager.instance.currentWeapon != null);
@@ -84,8 +81,6 @@ public class PlayerController : MonoBehaviour, IDamage
 
         UpdateEncumbrance();
 
-
-        //sprinting
         if (playerMovement.isSprinting)
         {
             float drainPerSec = maxStamina * (staminaDrainRate / 100f);
@@ -141,8 +136,6 @@ public class PlayerController : MonoBehaviour, IDamage
         }
     }
 
-   
-
     #region UI
     public float CurrentStamina
     {
@@ -157,7 +150,16 @@ public class PlayerController : MonoBehaviour, IDamage
 
     public void takeDamage(int amount)
     {
+        ApplyDamage(amount, true);
+    }
 
+    public void TakeDamage_NoShake(int amount)
+    {
+        ApplyDamage(amount, false);
+    }
+
+    void ApplyDamage(int amount, bool doCameraShake)
+    {
         int finalDamage = amount;
 
         if (currentArmor != null)
@@ -177,16 +179,25 @@ public class PlayerController : MonoBehaviour, IDamage
             Debug.Log("[PlayerController] No armor. Full damage: " + amount);
         }
 
+        if (finalDamage <= 0)
+            doCameraShake = false;
+
         HP -= finalDamage;
         Debug.Log("[PlayerController] Took " + finalDamage + " damage. HP now: " + HP);
+
         if (SkillManager.instance != null && finalDamage > 0)
         {
             SkillManager.instance.AddToughnessXP(finalDamage);
         }
+
         updatePlayerUI();
         StartCoroutine(flashRed());
 
-       
+        if (doCameraShake && GameManager.instance != null && GameManager.instance.cameraControllerScript != null)
+        {
+            GameManager.instance.cameraControllerScript.Shake(0.15f, 0.15f);
+        }
+
         if (HP <= 0)
         {
             GameManager.instance.YouLose();
@@ -226,11 +237,9 @@ public class PlayerController : MonoBehaviour, IDamage
 
         updatePlayerUI();
     }
-
     #endregion
 
     #region WeaponAndInteraction
-
     void OnInteract()
     {
         if (!GameManager.instance.isPaused)
@@ -251,6 +260,7 @@ public class PlayerController : MonoBehaviour, IDamage
             }
         }
     }
+
 
     public void EquipWeapon(Weapon weapon)
     {
@@ -303,7 +313,6 @@ public class PlayerController : MonoBehaviour, IDamage
 
     void HandleCombo()
     {
-
         switch (nextSwing)
         {
             case null:
@@ -340,7 +349,6 @@ public class PlayerController : MonoBehaviour, IDamage
     {
         WeaponManager.instance.currentRingEquipped = ring;
     }
-
     #endregion
 
     #region StatusEffects
@@ -373,7 +381,8 @@ public class PlayerController : MonoBehaviour, IDamage
             if (HP <= 0 || GameManager.instance == null)
                 break;
 
-            takeDamage(damagePerTick);
+            TakeDamage_NoShake(damagePerTick);
+
             yield return new WaitForSeconds(interval);
         }
 
@@ -455,10 +464,7 @@ public class PlayerController : MonoBehaviour, IDamage
 
         playerMovement.isEncumbered = currentWeight > weightLimit;
     }
-
     #endregion
-
-
 }
 
 

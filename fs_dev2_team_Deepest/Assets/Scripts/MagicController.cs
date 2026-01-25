@@ -9,9 +9,7 @@ public enum SpellType
     TeleGrab,
     Teleport,
     Shield,
-    Speed,
-    Fire,
-    Lightning
+    Speed
 }
 
 public class MagicController : MonoBehaviour
@@ -21,46 +19,32 @@ public class MagicController : MonoBehaviour
     Dictionary<SpellType, GameObject> spellPrefabsDic;
 
     [Header("SpellPrefabs")]
-    public GameObject teleGrabPref;
+    [SerializeField] GameObject teleGrabPref;
     [SerializeField] GameObject teleportPref;
     [SerializeField] GameObject shieldPref;
     [SerializeField] GameObject speedPref;
-    [SerializeField] GameObject lightningPref;
-    public GameObject throwPref;
-    [SerializeField] GameObject firePref;
-    public GameObject explodePref;
-    [SerializeField] GameObject sparkPrefab;
-    GameObject currentPrefabInstance;
+    [SerializeField] GameObject throwPref;
 
     [Header("Transforms")]
-    public Transform teleGrabLocation;
+    [SerializeField] Transform teleGrabLocation;
     [SerializeField] Transform magicHandTransform;
 
     [Header("Sound")]
-    public AudioSource audSource;
+    [SerializeField] AudioSource audSource;
     [SerializeField] AudioClip grabClip;
-    public AudioClip throwClip;
-    [SerializeField] AudioClip fireBallClip;
-    [SerializeField] AudioClip fireBallChargeClip;
-    [SerializeField] AudioClip lightningChargeClip;
-    [SerializeField] AudioClip lightningCastClip;
-
-
+    [SerializeField] AudioClip throwClip;
 
     [Header("Floats")]
     [SerializeField] float grabDistance;
     [SerializeField] float grabSpeed;
     [SerializeField] float teleportSpeed;
-    public float throwForce;
+    [SerializeField] float throwForce;
     [SerializeField] float speedDuration;
     [SerializeField] float grabTimer;
     [SerializeField] float speedTimer;
-    [SerializeField] float fireBallSpeed;
     float originalCamFov;
     [SerializeField] float grabFov;
     [SerializeField] float moveInSpeed;
-    [SerializeField] float lightningDistance;
-    [SerializeField] int lightningDamage;
 
     [Header("References")]
     [SerializeField] BoxCollider grabCollider;
@@ -71,11 +55,6 @@ public class MagicController : MonoBehaviour
     public bool isTelegrabbing;
     bool isTeleporting;
     public bool isBoosting;
-    bool isChargingFireball;
-    bool isChargingLightning;
-
-    [SerializeField] LayerMask ignoreLayer;
-    public IThrow throwObject;
 
     private void Awake()
     {
@@ -84,9 +63,7 @@ public class MagicController : MonoBehaviour
             {SpellType.TeleGrab, teleGrabPref},
             {SpellType.Teleport, teleportPref},
             {SpellType.Shield, shieldPref},
-            {SpellType.Speed,  speedPref},
-            {SpellType.Fire, firePref },
-            {SpellType.Lightning, sparkPrefab }
+            {SpellType.Speed,  speedPref}
         };
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -99,10 +76,6 @@ public class MagicController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        if (WeaponManager.instance.currentRingEquipped == null)
-            return;
-
         //if i hold down the left mouse button and the an enemy is being grabbed, move the enemies transform towards me and enable the collider
         if (Input.GetButton("Fire2"))
         {
@@ -112,45 +85,15 @@ public class MagicController : MonoBehaviour
             }
         }
 
-        if(Input.GetButton("Fire2") && WeaponManager.instance.currentRingEquipped.spellType == SpellType.Fire)
-        {
-            isChargingFireball = true;
-        }
-
-        if (Input.GetButton("Fire2") && WeaponManager.instance.currentRingEquipped.spellType == SpellType.Lightning)
-        {
-            isChargingLightning = true;
-        }
-
-        if (WeaponManager.instance.currentRingEquipped != null)
-        {
-            if (WeaponManager.instance.currentRingEquipped.spellType == SpellType.TeleGrab)
-                animator.SetBool("IsTelegrabbing", isTelegrabbing);
-
-            else if (WeaponManager.instance.currentRingEquipped.spellType == SpellType.Fire)
-                animator.SetBool("IsTelegrabbing", isChargingFireball);
-
-            else if (WeaponManager.instance.currentRingEquipped.spellType == SpellType.Lightning)
-                animator.SetBool("IsTelegrabbing", isChargingLightning);
-        }
+        animator.SetBool("IsTelegrabbing", isTelegrabbing);
 
         //if i let go while an enemy is being grabbed
         if (Input.GetButtonUp("Fire2") && isTelegrabbing && objectGrabbed != null)
         {
-            throwObject.Throw(this);
+            Throw(objectGrabbed);
         }
 
-        if(Input.GetButtonUp("Fire2") && isChargingFireball)
-        {
-            
-            StartCoroutine(FireBallFly(7));
-        }
-
-        if (Input.GetButtonUp("Fire2") && isChargingLightning)
-        {
-            ShootLightning();
-        }
-
+       
 
         CastSpell();
 
@@ -217,14 +160,6 @@ public class MagicController : MonoBehaviour
                         StartCoroutine(SpeedBoost(2));
                         Debug.Log("BOOSTING");
                         break;
-                    case SpellType.Fire:
-                        currentPrefabInstance = Instantiate(prefab, magicHandTransform);
-                        audSource.PlayOneShot(fireBallChargeClip);
-                         break;
-                    case SpellType.Lightning:
-                        currentPrefabInstance = Instantiate(prefab, magicHandTransform);
-                        audSource.PlayOneShot(lightningChargeClip);
-                        break;
                 }
                 PlayerAnimatorManager.instance.PlayTargetAnimation(animator, "MagicCast", .1f);
             }
@@ -260,38 +195,23 @@ public class MagicController : MonoBehaviour
                 StartCoroutine(TeleportToEnemy(.5f, hit));
             }
         }
-
     }
 
-    void ShootLightning()
+    void Throw(GameObject obj)
     {
-        GameObject lightningBolt = Instantiate(lightningPref, magicHandTransform);
-        Destroy(lightningBolt, .5f);
-        Destroy(currentPrefabInstance);
-        RaycastHit hit;
+        Rigidbody rb = obj.GetComponent<Rigidbody>();
+        objectGrabbed.transform.SetParent(null);
 
+        objectGrabbed = null;
+        isTelegrabbing = false;
 
-        if (Physics.Raycast(transform.position, Camera.main.transform.forward, out hit, lightningDistance, ~ignoreLayer))
-        {
-            ILightning lightning = hit.collider.GetComponent<ILightning>();
-            IDamage dmg = hit.collider.GetComponent<IDamage>();
+        rb.AddForce(Camera.main.transform.forward * throwForce, ForceMode.Impulse);
 
-            if (lightning != null)
-            {
-                lightning.ChainLightning();
-            }
+        audSource.PlayOneShot(throwClip);
+        GameObject effect = Instantiate(throwPref, teleGrabLocation);
+        Destroy(effect, 3);
+        teleGrabPref.SetActive(false);//Destroy(currentPrefInstance);
 
-            if (dmg != null && !hit.collider.CompareTag("Player"))
-            {
-                dmg.takeDamage(lightningDamage);
-            }
-
-            GameObject sparkEffect = Instantiate(sparkPrefab, hit.point, Quaternion.identity);
-
-            Destroy(sparkEffect, 2);
-        }
-
-        isChargingLightning = false;
     }
 
     void PullEnemyToHand()
@@ -306,7 +226,6 @@ public class MagicController : MonoBehaviour
         if (Vector3.Distance(rb.position, targetPos) < 1f)
         {
             AttachEnemy(objectGrabbed);
-
         }
     }
 
@@ -374,38 +293,6 @@ public class MagicController : MonoBehaviour
         speedPref.SetActive(false);
 
         isBoosting = false;
-    }
-
-    IEnumerator FireBallFly(float duration)
-    {
-        audSource.pitch = Random.Range(.8f, 1.2f);
-        audSource.PlayOneShot(fireBallClip);
-        GameObject fireball = Instantiate(currentPrefabInstance, magicHandTransform);
-        fireball.transform.SetParent(null);
-        Destroy(currentPrefabInstance);
-        GameObject explosionEffect = Instantiate(explodePref, magicHandTransform);
-        Destroy(explosionEffect, 1f);
-
-        Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
-        Vector3 dir;
-
-        if (Physics.Raycast(ray, out RaycastHit hit, 100f, ~ignoreLayer))
-            dir = (hit.point - fireball.transform.position).normalized;
-        else
-            dir = Camera.main.transform.forward;
-
-        isChargingFireball = false;
-
-        float timer = 0f;
-
-        while (timer < duration)
-        {
-            timer += Time.deltaTime;
-            fireball.transform.position += dir * fireBallSpeed * timer;
-            yield return null;
-        }
-
-        Destroy(fireball);
     }
 
 }

@@ -27,7 +27,6 @@ public class Item : MonoBehaviour, IInteractable
     {
         originalPos = transform.position;
         originalRot = transform.rotation;
-        
         grabPosition = GameObject.FindGameObjectWithTag("GrabPosition").transform;
     }
 

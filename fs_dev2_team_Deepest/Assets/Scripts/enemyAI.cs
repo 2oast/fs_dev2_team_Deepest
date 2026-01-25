@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.AI;
 
-public class EnemyAI : MonoBehaviour, IDamage, IThrow
+public class EnemyAI : MonoBehaviour, IDamage
 {
     public enum EnemyType
     {
@@ -17,7 +17,6 @@ public class EnemyAI : MonoBehaviour, IDamage, IThrow
     [SerializeField] Renderer model;
     [SerializeField] NavMeshAgent agent;
     [SerializeField] Animator anim;
-    Rigidbody rb;
 
     [SerializeField] int faceTargetSpeed = 5;
     [SerializeField] int FOV = 90;
@@ -76,7 +75,6 @@ public class EnemyAI : MonoBehaviour, IDamage, IThrow
         {
             ghostHand.SetActive(false);
         }
-        rb = GetComponent<Rigidbody>();
     }
 
     void Update()
@@ -431,20 +429,5 @@ public class EnemyAI : MonoBehaviour, IDamage, IThrow
         {
             yield return null;
         }
-    }
-
-    public void Throw(MagicController magicController)
-    {
-        magicController.objectGrabbed.transform.SetParent(null);
-
-        magicController.objectGrabbed = null;
-        magicController.isTelegrabbing = false;
-
-        rb.AddForce(Camera.main.transform.forward * magicController.throwForce, ForceMode.Impulse);
-
-        magicController.audSource.PlayOneShot(magicController.throwClip);
-        GameObject effect = Instantiate(magicController.throwPref, magicController.teleGrabLocation);
-        Destroy(effect, 3);
-        magicController.teleGrabPref.SetActive(false);
     }
 }

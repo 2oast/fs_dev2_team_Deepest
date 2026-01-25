@@ -47,7 +47,6 @@ public class PlayerController : MonoBehaviour, IDamage
 
     [Header("Animations")]
     [SerializeField] Animator animator;
-    [SerializeField] Animator legAnimator;
 
     [Header("Status Effects")]
     [SerializeField] bool isPoisoned;
@@ -63,7 +62,6 @@ public class PlayerController : MonoBehaviour, IDamage
     bool isBlocking;
     bool isCharging;
     public bool chargeAttack;
-    public bool isKicking;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -83,9 +81,6 @@ public class PlayerController : MonoBehaviour, IDamage
 
         UpdateEncumbrance();
 
-        Kick();
-
-        //sprinting
         if (playerMovement.isSprinting)
         {
             float drainPerSec = maxStamina * (staminaDrainRate / 100f);
@@ -347,14 +342,6 @@ public class PlayerController : MonoBehaviour, IDamage
             PlayerAnimatorManager.instance.PlayTargetAnimation(animator, nextSwing, 0f);
             audioSource.pitch = Random.Range(.7f, 1.2f);
             audioSource.PlayOneShot(swordSwing);
-        }
-    }
-
-    void Kick()
-    {
-        if(Input.GetKeyDown(KeyCode.F) && !isKicking)
-        {
-            PlayerAnimatorManager.instance.PlayTargetAnimation(legAnimator, "Kick", .5f);
         }
     }
 

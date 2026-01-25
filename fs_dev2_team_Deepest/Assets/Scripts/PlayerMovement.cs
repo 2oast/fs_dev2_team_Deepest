@@ -15,10 +15,6 @@ public class PlayerMovement : MonoBehaviour
     public float bobAmplitude = 0.05f;
     public float sprintBobMultiplier = 1.4f;
     public float bobSmooth = 10f;
-    [SerializeField] float camTilt;
-    [SerializeField] float camRotationSpeed;
-    Quaternion originalCamRot;
-    [SerializeField] Transform camPos;
 
     float bobTimer;
     Vector3 armStartLocalPos;
@@ -93,6 +89,11 @@ public class PlayerMovement : MonoBehaviour
         return Vector3.ProjectOnPlane(moveDir, slopeHit.normal);
     }
 
+    void StateHandler()
+    {
+
+    }
+
     private void Start()
     {
         playerController = GetComponent<PlayerController>();
@@ -100,7 +101,6 @@ public class PlayerMovement : MonoBehaviour
         readyToJump = true;
         if (armHolder != null)
             armStartLocalPos = armHolder.localPosition;
-        originalCamRot = camPos.rotation;
     }
 
     private void Update()
@@ -169,7 +169,6 @@ public class PlayerMovement : MonoBehaviour
         if (isEncumbered)
             moveSpeed *= encumberedSpeedMultiplier;
 
-        //TiltCam(horizontalInput);
 
         SpeedControl(moveSpeed);
 
@@ -256,27 +255,43 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    
+    void HandleViewBobbing()
+    {
+        if (armHolder == null)
+            return;
 
-    //void TiltCam(float moveMagnitude)
-    //{
-    //    Quaternion targetRot;
+        // Horizontal movement speed only
+        Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+        float speedPercent = Mathf.Clamp01(flatVel.magnitude / speed);
 
-    //    if(moveMagnitude > 0)
-    //    {
-    //        targetRot = originalCamRot * Quaternion.Euler(0, 0, camTilt);
-    //    }
-    //    else if(moveMagnitude < 0)
-    //    {
-    //        targetRot = originalCamRot * Quaternion.Euler(0, 0, -camTilt);
-    //    }
-    //    else
-    //    {
-    //        targetRot = originalCamRot;
-    //    }
+        bool shouldBob = isGrounded && speedPercent > 0.1f;
 
-    //    camPos.rotation = Quaternion.Slerp(camPos.rotation, targetRot, Time.deltaTime * camRotationSpeed);
-    //}
+        if (shouldBob)
+        {
+            bobTimer += Time.deltaTime * bobFrequency * (isSprinting ? sprintBobMultiplier : 1f);
+
+            float bobY = Mathf.Sin(bobTimer) * bobAmplitude;
+            float bobX = Mathf.Cos(bobTimer * 0.5f) * bobAmplitude * 0.5f;
+
+            Vector3 targetPos = armStartLocalPos + new Vector3(bobX, bobY, 0f);
+            armHolder.localPosition = Vector3.Lerp(
+                armHolder.localPosition,
+                targetPos,
+                Time.deltaTime * bobSmooth
+            );
+        }
+        else
+        {
+            // Smoothly return arms to center
+            bobTimer = 0f;
+            armHolder.localPosition = Vector3.Lerp(
+                armHolder.localPosition,
+                armStartLocalPos,
+                Time.deltaTime * bobSmooth
+            );
+        }
+    }
+
 
     #endregion
 }

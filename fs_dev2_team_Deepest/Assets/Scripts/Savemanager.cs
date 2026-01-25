@@ -1,4 +1,5 @@
 using System.IO;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class SaveManager : MonoBehaviour
@@ -93,14 +94,79 @@ public class SaveManager : MonoBehaviour
             foreach (var slot in inv.slots)
             {
                 if (slot != null && slot.itemInSlot != null)
-                {
                     data.inventoryItemNames.Add(slot.itemInSlot.itemName);
-                }
             }
         }
 
         data.isPoisoned = pc.IsPoisoned;
         data.poisonTimeRemaining = pc.PoisonRemainingTime;
+
+        data.bridgeIDs.Clear();
+        data.bridgeExtended.Clear();
+
+        foreach (var bridge in FindObjectsByType<BridgeScript>(FindObjectsSortMode.None))
+        {
+            if (bridge == null || string.IsNullOrEmpty(bridge.id))
+                continue;
+
+            data.bridgeIDs.Add(bridge.id);
+            data.bridgeExtended.Add(bridge.IsExtended);
+        }
+
+        // Crates (DestructibleObjects)
+        data.crateIDs.Clear();
+        data.crateBroken.Clear();
+        data.cratePickupCollected.Clear();
+
+        foreach (var crate in FindObjectsByType<DestructibleObjects>(FindObjectsSortMode.None))
+        {
+            if (crate == null || string.IsNullOrEmpty(crate.id))
+                continue;
+
+            bool broken, dropped;
+            crate.GetSaveState(out broken, out dropped);
+
+            bool pickupCollected = false;
+
+            var pickupObj = crate.ItemPickup;
+            if (pickupObj != null)
+            {
+                var pid = pickupObj.GetComponent<PickupSaveID>();
+                if (pid != null && !string.IsNullOrEmpty(pid.id))
+                {
+                    pickupCollected = data.collectedPickupIDs.Contains(pid.id);
+                }
+                else
+                {
+                    pickupCollected = false;
+                }
+            }
+            else
+            {
+                if (broken)
+                    pickupCollected = true;
+            }
+
+            data.crateIDs.Add(crate.id);
+            data.crateBroken.Add(broken);
+            data.cratePickupCollected.Add(pickupCollected);
+        }
+
+        HashSet<string> existingPickupIDs = new HashSet<string>();
+        foreach (var p in FindObjectsByType<PickupSaveID>(FindObjectsSortMode.None))
+        {
+            if (p != null && !string.IsNullOrEmpty(p.id))
+                existingPickupIDs.Add(p.id);
+        }
+
+        if (data.collectedPickupIDs == null)
+            data.collectedPickupIDs = new List<string>();
+
+        for (int i = data.collectedPickupIDs.Count - 1; i >= 0; i--)
+        {
+            if (string.IsNullOrEmpty(data.collectedPickupIDs[i]))
+                data.collectedPickupIDs.RemoveAt(i);
+        }
 
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(SavePath, json);
@@ -173,9 +239,7 @@ public class SaveManager : MonoBehaviour
         {
             ItemData itemData = itemDatabase.GetItemByName(itemName);
             if (itemData != null)
-            {
                 inv.AddItemFromData(itemData);
-            }
         }
 
         if (!string.IsNullOrEmpty(data.currentWeaponName))
@@ -191,9 +255,7 @@ public class SaveManager : MonoBehaviour
                 }
 
                 if (WeaponManager.instance != null)
-                {
                     WeaponManager.instance.currentWeapon = null;
-                }
 
                 pc.EquipWeapon(weapon);
                 inv.weaponImage.sprite = weapon.itemIcon;
@@ -223,14 +285,93 @@ public class SaveManager : MonoBehaviour
         }
 
         foreach (var enemy in FindObjectsByType<EnemyAI>(FindObjectsSortMode.None))
-        {
             Object.Destroy(enemy.gameObject);
-        }
 
         EnemySpawner.ResetAllSpawners();
 
+        if (data.bridgeIDs != null && data.bridgeExtended != null)
+        {
+            for (int i = 0; i < data.bridgeIDs.Count && i < data.bridgeExtended.Count; i++)
+            {
+                string id = data.bridgeIDs[i];
+                bool extended = data.bridgeExtended[i];
+
+                foreach (var bridge in FindObjectsByType<BridgeScript>(FindObjectsSortMode.None))
+                {
+                    if (bridge != null && bridge.id == id)
+                    {
+                        bridge.ApplyState(extended);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (data.crateIDs != null && data.crateBroken != null && data.cratePickupCollected != null)
+        {
+            for (int i = 0; i < data.crateIDs.Count; i++)
+            {
+                string id = data.crateIDs[i];
+                bool broken = (i < data.crateBroken.Count) ? data.crateBroken[i] : false;
+                bool pickupCollected = (i < data.cratePickupCollected.Count) ? data.cratePickupCollected[i] : false;
+
+                foreach (var crate in FindObjectsByType<DestructibleObjects>(FindObjectsSortMode.None))
+                {
+                    if (crate != null && crate.id == id)
+                    {
+                        crate.ApplySaveState(broken, pickupCollected);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (data.collectedPickupIDs != null)
+        {
+            foreach (var pid in FindObjectsByType<PickupSaveID>(FindObjectsSortMode.None))
+            {
+                if (pid != null && !string.IsNullOrEmpty(pid.id))
+                {
+                    if (data.collectedPickupIDs.Contains(pid.id))
+                    {
+                        Destroy(pid.gameObject);
+                    }
+                }
+            }
+        }
+
         Debug.Log("Game loaded from: " + SavePath);
     }
+
+    public void MarkPickupCollected(string pickupId)
+    {
+        if (string.IsNullOrEmpty(pickupId))
+            return;
+
+        GameData data = LoadRawGameDataOrNew();
+        if (data.collectedPickupIDs == null)
+            data.collectedPickupIDs = new List<string>();
+
+        if (!data.collectedPickupIDs.Contains(pickupId))
+            data.collectedPickupIDs.Add(pickupId);
+
+        string json = JsonUtility.ToJson(data, true);
+        File.WriteAllText(SavePath, json);
+    }
+
+    GameData LoadRawGameDataOrNew()
+    {
+        if (!File.Exists(SavePath))
+            return new GameData();
+
+        try
+        {
+            string json = File.ReadAllText(SavePath);
+            return JsonUtility.FromJson<GameData>(json);
+        }
+        catch
+        {
+            return new GameData();
+        }
+    }
 }
-
-

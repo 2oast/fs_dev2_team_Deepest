@@ -28,5 +28,12 @@ public class GameData
     public bool isPoisoned;
     public float poisonTimeRemaining;
 
-}
+    public List<string> bridgeIDs = new List<string>();
+    public List<bool> bridgeExtended = new List<bool>();
 
+    public List<string> crateIDs = new List<string>();
+    public List<bool> crateBroken = new List<bool>();
+    public List<bool> cratePickupCollected = new List<bool>();
+
+    public List<string> collectedPickupIDs = new List<string>();
+}

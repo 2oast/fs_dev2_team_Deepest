@@ -3,6 +3,10 @@ using UnityEngine;
 
 public class DestructibleObjects : MonoBehaviour, IDestructible
 {
+    [Header("Save State")]
+    [Tooltip("Unique ID for THIS crate. Must be unique across the whole scene.")]
+    public string id;
+
     [Header("Destruction Pieces")]
     [SerializeField] GameObject[] pieces;
     [SerializeField] float explodeForce;
@@ -14,13 +18,25 @@ public class DestructibleObjects : MonoBehaviour, IDestructible
     [SerializeField] AudioClip breakingClip;
 
     [Header("Item Drop")]
+    [Tooltip("This pickup should usually start DISABLED in the scene, as a child of the crate.")]
     [SerializeField] GameObject itemPickup;
 
     bool isFading;
     bool hasDroppedItem;
 
+    bool isBroken;
+
+    public bool IsBroken { get { return isBroken; } }
+    public bool HasDroppedItem { get { return hasDroppedItem; } }
+    public GameObject ItemPickup { get { return itemPickup; } }
+
     public void Destruct()
     {
+        if (isBroken)
+            return;
+
+        isBroken = true;
+
         Collider rootCol = GetComponent<Collider>();
         if (rootCol) rootCol.enabled = false;
 
@@ -68,10 +84,6 @@ public class DestructibleObjects : MonoBehaviour, IDestructible
             itemPickup.SetActive(true);
             hasDroppedItem = true;
         }
-        else
-        {
-
-        }
     }
 
     IEnumerator FadeAway()
@@ -79,5 +91,60 @@ public class DestructibleObjects : MonoBehaviour, IDestructible
         yield return new WaitForSeconds(3f);
         Destroy(gameObject);
     }
+
+    public void GetSaveState(out bool broken, out bool pickupDropped)
+    {
+        broken = isBroken;
+        pickupDropped = hasDroppedItem;
+    }
+
+    public void ApplySaveState(bool broken, bool pickupCollected)
+    {
+        isBroken = broken;
+
+        if (!broken)
+        {
+            if (itemPickup != null)
+            {
+                if (itemPickup.transform.parent != transform)
+                    itemPickup.transform.SetParent(transform);
+
+                if (!pickupCollected)
+                    itemPickup.SetActive(false);
+                else
+                    itemPickup.SetActive(false);
+            }
+
+            hasDroppedItem = false;
+            return;
+        }
+
+        if (pickupCollected)
+        {
+            if (itemPickup != null)
+            {
+                Destroy(itemPickup);
+            }
+        }
+        else
+        {
+            ActivatePickup();
+        }
+
+        Destroy(gameObject);
+    }
+
+    public void ResetStateForNewGame()
+    {
+        isBroken = false;
+        hasDroppedItem = false;
+
+        if (itemPickup != null)
+        {
+            itemPickup.transform.SetParent(transform);
+            itemPickup.SetActive(false);
+        }
+    }
 }
+
 

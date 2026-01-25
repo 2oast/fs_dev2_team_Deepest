@@ -1,0 +1,75 @@
+{
+    "version": 1,
+    "name": "UIInputactions",
+    "maps": [
+        {
+            "name": "UI",
+            "id": "2732d6e7-e789-4f90-bff2-1fcc42f0abb0",
+            "actions": [
+                {
+                    "name": "Point",
+                    "type": "Value",
+                    "id": "76eefff3-b652-4fb1-8514-0d9a2a03c464",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Click",
+                    "type": "Button",
+                    "id": "ed108187-1b0f-42c0-858f-b5c2fc3a096c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Scrollwheel",
+                    "type": "Value",
+                    "id": "cd91025c-7af3-40e8-8e4a-a59973271f01",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "cbab1241-5292-4ec9-aa69-c94823607424",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Point",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "38b8e12b-0e19-4de1-89ab-550f23381a4a",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "bfd5b260-4c91-4354-b6a1-001b764043ad",
+                    "path": "<Mouse>/scroll",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Scrollwheel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

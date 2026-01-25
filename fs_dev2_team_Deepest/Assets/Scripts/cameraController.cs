@@ -7,36 +7,39 @@ public class CameraController : MonoBehaviour
     [SerializeField] bool invertY;
     [SerializeField] Transform parentTransform;
 
-
     float camRotX;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
+        SetCursorLocked(true);
     }
 
-    // Update is called once per frame
     void Update()
     {
-        //get input
+        if (GameManager.instance != null && GameManager.instance.isInteracting)
+        {
+            SetCursorLocked(false);
+            return;
+        }
+
+        SetCursorLocked(true);
+
         float mouseX = Input.GetAxisRaw("Mouse X") * sens * Time.deltaTime;
         float mouseY = Input.GetAxisRaw("Mouse Y") * sens * Time.deltaTime;
 
-        // use the invert Y
         if (invertY)
             camRotX += mouseY;
         else
             camRotX -= mouseY;
 
-        // clamp the camera on the X axis
         camRotX = Mathf.Clamp(camRotX, lockVertMin, lockVertMax);
 
-        //rotate the camera on the X axis
-
-        // rotate the player on the Y axis
         parentTransform.Rotate(Vector3.up * mouseX);
+    }
 
+    void SetCursorLocked(bool locked)
+    {
+        Cursor.visible = !locked;
+        Cursor.lockState = locked ? CursorLockMode.Locked : CursorLockMode.None;
     }
 }

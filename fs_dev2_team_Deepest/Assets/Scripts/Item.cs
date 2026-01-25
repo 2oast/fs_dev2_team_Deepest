@@ -7,7 +7,6 @@ public class Item : MonoBehaviour, IInteractable
     public ItemData item;
 
     [Header("---Stylish Floating---")]
-
     [SerializeField] float floatSpeed = 2f;
     public int spinSpeed = 50;
 
@@ -27,7 +26,6 @@ public class Item : MonoBehaviour, IInteractable
     {
         originalPos = transform.position;
         originalRot = transform.rotation;
-        
     }
 
     void Update()
@@ -35,9 +33,7 @@ public class Item : MonoBehaviour, IInteractable
         if (isFloating || isReadyToCollect)
         {
             transform.Rotate(Vector3.up * spinSpeed * Time.deltaTime);
-            GameManager.instance.isInteracting = true;
             Camera.main.transform.LookAt(this.transform.position);
-            GameManager.instance.cameraControllerScript.enabled = false;
         }
 
         if (isReadyToCollect)
@@ -52,7 +48,6 @@ public class Item : MonoBehaviour, IInteractable
         {
             StartCoroutine(FloatToCenter());
         }
-
     }
 
     public IEnumerator FloatToCenter()
@@ -68,13 +63,23 @@ public class Item : MonoBehaviour, IInteractable
         {
             time += Time.deltaTime * floatSpeed;
             transform.position = Vector3.Lerp(startPos, targetPos, time);
+
             InventoryManager.instance.itemToBeCollected = this;
+
             yield return null;
         }
+
         GameManager.instance.YesOrNoObj.SetActive(true);
+
+        GameManager.instance.isInteracting = true;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        if (GameManager.instance.cameraControllerScript != null)
+            GameManager.instance.cameraControllerScript.enabled = false;
+
         isFloating = false;
         isReadyToCollect = true;
-
     }
 
     void PickupMessage(string objectName)
@@ -82,3 +87,4 @@ public class Item : MonoBehaviour, IInteractable
         GameManager.instance.pickupText.text = "Pick up " + objectName + "?";
     }
 }
+

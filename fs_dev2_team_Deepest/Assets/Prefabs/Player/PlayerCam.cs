@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class PlayerCam : MonoBehaviour
@@ -9,14 +10,24 @@ public class PlayerCam : MonoBehaviour
 
     float xRot;
     float yRot;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+    [Header("Camera Shake")]
+    [SerializeField] float shakeReturnSpeed = 25f;
+
+    Vector3 defaultLocalPos;
+    float shakeTimer;
+    float shakeIntensity;
+
+    Coroutine shakeLoop;
+
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        defaultLocalPos = transform.localPosition;
     }
 
-    // Update is called once per frame
     void Update()
     {
         float mouseX = Input.GetAxis("Mouse X") * Time.deltaTime * sensX;
@@ -25,10 +36,71 @@ public class PlayerCam : MonoBehaviour
         yRot += mouseX;
         xRot -= mouseY;
 
-        xRot = Mathf.Clamp(xRot, -90, 90);
+        xRot = Mathf.Clamp(xRot, -90f, 90f);
 
-        transform.rotation = Quaternion.Euler(xRot, yRot, 0);
-        orientation.rotation = Quaternion.Euler(0, yRot, 0);
+        transform.rotation = Quaternion.Euler(xRot, yRot, 0f);
 
+        if (orientation != null)
+            orientation.rotation = Quaternion.Euler(0f, yRot, 0f);
+
+        HandleShake();
+    }
+
+    public void Shake(float duration, float intensity)
+    {
+        if (intensity > shakeIntensity)
+            shakeIntensity = intensity;
+
+        if (duration > shakeTimer)
+            shakeTimer = duration;
+    }
+
+    public void StartShakeLoop(float intensity, float refreshTime = 0.2f)
+    {
+        if (refreshTime <= 0f)
+            refreshTime = 0.2f;
+
+        StopShakeLoop();
+        shakeLoop = StartCoroutine(ShakeLoop(intensity, refreshTime));
+    }
+
+    public void StopShakeLoop()
+    {
+        if (shakeLoop != null)
+        {
+            StopCoroutine(shakeLoop);
+            shakeLoop = null;
+        }
+
+        shakeTimer = 0f;
+        shakeIntensity = 0f;
+    }
+
+    IEnumerator ShakeLoop(float intensity, float refreshTime)
+    {
+        while (true)
+        {
+            Shake(refreshTime, intensity);
+
+            yield return new WaitForSeconds(refreshTime * 0.5f);
+        }
+    }
+
+    void HandleShake()
+    {
+        if (shakeTimer > 0f)
+        {
+            shakeTimer -= Time.deltaTime;
+
+            Vector3 offset = Random.insideUnitSphere * shakeIntensity;
+            transform.localPosition = defaultLocalPos + offset;
+        }
+        else
+        {
+            transform.localPosition =
+                Vector3.Lerp(transform.localPosition, defaultLocalPos, Time.deltaTime * shakeReturnSpeed);
+
+            shakeIntensity = 0f;
+        }
     }
 }

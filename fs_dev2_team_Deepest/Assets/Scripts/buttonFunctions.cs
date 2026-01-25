@@ -8,30 +8,51 @@ public class ButtonFunctions : MonoBehaviour
 
     public void CollectItem()
     {
-        InventoryManager.instance.AddItemToInventory(InventoryManager.instance.itemToBeCollected);
+        if (InventoryManager.instance.itemToBeCollected != null)
+        {
+            InventoryManager.instance.AddItemToInventory(InventoryManager.instance.itemToBeCollected);
 
-        Destroy(InventoryManager.instance.itemToBeCollected.gameObject);
-        InventoryManager.instance.itemToBeCollected = null;
+            Destroy(InventoryManager.instance.itemToBeCollected.gameObject);
+            InventoryManager.instance.itemToBeCollected = null;
+        }
+
         GameManager.instance.pickupText.text = "";
         GameManager.instance.YesOrNoObj.SetActive(false);
-        GameManager.instance.playerControllerScript.enabled = true;
+
         GameManager.instance.isInteracting = false;
-        GameManager.instance.cameraControllerScript.enabled = true;
+        GameManager.instance.playerControllerScript.enabled = true;
+
+        if (GameManager.instance.cameraControllerScript != null)
+            GameManager.instance.cameraControllerScript.enabled = true;
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     public void RefuseItem()
     {
-        InventoryManager.instance.itemToBeCollected.transform.position = InventoryManager.instance.itemToBeCollected.originalPos;
-        InventoryManager.instance.itemToBeCollected.transform.rotation = InventoryManager.instance.itemToBeCollected.originalRot;
-        GameManager.instance.YesOrNoObj.SetActive(false);
-        StopCoroutine(InventoryManager.instance.itemToBeCollected.FloatToCenter());
-        InventoryManager.instance.itemToBeCollected.isFloating = false;
-        InventoryManager.instance.itemToBeCollected.isReadyToCollect = false;
-        InventoryManager.instance.itemToBeCollected = null;
+        if (InventoryManager.instance.itemToBeCollected != null)
+        {
+            InventoryManager.instance.itemToBeCollected.transform.position = InventoryManager.instance.itemToBeCollected.originalPos;
+            InventoryManager.instance.itemToBeCollected.transform.rotation = InventoryManager.instance.itemToBeCollected.originalRot;
+
+            InventoryManager.instance.itemToBeCollected.isFloating = false;
+            InventoryManager.instance.itemToBeCollected.isReadyToCollect = false;
+
+            InventoryManager.instance.itemToBeCollected = null;
+        }
+
         GameManager.instance.pickupText.text = "";
-        GameManager.instance.playerControllerScript.enabled = true;
+        GameManager.instance.YesOrNoObj.SetActive(false);
+
         GameManager.instance.isInteracting = false;
-        GameManager.instance.cameraControllerScript.enabled = true;
+        GameManager.instance.playerControllerScript.enabled = true;
+
+        if (GameManager.instance.cameraControllerScript != null)
+            GameManager.instance.cameraControllerScript.enabled = true;
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     public void Resume()
@@ -129,4 +150,3 @@ public class ButtonFunctions : MonoBehaviour
         }
     }
 }
-

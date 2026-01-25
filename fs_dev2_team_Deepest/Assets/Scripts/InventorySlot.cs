@@ -9,6 +9,7 @@ public class InventorySlot : MonoBehaviour, ISubmitHandler, IPointerClickHandler
     public GameObject slotPref;
     public Image itemImageComp;
     public Sprite itemSprite;
+    public Sprite originalItemSprite;
     public TextMeshProUGUI itemNameTextBox;
 
     public bool isFilled;
@@ -79,7 +80,7 @@ public class InventorySlot : MonoBehaviour, ISubmitHandler, IPointerClickHandler
         if (itemInSlot.itemType == ItemType.Consumable)
         {
             Debug.Log("Item is consumable, clearing slot.");
-            ClearSlot();
+            Destroy(gameObject);
         }
     }
 
@@ -125,7 +126,7 @@ public class InventorySlot : MonoBehaviour, ISubmitHandler, IPointerClickHandler
     {
         if (InventoryManager.instance.selectedSlot == null)
         {
-            InventoryManager.instance.itemImage.sprite = null;
+            InventoryManager.instance.itemImage.sprite = originalItemSprite;
             InventoryManager.instance.itemDescriptionBox.text = null;
         }
     }
@@ -135,7 +136,7 @@ public class InventorySlot : MonoBehaviour, ISubmitHandler, IPointerClickHandler
         if (InventoryManager.instance.pendingEquipSlot == null)
         {
             InventoryManager.instance.selectedSlot = null;
-            InventoryManager.instance.itemImage.sprite = null;
+            InventoryManager.instance.itemImage.sprite = originalItemSprite;
             InventoryManager.instance.itemDescriptionBox.text = null;
             InventoryManager.instance.YesOrNoPanel.SetActive(false);
         }

@@ -5,10 +5,13 @@ using UnityEngine.UI;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
 
-public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport
+public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport, IThrow
 {
     [SerializeField] int maxHp;
     [SerializeField] int HP;
+    [SerializeField] int throwDamage = 15;
+
+    [SerializeField] BoxCollider throwCollider;
     [SerializeField] Renderer model;
     [SerializeField] Transform meshTrans;
     [SerializeField] Animator anim;
@@ -22,11 +25,12 @@ public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport
 
     public bool isStunned;
     public bool isGrabbed;
+    bool isThrown = false;
     bool isHit;
 
     Color colorOrig;
 
-    
+    Rigidbody rb;
 
     Vector3 scaleOrig;
 
@@ -40,8 +44,9 @@ public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport
         scaleOrig = transform.localScale;
         colorOrig = model.material.color;
         agent = GetComponent<NavMeshAgent>();
-
+        rb = GetComponent<Rigidbody>();
         mats = new List<Material>(model.materials);
+        throwCollider = GetComponent<BoxCollider>();
     }
 
     // Update is called once per frame
@@ -61,8 +66,6 @@ public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport
             model.materials = mats.ToArray();
             isStunned = true;
         }
-        
-
         HP -= amount;
         agent.SetDestination(GameManager.instance.player.transform.position);
         audioSource.PlayOneShot(hurtSound, .5f);
@@ -74,7 +77,7 @@ public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport
             TextMesh text = floatText.GetComponent<TextMesh>();
             text.text = amount.ToString();
             Destroy(floatText, 1f);
-            StartCoroutine(GameManager.instance.HitStop(.07f));
+            StartCoroutine(GameManager.instance.HitStop(.03f));
             StartCoroutine(FadeOut(1));
         }
         else
@@ -87,7 +90,7 @@ public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport
             audioSource.PlayOneShot(hurtSound);
             Destroy(floatText, 1f);
             StartCoroutine(flashRed(.5F));
-            StartCoroutine(GameManager.instance.HitStop(.07f));
+            StartCoroutine(GameManager.instance.HitStop(.03f));
         }
     }
 
@@ -112,6 +115,7 @@ public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport
         Rigidbody rb = GetComponent<Rigidbody>();
         rb.isKinematic = false;
         magicController.objectGrabbed = gameObject;
+        magicController.throwObject = GetComponent<IThrow>();
     }
 
     IEnumerator FadeOut(float duration)
@@ -140,6 +144,53 @@ public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport
         Destroy(gameObject);
     }
 
-    
+    IEnumerator Knockback(float duration, float force)
+    {
+        rb.isKinematic = false;
+        agent.enabled = false;
+        Vector3 direction = (transform.position - GameManager.instance.player.transform.position).normalized;
+        direction.y = 0;
+        rb.AddForce(direction * force, ForceMode.Impulse);
 
+        yield return new WaitForSeconds(duration);
+
+        rb.isKinematic = true;
+        agent.enabled = true;
+        
+    }
+
+    public void Throw(MagicController magicController)
+    {
+        magicController.objectGrabbed.transform.SetParent(null);
+
+        magicController.objectGrabbed = null;
+        magicController.isTelegrabbing = false;
+
+        rb.AddForce(Camera.main.transform.forward * magicController.throwForce, ForceMode.Impulse);
+
+        magicController.audSource.PlayOneShot(magicController.throwClip);
+        GameObject effect = Instantiate(magicController.throwPref, magicController.teleGrabLocation);
+        Destroy(effect, 3);
+        magicController.teleGrabPref.SetActive(false);
+        throwCollider.enabled = true;
+        isThrown = true;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(isThrown)
+        {
+            IDamage dmg = other.GetComponent<IDamage>();
+
+            if (dmg != null)
+            {
+                dmg.takeDamage(throwDamage);
+                StartCoroutine(FadeOut(2));
+            }
+
+            StartCoroutine(FadeOut(3));
+        }
+       
+
+    }
 }

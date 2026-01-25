@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour, IDamage
     [Header("Player Stats")]
     public int HP;
     float currentWeight;
-    [Range(0,1)]public float chargeTimer;
+    [Range(0, 1)] public float chargeTimer;
     float staminaRegenTimer;
     int HPOrig;
 
@@ -55,7 +55,7 @@ public class PlayerController : MonoBehaviour, IDamage
     [SerializeField] float poisonRemainingTime;
     [SerializeField] float poisonTotalDuration;
     float poisonEndTime;
-    
+
     public float PoisonRemainingTime => poisonRemainingTime;
 
     [Header("Flags")]
@@ -65,8 +65,6 @@ public class PlayerController : MonoBehaviour, IDamage
     public bool chargeAttack;
     public bool isKicking;
 
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         playerMovement = GetComponent<PlayerMovement>();
@@ -75,8 +73,6 @@ public class PlayerController : MonoBehaviour, IDamage
         updatePlayerUI();
         updateStaminaUI();
     }
-
-    
 
     void Update()
     {
@@ -88,7 +84,6 @@ public class PlayerController : MonoBehaviour, IDamage
 
         Kick();
 
-        //sprinting
         if (playerMovement.isSprinting)
         {
             float drainPerSec = maxStamina * (staminaDrainRate / 100f);
@@ -100,6 +95,7 @@ public class PlayerController : MonoBehaviour, IDamage
             stamina = Mathf.Clamp(stamina, 0f, maxStamina);
 
             staminaRegenTimer = 0f;
+
             if (SkillManager.instance != null)
             {
                 SkillManager.instance.AddSprintXP(Time.deltaTime * 2f);
@@ -124,6 +120,7 @@ public class PlayerController : MonoBehaviour, IDamage
                 staminaRegenTimer = 0f;
             }
         }
+
         updateStaminaUI();
 
         if (isPoisoned)
@@ -144,8 +141,6 @@ public class PlayerController : MonoBehaviour, IDamage
         }
     }
 
-   
-
     #region UI
     public float CurrentStamina
     {
@@ -160,7 +155,16 @@ public class PlayerController : MonoBehaviour, IDamage
 
     public void takeDamage(int amount)
     {
+        ApplyDamage(amount, true);
+    }
 
+    public void TakeDamage_NoShake(int amount)
+    {
+        ApplyDamage(amount, false);
+    }
+
+    void ApplyDamage(int amount, bool doCameraShake)
+    {
         int finalDamage = amount;
 
         if (currentArmor != null)
@@ -180,16 +184,25 @@ public class PlayerController : MonoBehaviour, IDamage
             Debug.Log("[PlayerController] No armor. Full damage: " + amount);
         }
 
+        if (finalDamage <= 0)
+            doCameraShake = false;
+
         HP -= finalDamage;
         Debug.Log("[PlayerController] Took " + finalDamage + " damage. HP now: " + HP);
+
         if (SkillManager.instance != null && finalDamage > 0)
         {
             SkillManager.instance.AddToughnessXP(finalDamage);
         }
+
         updatePlayerUI();
         StartCoroutine(flashRed());
 
-       
+        if (doCameraShake && GameManager.instance != null && GameManager.instance.cameraControllerScript != null)
+        {
+            GameManager.instance.cameraControllerScript.Shake(0.15f, 0.15f);
+        }
+
         if (HP <= 0)
         {
             GameManager.instance.YouLose();
@@ -229,11 +242,9 @@ public class PlayerController : MonoBehaviour, IDamage
 
         updatePlayerUI();
     }
-
     #endregion
 
     #region WeaponAndInteraction
-
     void OnInteract()
     {
         if (!GameManager.instance.isPaused)
@@ -306,7 +317,6 @@ public class PlayerController : MonoBehaviour, IDamage
 
     void HandleCombo()
     {
-
         switch (nextSwing)
         {
             case null:
@@ -328,22 +338,30 @@ public class PlayerController : MonoBehaviour, IDamage
 
         if (isCharging)
             chargeTimer += Time.deltaTime / 3;
+
         UImanager.instance.FillChargeMeter(chargeTimer);
 
         if (Input.GetButtonDown("Fire1") && !GameManager.instance.isInteracting)
         {
             HandleCombo();
             PlayerAnimatorManager.instance.PlayTargetAnimation(animator, nextSwing, 0f);
-            audioSource.pitch = Random.Range(.7f, 1.2f);
-            audioSource.PlayOneShot(swordSwing);
+
+            if (audioSource != null && swordSwing != null)
+            {
+                audioSource.pitch = Random.Range(.7f, 1.2f);
+                audioSource.PlayOneShot(swordSwing);
+            }
         }
     }
 
     void Kick()
     {
-        if(Input.GetKeyDown(KeyCode.F) && !isKicking)
+        if (Input.GetKeyDown(KeyCode.F) && !isKicking)
         {
-            PlayerAnimatorManager.instance.PlayTargetAnimation(legAnimator, "Kick", .5f);
+            if (legAnimator != null)
+            {
+                PlayerAnimatorManager.instance.PlayTargetAnimation(legAnimator, "Kick", .5f);
+            }
         }
     }
 
@@ -351,7 +369,6 @@ public class PlayerController : MonoBehaviour, IDamage
     {
         WeaponManager.instance.currentRingEquipped = ring;
     }
-
     #endregion
 
     #region StatusEffects
@@ -384,7 +401,8 @@ public class PlayerController : MonoBehaviour, IDamage
             if (HP <= 0 || GameManager.instance == null)
                 break;
 
-            takeDamage(damagePerTick);
+            TakeDamage_NoShake(damagePerTick);
+
             yield return new WaitForSeconds(interval);
         }
 
@@ -466,11 +484,5 @@ public class PlayerController : MonoBehaviour, IDamage
 
         playerMovement.isEncumbered = currentWeight > weightLimit;
     }
-
     #endregion
-
-
 }
-
-
-

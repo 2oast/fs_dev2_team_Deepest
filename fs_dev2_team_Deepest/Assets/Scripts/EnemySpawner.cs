@@ -5,7 +5,7 @@ using UnityEngine;
 public class EnemySpawner : MonoBehaviour
 {
     public enum SpawnMode
-    { 
+    {
         SingleType,
         RandomType
     }
@@ -17,10 +17,8 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] GameObject[] enemyPrefabs;
     [SerializeField] int singleTypeIndex = 0;
 
-    [Tooltip("How many enemies total should spawn each time the player enters range.")]
     [SerializeField] int enemiesToSpawn = 3;
 
-    [Tooltip("Time between each individual spawn.")]
     [SerializeField] float spawnDelay = 5f;
 
     [Header("----- Distance Settings -----")]
@@ -30,11 +28,25 @@ public class EnemySpawner : MonoBehaviour
     [Header("----- Spawn Offsets -----")]
     [SerializeField] float spawnRadius = 3f;
 
+    [Header("----- Door Lock -----")]
+    [SerializeField] Door doorToControl;
+
+    [SerializeField] bool lockDoorOnActivate = true;
+    [SerializeField] bool openDoorWhenCleared = true;
+
+    [SerializeField] bool dontResetWhenLeaving = true;
+
+    [SerializeField] bool onlySpawnOnce = true;
+
     Transform player;
     bool playerInsideRange = false;
 
     Coroutine spawnRoutine;
     List<GameObject> spawnedEnemies = new List<GameObject>();
+
+    bool encounterActive = false;
+    bool finishedSpawning = false;
+    bool cleared = false;
 
     void OnEnable()
     {
@@ -59,6 +71,9 @@ public class EnemySpawner : MonoBehaviour
 
     void Update()
     {
+        if (doorToControl != null && onlySpawnOnce && cleared)
+            return;
+
         if (player == null)
         {
             FindPlayer();
@@ -70,15 +85,38 @@ public class EnemySpawner : MonoBehaviour
         if (!playerInsideRange && distance <= activateDistance)
         {
             playerInsideRange = true;
+
+            if (doorToControl != null && !encounterActive && !cleared)
+            {
+                encounterActive = true;
+                finishedSpawning = false;
+
+                if (lockDoorOnActivate)
+                    doorToControl.LockAndClose();
+            }
+
             StartSpawning();
         }
         else if (playerInsideRange && distance > deactivateDistance)
         {
             playerInsideRange = false;
-            ResetSpawner();
+
+            if (doorToControl == null || !dontResetWhenLeaving)
+                ResetSpawner();
         }
 
         CleanupSpawnedList();
+
+        if (doorToControl != null && encounterActive && finishedSpawning && spawnedEnemies.Count == 0 && !cleared)
+        {
+            cleared = true;
+            encounterActive = false;
+
+            if (openDoorWhenCleared)
+                doorToControl.UnlockAndOpen();
+            else
+                doorToControl.Unlock();
+        }
     }
 
     void FindPlayer()
@@ -94,9 +132,11 @@ public class EnemySpawner : MonoBehaviour
         }
     }
 
-
     void StartSpawning()
     {
+        if (doorToControl != null && onlySpawnOnce && encounterActive && spawnRoutine != null)
+            return;
+
         if (spawnRoutine != null)
             StopCoroutine(spawnRoutine);
 
@@ -113,6 +153,9 @@ public class EnemySpawner : MonoBehaviour
             SpawnSingleEnemy();
             yield return new WaitForSeconds(spawnDelay);
         }
+
+        if (doorToControl != null && encounterActive)
+            finishedSpawning = true;
     }
 
     void SpawnSingleEnemy()
@@ -150,7 +193,6 @@ public class EnemySpawner : MonoBehaviour
         }
     }
 
-
     void ResetSpawner()
     {
         if (spawnRoutine != null)
@@ -166,6 +208,13 @@ public class EnemySpawner : MonoBehaviour
         }
 
         spawnedEnemies.Clear();
+
+        encounterActive = false;
+        finishedSpawning = false;
+        cleared = false;
+
+        if (doorToControl != null)
+            doorToControl.Unlock();
     }
 
     void CleanupSpawnedList()
@@ -194,3 +243,4 @@ public class EnemySpawner : MonoBehaviour
         }
     }
 }
+

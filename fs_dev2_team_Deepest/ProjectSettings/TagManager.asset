@@ -8,6 +8,7 @@ TagManager:
   - PlayerMelee
   - PlayerRanged
   - Breakable
+  - GrabPosition
   layers:
   - Default
   - TransparentFX

@@ -15,6 +15,8 @@ public class InventoryManager : MonoBehaviour
     public InventorySlot selectedSlot;
     public InventorySlot pendingEquipSlot;
 
+    public ItemData equippedRing;
+
     public Image itemImage;
     public Image headPieceImage;
     public Image chestPieceImage;
@@ -73,5 +75,6 @@ public class InventoryManager : MonoBehaviour
 
         slots.Clear();
     }
+
 }
 

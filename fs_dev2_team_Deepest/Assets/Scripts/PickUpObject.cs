@@ -10,6 +10,7 @@ public class PickUpObject : MonoBehaviour, IGrab, IThrow
     {
         rb = GetComponent<Rigidbody>();
         throwCollider = GetComponent<BoxCollider>();
+        explosiveObject = GetComponent<ExplosiveObject>();
     }
 
     public void Grab(MagicController magicController)

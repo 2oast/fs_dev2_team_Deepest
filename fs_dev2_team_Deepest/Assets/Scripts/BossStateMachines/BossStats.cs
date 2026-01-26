@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
@@ -93,5 +94,15 @@ public class BossStats : MonoBehaviour, IDamage
     private void Update()
     {
         bossHealthBar.fillAmount = (float)health / maxHP;
+
+        if(health <= 0)
+        {
+            GameManager.instance.menuActive = GameManager.instance.menuWin;
+            GameManager.instance.StatePause();
+            GameManager.instance.menuWin.SetActive(true);
+        }
     }
+
+
+    
 }

@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     public GameObject menuWin;
     [SerializeField] GameObject menuLose;
     public GameObject inventoryScreen;
+    public GameObject controlsScreen;
     public GameObject radioUI;
 
     [Header("Text Objects")]

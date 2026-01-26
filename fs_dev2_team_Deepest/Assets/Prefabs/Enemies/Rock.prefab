@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 4833185069359052442}
   - component: {fileID: 6449040120005055848}
   - component: {fileID: 4828976892902145274}
-  - component: {fileID: 1109221894904263806}
   - component: {fileID: 7080414579130169493}
   - component: {fileID: 3140402533556033088}
   m_Layer: 0
@@ -32,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5169489515084217962}
@@ -114,30 +113,6 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1109221894904263806
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2938509144648027547}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 878c78f771a7d81448d5fc14b2ba8dd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Damage
-  elementalType: 0
-  type: 1
-  rb: {fileID: 0}
-  damageAmount: 40
-  damageRate: 0
-  speed: 0
-  destroyTime: 5
-  target: {fileID: 7472837932902192329}
-  appliesPoison: 0
-  poisonDuration: 5
-  poisonInterval: 1
-  poisonDamagePerTick: 1
 --- !u!54 &7080414579130169493
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -178,6 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   hitCollider: {fileID: 4828976892902145274}
+  rockDamage: 40
 --- !u!1001 &5166343882455440052
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -242,7 +218,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 64223950755166674, guid: 512245daca745f64693d790c6c69d575, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

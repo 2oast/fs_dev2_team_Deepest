@@ -118,39 +118,7 @@ public class SaveManager : MonoBehaviour
         data.crateBroken.Clear();
         data.cratePickupCollected.Clear();
 
-        foreach (var crate in FindObjectsByType<DestructibleObjects>(FindObjectsSortMode.None))
-        {
-            if (crate == null || string.IsNullOrEmpty(crate.id))
-                continue;
-
-            bool broken, dropped;
-            crate.GetSaveState(out broken, out dropped);
-
-            bool pickupCollected = false;
-
-            var pickupObj = crate.ItemPickup;
-            if (pickupObj != null)
-            {
-                var pid = pickupObj.GetComponent<PickupSaveID>();
-                if (pid != null && !string.IsNullOrEmpty(pid.id))
-                {
-                    pickupCollected = data.collectedPickupIDs.Contains(pid.id);
-                }
-                else
-                {
-                    pickupCollected = false;
-                }
-            }
-            else
-            {
-                if (broken)
-                    pickupCollected = true;
-            }
-
-            data.crateIDs.Add(crate.id);
-            data.crateBroken.Add(broken);
-            data.cratePickupCollected.Add(pickupCollected);
-        }
+       
 
         HashSet<string> existingPickupIDs = new HashSet<string>();
         foreach (var p in FindObjectsByType<PickupSaveID>(FindObjectsSortMode.None))
@@ -307,24 +275,7 @@ public class SaveManager : MonoBehaviour
             }
         }
 
-        if (data.crateIDs != null && data.crateBroken != null && data.cratePickupCollected != null)
-        {
-            for (int i = 0; i < data.crateIDs.Count; i++)
-            {
-                string id = data.crateIDs[i];
-                bool broken = (i < data.crateBroken.Count) ? data.crateBroken[i] : false;
-                bool pickupCollected = (i < data.cratePickupCollected.Count) ? data.cratePickupCollected[i] : false;
-
-                foreach (var crate in FindObjectsByType<DestructibleObjects>(FindObjectsSortMode.None))
-                {
-                    if (crate != null && crate.id == id)
-                    {
-                        crate.ApplySaveState(broken, pickupCollected);
-                        break;
-                    }
-                }
-            }
-        }
+        
 
         if (data.collectedPickupIDs != null)
         {

@@ -5,7 +5,7 @@ public class ChangeLocationState : BossBaseState
 {
     public override void EnterState(BossStateManager manager)
     {
-        int randomNumber = Random.Range(0, 6);
+        int randomNumber = Random.Range(0, 3);
         manager.randomState = Random.Range(1, 3);
         manager.nextPos = manager.locations[randomNumber];
         manager.isMoving = true;

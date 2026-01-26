@@ -283,8 +283,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8411f246ba1546c4a94822400ff6d9d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::enemyAI
-  maxHp: 300
-  HP: 300
+  maxHp: 40
+  HP: 40
   throwDamage: 15
   throwCollider: {fileID: 0}
   model: {fileID: 7909882049173779095}

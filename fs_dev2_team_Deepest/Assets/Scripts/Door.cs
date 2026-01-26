@@ -6,6 +6,7 @@ public class Door : MonoBehaviour, IInteractable
     bool isLocked = false;
 
     [SerializeField] bool isKeyDoor;
+    [SerializeField] KeyItem keyNeeded;
 
     [SerializeField] float openHeight, openSpeed;
 

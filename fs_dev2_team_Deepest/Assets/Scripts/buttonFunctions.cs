@@ -149,4 +149,16 @@ public class ButtonFunctions : MonoBehaviour
             Debug.LogWarning("LoadGame button pressed, but SaveManager.instance is null.");
         }
     }
+
+
+    public void CloseScreen()
+    {
+        GameManager.instance.controlsScreen.SetActive(false);
+    }
+
+    public void OpenControlsScreen()
+    {
+        GameManager.instance.menuActive = GameManager.instance.controlsScreen;
+        GameManager.instance.controlsScreen.SetActive(true);
+    }
 }

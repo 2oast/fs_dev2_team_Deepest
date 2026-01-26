@@ -24,7 +24,7 @@ public class ExplosiveObject : MonoBehaviour, IExplode
     {
         explosionCollider = GetComponent<SphereCollider>();
         meshRenderer = GetComponent<MeshRenderer>();
-
+        audSource = GetComponent<AudioSource>();
         explosionCollider.enabled = false;
         explosionCollider.isTrigger = true;
         meshCollider = GetComponent<MeshCollider>();

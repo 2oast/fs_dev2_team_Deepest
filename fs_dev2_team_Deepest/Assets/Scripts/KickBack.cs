@@ -36,6 +36,10 @@ public class KickBack : MonoBehaviour
             }
         }
 
+        IDestructible destruct = other.GetComponent<IDestructible>();
+        if (destruct != null)
+            destruct.Destruct();
+
         audSource.PlayOneShot(kickSound);
     }
 

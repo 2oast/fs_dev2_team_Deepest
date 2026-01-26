@@ -42,6 +42,11 @@ public class BridgePedestal : MonoBehaviour, IInteractable
     bool isExtending;
     Coroutine extendRoutine;
 
+    private void Start()
+    {
+        
+    }
+
     void Init()
     {
         if (initialized)

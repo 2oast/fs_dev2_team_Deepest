@@ -18,7 +18,7 @@ public class Item : MonoBehaviour, IInteractable
     private Vector3 targetPos;
     public Vector3 originalPos;
     public Quaternion originalRot;
-    [SerializeField] Transform grabPosition;
+    [SerializeField] GameObject grabPosition;
 
     Material itemMat;
 
@@ -26,6 +26,7 @@ public class Item : MonoBehaviour, IInteractable
     {
         originalPos = transform.position;
         originalRot = transform.rotation;
+        grabPosition = GameObject.FindWithTag("ItemGrabPosition");
     }
 
     void Update()
@@ -54,7 +55,7 @@ public class Item : MonoBehaviour, IInteractable
     {
         isFloating = true;
 
-        targetPos = grabPosition.position;
+        targetPos = grabPosition.transform.position;
 
         Vector3 startPos = transform.position;
         float time = 0f;

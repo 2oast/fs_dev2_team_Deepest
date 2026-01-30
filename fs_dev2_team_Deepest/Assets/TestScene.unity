@@ -10583,6 +10583,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Door
       objectReference: {fileID: 0}
+    - target: {fileID: 9135096872691761186, guid: 42f835562e47ff74b968502f59d07f93, type: 3}
+      propertyPath: isKeyDoor
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9135096872691761186, guid: 42f835562e47ff74b968502f59d07f93, type: 3}
+      propertyPath: keyNeeded
+      value: 
+      objectReference: {fileID: 11400000, guid: c0442458ebb58634883316ea01063f5b, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

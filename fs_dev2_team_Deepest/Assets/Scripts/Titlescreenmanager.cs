@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using System.IO;
 
 public class TitleScreenManager : MonoBehaviour
 {
@@ -8,7 +10,14 @@ public class TitleScreenManager : MonoBehaviour
     [Header("Music")]
     [SerializeField] AudioSource musicSource;
 
+    [Header("Load Button")]
+    [SerializeField] Button loadGameButton;
+    [SerializeField] Image loadGameButtonImage;
+    [SerializeField] float disabledAlpha = 0.4f;
+
     public static bool loadFromSave = false;
+
+    string SavePath => Path.Combine(Application.persistentDataPath, "savegame.json");
 
     void Start()
     {
@@ -16,6 +25,23 @@ public class TitleScreenManager : MonoBehaviour
         {
             musicSource.loop = true;
             musicSource.Play();
+        }
+
+        UpdateLoadButtonState();
+    }
+
+    void UpdateLoadButtonState()
+    {
+        bool hasSave = File.Exists(SavePath);
+
+        if (loadGameButton != null)
+            loadGameButton.interactable = hasSave;
+
+        if (loadGameButtonImage != null)
+        {
+            Color c = loadGameButtonImage.color;
+            c.a = hasSave ? 1f : disabledAlpha;
+            loadGameButtonImage.color = c;
         }
     }
 
@@ -30,14 +56,16 @@ public class TitleScreenManager : MonoBehaviour
     public void OnNewGamePressed()
     {
         loadFromSave = false;
-
         SaveManager.DeleteSaveFile();
-
+        StopMusic();
         SceneManager.LoadScene(gameplaySceneName);
     }
 
     public void OnLoadGamePressed()
     {
+        if (!File.Exists(SavePath))
+            return;
+
         loadFromSave = true;
         StopMusic();
         SceneManager.LoadScene(gameplaySceneName);

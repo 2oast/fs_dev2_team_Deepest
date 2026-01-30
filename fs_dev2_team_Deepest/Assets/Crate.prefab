@@ -586,7 +586,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b8c86b0a8f3af8429d846fd58626089, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  id: 
   pieces:
   - {fileID: 2831770701697026596}
   - {fileID: 5403992593272388303}
@@ -617,7 +616,7 @@ MonoBehaviour:
   explodeForce: 200
   radius: 200
   fadeSpeed: 0
-  audSource: {fileID: 0}
+  audSource: {fileID: 1766157465374462}
   breakingClip: {fileID: 8300000, guid: 0871414010323e64bad31a358eaee0c3, type: 3}
   itemPickup: {fileID: 0}
 --- !u!65 &8232559706400456040

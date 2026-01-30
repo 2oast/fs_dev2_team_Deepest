@@ -17,8 +17,11 @@ public class EnemyStateManager : MonoBehaviour
 
     [Header("Navmesh")]
     public NavMeshAgent agent { get; private set; }
-    public int FOV;
+    public int FOV = 90;
     public float faceTargetSpeed = 8f;
+
+    [Header("Aggro")]
+    public float aggroRange = 12f;
 
     [Header("Projectile settings")]
     public float shootTimer;
@@ -65,6 +68,41 @@ public class EnemyStateManager : MonoBehaviour
         state.EnterState(this);
     }
 
+    public void EngageTarget(Transform target)
+    {
+        if (target == null)
+            return;
+
+        aimTarget = target;
+
+        if (currentState != pursueState)
+            SwitchState(pursueState);
+    }
+
+    public bool IsTargetInRange()
+    {
+        if (aimTarget == null)
+            return false;
+
+        float dist = Vector3.Distance(transform.position, aimTarget.position);
+        return dist <= aggroRange;
+    }
+
+    public bool CanSeeTarget()
+    {
+        if (aimTarget == null)
+            return false;
+
+        Vector3 toTarget = aimTarget.position - transform.position;
+        toTarget.y = 0f;
+
+        if (toTarget.sqrMagnitude < 0.0001f)
+            return true;
+
+        float angle = Vector3.Angle(transform.forward, toTarget.normalized);
+        return angle <= (FOV * 0.5f);
+    }
+
     public void shoot()
     {
         shootTimer = 0f;
@@ -93,16 +131,15 @@ public class EnemyStateManager : MonoBehaviour
         if (aimTarget == null)
             return;
 
-        Vector3 toPlayer = aimTarget.position - transform.position;
-        toPlayer.y = 0f;
+        Vector3 toTarget = aimTarget.position - transform.position;
+        toTarget.y = 0f;
 
-        if (toPlayer.sqrMagnitude < 0.0001f)
+        if (toTarget.sqrMagnitude < 0.0001f)
             return;
 
-        playerDir = toPlayer.normalized;
+        playerDir = toTarget.normalized;
 
-        Quaternion rot = Quaternion.LookRotation(toPlayer);
+        Quaternion rot = Quaternion.LookRotation(toTarget);
         transform.rotation = Quaternion.Slerp(transform.rotation, rot, Time.deltaTime * faceTargetSpeed);
     }
 }
-

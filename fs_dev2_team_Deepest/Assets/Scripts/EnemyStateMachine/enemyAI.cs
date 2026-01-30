@@ -57,8 +57,14 @@ public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport, IThrow
 
     public void takeDamage(int amount)
     {
+        EnemyStateManager sm = GetComponent<EnemyStateManager>();
+        if (sm != null && GameManager.instance != null && GameManager.instance.player != null)
+            sm.EngageTarget(GameManager.instance.player.transform);
+
         if (anim != null && PlayerAnimatorManager.instance != null)
             PlayerAnimatorManager.instance.PlayTargetAnimation(anim, "enemySquash", .5f);
+
+        HP -= amount;
 
         if (!isStunned && HP <= maxHp / 2)
         {
@@ -70,8 +76,6 @@ public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport, IThrow
             isStunned = true;
         }
 
-        HP -= amount;
-
         if (agent != null && agent.enabled && !isStunned && !isGrabbed && !isThrown)
         {
             if (GameManager.instance != null && GameManager.instance.player != null)
@@ -81,6 +85,11 @@ public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport, IThrow
         if (audioSource != null && hurtSound != null)
             audioSource.PlayOneShot(hurtSound, .5f);
 
+        ShowFloatText(amount);
+
+        if (GameManager.instance != null)
+            GameManager.instance.RequestHitStop(.03f);
+
         if (HP <= 0)
         {
             if (audioSource != null && hurtSound != null)
@@ -89,17 +98,10 @@ public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport, IThrow
                 audioSource.PlayOneShot(hurtSound);
             }
 
-            ShowFloatText(amount);
-
-            if (GameManager.instance != null)
-                GameManager.instance.RequestHitStop(.03f);
-
             StartCoroutine(FadeOut(1f));
         }
         else
         {
-            ShowFloatText(amount);
-
             if (audioSource != null && hurtSound != null)
             {
                 audioSource.pitch = Random.Range(.5f, 1f);
@@ -107,9 +109,6 @@ public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport, IThrow
             }
 
             StartCoroutine(flashRed(.05f));
-
-            if (GameManager.instance != null)
-                StartCoroutine(GameManager.instance.HitStop(.03f));
         }
     }
 
@@ -230,3 +229,4 @@ public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport, IThrow
         StartCoroutine(FadeOut(2f));
     }
 }
+

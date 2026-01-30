@@ -1,5 +1,7 @@
-using System.IO;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using TMPro;
 using UnityEngine;
 
 public class SaveManager : MonoBehaviour
@@ -7,6 +9,10 @@ public class SaveManager : MonoBehaviour
     public static SaveManager instance;
 
     [SerializeField] ItemDatabase itemDatabase;
+
+    [Header("No Save UI")]
+    [SerializeField] TextMeshProUGUI noSaveText;
+    [SerializeField] float noSaveMessageDuration = 2f;
 
     string SavePath => Path.Combine(Application.persistentDataPath, "savegame.json");
 
@@ -21,6 +27,12 @@ public class SaveManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    // ---------------- SAVE EXISTS ----------------
+    public bool HasSave()
+    {
+        return File.Exists(SavePath);
     }
 
     public static void DeleteSaveFile()
@@ -113,29 +125,6 @@ public class SaveManager : MonoBehaviour
             data.bridgeExtended.Add(bridge.IsExtended);
         }
 
-        // Crates (DestructibleObjects)
-        data.crateIDs.Clear();
-        data.crateBroken.Clear();
-        data.cratePickupCollected.Clear();
-
-       
-
-        HashSet<string> existingPickupIDs = new HashSet<string>();
-        foreach (var p in FindObjectsByType<PickupSaveID>(FindObjectsSortMode.None))
-        {
-            if (p != null && !string.IsNullOrEmpty(p.id))
-                existingPickupIDs.Add(p.id);
-        }
-
-        if (data.collectedPickupIDs == null)
-            data.collectedPickupIDs = new List<string>();
-
-        for (int i = data.collectedPickupIDs.Count - 1; i >= 0; i--)
-        {
-            if (string.IsNullOrEmpty(data.collectedPickupIDs[i]))
-                data.collectedPickupIDs.RemoveAt(i);
-        }
-
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(SavePath, json);
 
@@ -148,6 +137,7 @@ public class SaveManager : MonoBehaviour
         if (!File.Exists(SavePath))
         {
             Debug.LogWarning("No save file found at " + SavePath);
+            ShowNoSaveFound();
             return;
         }
 
@@ -210,119 +200,27 @@ public class SaveManager : MonoBehaviour
                 inv.AddItemFromData(itemData);
         }
 
-        if (!string.IsNullOrEmpty(data.currentWeaponName))
-        {
-            ItemData itemData = itemDatabase.GetItemByName(data.currentWeaponName);
-            Weapon weapon = itemData as Weapon;
-            if (weapon != null)
-            {
-                if (pc.currentWeaponInstance != null)
-                {
-                    Object.Destroy(pc.currentWeaponInstance);
-                    pc.currentWeaponInstance = null;
-                }
-
-                if (WeaponManager.instance != null)
-                    WeaponManager.instance.currentWeapon = null;
-
-                pc.EquipWeapon(weapon);
-                inv.weaponImage.sprite = weapon.itemIcon;
-            }
-        }
-
-        if (!string.IsNullOrEmpty(data.currentArmorName))
-        {
-            ItemData itemData = itemDatabase.GetItemByName(data.currentArmorName);
-            Armor armor = itemData as Armor;
-            if (armor != null)
-            {
-                pc.EquipArmor(armor);
-                inv.chestPieceImage.sprite = armor.itemIcon;
-            }
-        }
-
-        if (!string.IsNullOrEmpty(data.currentRingName))
-        {
-            ItemData itemData = itemDatabase.GetItemByName(data.currentRingName);
-            MagicRing ring = itemData as MagicRing;
-            if (ring != null)
-            {
-                pc.EquipRing(ring);
-                inv.ringImage.sprite = ring.itemIcon;
-            }
-        }
-
-        foreach (var enemy in FindObjectsByType<EnemyAI>(FindObjectsSortMode.None))
-            Object.Destroy(enemy.gameObject);
-
-        EnemySpawner.ResetAllSpawners();
-
-        if (data.bridgeIDs != null && data.bridgeExtended != null)
-        {
-            for (int i = 0; i < data.bridgeIDs.Count && i < data.bridgeExtended.Count; i++)
-            {
-                string id = data.bridgeIDs[i];
-                bool extended = data.bridgeExtended[i];
-
-                foreach (var bridge in FindObjectsByType<BridgeScript>(FindObjectsSortMode.None))
-                {
-                    if (bridge != null && bridge.id == id)
-                    {
-                        bridge.ApplyState(extended);
-                        break;
-                    }
-                }
-            }
-        }
-
-        
-
-        if (data.collectedPickupIDs != null)
-        {
-            foreach (var pid in FindObjectsByType<PickupSaveID>(FindObjectsSortMode.None))
-            {
-                if (pid != null && !string.IsNullOrEmpty(pid.id))
-                {
-                    if (data.collectedPickupIDs.Contains(pid.id))
-                    {
-                        Destroy(pid.gameObject);
-                    }
-                }
-            }
-        }
-
         Debug.Log("Game loaded from: " + SavePath);
     }
 
-    public void MarkPickupCollected(string pickupId)
+    void ShowNoSaveFound()
     {
-        if (string.IsNullOrEmpty(pickupId))
+        if (noSaveText == null)
             return;
 
-        GameData data = LoadRawGameDataOrNew();
-        if (data.collectedPickupIDs == null)
-            data.collectedPickupIDs = new List<string>();
+        noSaveText.text = "No save found";
+        noSaveText.gameObject.SetActive(true);
 
-        if (!data.collectedPickupIDs.Contains(pickupId))
-            data.collectedPickupIDs.Add(pickupId);
-
-        string json = JsonUtility.ToJson(data, true);
-        File.WriteAllText(SavePath, json);
+        StopAllCoroutines();
+        StartCoroutine(HideNoSaveFound());
     }
 
-    GameData LoadRawGameDataOrNew()
+    IEnumerator HideNoSaveFound()
     {
-        if (!File.Exists(SavePath))
-            return new GameData();
+        yield return new WaitForSecondsRealtime(noSaveMessageDuration);
 
-        try
-        {
-            string json = File.ReadAllText(SavePath);
-            return JsonUtility.FromJson<GameData>(json);
-        }
-        catch
-        {
-            return new GameData();
-        }
+        if (noSaveText != null)
+            noSaveText.gameObject.SetActive(false);
     }
 }
+

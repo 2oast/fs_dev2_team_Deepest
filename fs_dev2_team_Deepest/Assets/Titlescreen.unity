@@ -198,6 +198,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1160595502 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6676681206319584562, guid: 3369fb97278c550488c20f9ac3b22fa6, type: 3}
+  m_PrefabInstance: {fileID: 367357785628841051}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+--- !u!114 &1160595506 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8822007539723027109, guid: 3369fb97278c550488c20f9ac3b22fa6, type: 3}
+  m_PrefabInstance: {fileID: 367357785628841051}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!1 &1488462704
 GameObject:
   m_ObjectHideFlags: 0
@@ -344,9 +366,21 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1304702289343326339, guid: 3369fb97278c550488c20f9ac3b22fa6, type: 3}
+      propertyPath: disabledAlpha
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1304702289343326339, guid: 3369fb97278c550488c20f9ac3b22fa6, type: 3}
+      propertyPath: loadGameButton
+      value: 
+      objectReference: {fileID: 1160595506}
+    - target: {fileID: 1304702289343326339, guid: 3369fb97278c550488c20f9ac3b22fa6, type: 3}
       propertyPath: gameplaySceneName
       value: TestScene
       objectReference: {fileID: 0}
+    - target: {fileID: 1304702289343326339, guid: 3369fb97278c550488c20f9ac3b22fa6, type: 3}
+      propertyPath: loadGameButtonImage
+      value: 
+      objectReference: {fileID: 1160595502}
     - target: {fileID: 3554978306240182184, guid: 3369fb97278c550488c20f9ac3b22fa6, type: 3}
       propertyPath: m_Name
       value: Titlescreencanvas

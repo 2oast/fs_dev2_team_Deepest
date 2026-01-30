@@ -269,7 +269,7 @@ public class MagicController : MonoBehaviour
         Destroy(lightningBolt, .5f);
         Destroy(currentPrefabInstance);
         RaycastHit hit;
-
+        audSource.PlayOneShot(lightningCastClip);
 
         if (Physics.Raycast(transform.position, Camera.main.transform.forward, out hit, lightningDistance, ~ignoreLayer))
         {

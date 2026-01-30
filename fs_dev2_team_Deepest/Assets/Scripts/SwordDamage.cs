@@ -6,7 +6,11 @@ public class SwordDamage : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        IDamage dmg = other.GetComponent<IDamage>();
+        IDestructible destruct = other.GetComponentInParent<IDestructible>();
+        if (destruct != null)
+            destruct.Destruct();
+
+        IDamage dmg = other.GetComponentInParent<IDamage>();
         int finalDamage = ComputeFinalDamage();
 
         if (SkillManager.instance != null)
@@ -24,9 +28,7 @@ public class SwordDamage : MonoBehaviour
         if (dmg != null && !other.CompareTag("Player"))
             dmg.takeDamage(finalDamage);
 
-        IDestructible destruct = other.GetComponent<IDestructible>();
-        if (destruct != null)
-            destruct.Destruct();
+
     }
 
     int ComputeFinalDamage()

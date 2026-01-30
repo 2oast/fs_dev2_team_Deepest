@@ -6,6 +6,35 @@ public class ButtonFunctions : MonoBehaviour
     [Header("Scenes")]
     [SerializeField] string titleSceneName = "TitleScreen";
 
+    [Header("End Menu Load Buttons (optional)")]
+    [SerializeField] GameObject loseMenuLoadButton;
+    [SerializeField] GameObject winMenuLoadButton;
+
+    void Start()
+    {
+        RefreshLoadButtons();
+    }
+
+    void OnEnable()
+    {
+        RefreshLoadButtons();
+    }
+
+    void RefreshLoadButtons()
+    {
+        if (SaveManager.instance == null)
+        {
+            if (loseMenuLoadButton != null) loseMenuLoadButton.SetActive(false);
+            if (winMenuLoadButton != null) winMenuLoadButton.SetActive(false);
+            return;
+        }
+
+        bool hasSave = SaveManager.instance.HasSave();
+
+        if (loseMenuLoadButton != null) loseMenuLoadButton.SetActive(hasSave);
+        if (winMenuLoadButton != null) winMenuLoadButton.SetActive(hasSave);
+    }
+
     public void CollectItem()
     {
         if (InventoryManager.instance.itemToBeCollected != null)
@@ -90,7 +119,7 @@ public class ButtonFunctions : MonoBehaviour
         switch (item.itemType)
         {
             case ItemType.Weapon:
-                if(slot.isEquipped)
+                if (slot.isEquipped)
                 {
                     InventoryManager.instance.weaponImage.sprite = slot.originalItemSprite;
                     slot.isEquipped = false;
@@ -101,17 +130,15 @@ public class ButtonFunctions : MonoBehaviour
                     InventoryManager.instance.weaponImage.sprite = item.itemIcon;
                     item.Use(GameManager.instance.playerControllerScript);
                     slot.isEquipped = true;
-
                 }
                 break;
 
             case ItemType.ChestPiece:
-                if(slot.isEquipped)
+                if (slot.isEquipped)
                 {
                     InventoryManager.instance.chestPieceImage.sprite = slot.originalItemSprite;
                     slot.isEquipped = false;
                     item.Use(GameManager.instance.playerControllerScript);
-
                 }
                 else
                 {
@@ -122,12 +149,11 @@ public class ButtonFunctions : MonoBehaviour
                 break;
 
             case ItemType.Leggings:
-                if(slot.isEquipped)
+                if (slot.isEquipped)
                 {
                     InventoryManager.instance.leggingsPieceImage.sprite = slot.originalItemSprite;
                     slot.isEquipped = false;
                     item.Use(GameManager.instance.playerControllerScript);
-
                 }
                 else
                 {
@@ -135,17 +161,15 @@ public class ButtonFunctions : MonoBehaviour
                     item.Use(GameManager.instance.playerControllerScript);
                     slot.isEquipped = true;
                 }
-                    
                 break;
 
             case ItemType.Gauntlets:
-                if(slot.isEquipped)
+                if (slot.isEquipped)
                 {
                     InventoryManager.instance.leftGauntletPieceImage.sprite = slot.originalItemSprite;
                     InventoryManager.instance.rightGauntletPieceImage.sprite = slot.originalItemSprite;
                     slot.isEquipped = false;
                     item.Use(GameManager.instance.playerControllerScript);
-
                 }
                 else
                 {
@@ -154,11 +178,10 @@ public class ButtonFunctions : MonoBehaviour
                     item.Use(GameManager.instance.playerControllerScript);
                     slot.isEquipped = true;
                 }
-
                 break;
 
             case ItemType.Ring:
-                if(slot.isEquipped)
+                if (slot.isEquipped)
                 {
                     InventoryManager.instance.ringImage.sprite = slot.originalItemSprite;
                     slot.isEquipped = false;
@@ -170,7 +193,6 @@ public class ButtonFunctions : MonoBehaviour
                     item.Use(GameManager.instance.playerControllerScript);
                     slot.isEquipped = true;
                 }
-
                 break;
 
             case ItemType.Consumable:
@@ -179,7 +201,6 @@ public class ButtonFunctions : MonoBehaviour
 
             case ItemType.Key:
                 break;
-
         }
 
         InventoryManager.instance.pendingEquipSlot = null;
@@ -187,7 +208,6 @@ public class ButtonFunctions : MonoBehaviour
         InventoryManager.instance.selectedSlot = null;
         InventoryManager.instance.itemImage.sprite = slot.originalItemSprite;
         InventoryManager.instance.YesOrNoPanel.SetActive(false);
-        
     }
 
     public void SaveGame()
@@ -195,6 +215,7 @@ public class ButtonFunctions : MonoBehaviour
         if (SaveManager.instance != null)
         {
             SaveManager.instance.SaveGame();
+            RefreshLoadButtons();
         }
         else
         {
@@ -206,6 +227,12 @@ public class ButtonFunctions : MonoBehaviour
     {
         if (SaveManager.instance != null)
         {
+            if (!SaveManager.instance.HasSave())
+            {
+                SaveManager.instance.LoadGame();
+                return;
+            }
+
             SaveManager.instance.LoadGame();
 
             if (GameManager.instance != null)
@@ -218,7 +245,6 @@ public class ButtonFunctions : MonoBehaviour
             Debug.LogWarning("LoadGame button pressed, but SaveManager.instance is null.");
         }
     }
-
 
     public void CloseControlsScreen()
     {

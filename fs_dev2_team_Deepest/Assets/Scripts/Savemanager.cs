@@ -29,6 +29,12 @@ public class SaveManager : MonoBehaviour
         }
     }
 
+    // ---------------- SAVE EXISTS ----------------
+    public bool HasSave()
+    {
+        return File.Exists(SavePath);
+    }
+
     public static void DeleteSaveFile()
     {
         string path = Path.Combine(Application.persistentDataPath, "savegame.json");
@@ -217,3 +223,4 @@ public class SaveManager : MonoBehaviour
             noSaveText.gameObject.SetActive(false);
     }
 }
+

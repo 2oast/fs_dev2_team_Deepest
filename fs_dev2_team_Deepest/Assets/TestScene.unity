@@ -2988,6 +2988,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 97dab3124f1b3884789f7f033ab69bd8, type: 3}
+--- !u!1 &520600876 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5391813619543587168, guid: 499606a742e420642a036abe53a3a224, type: 3}
+  m_PrefabInstance: {fileID: 1623165529}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &541389461 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 9061172977862432029, guid: c62a734d9ead7b044a6003c55ab39b4b, type: 3}
@@ -8629,6 +8634,14 @@ PrefabInstance:
       propertyPath: interactTextObject
       value: 
       objectReference: {fileID: 112661357}
+    - target: {fileID: 6592742122600067532, guid: 499606a742e420642a036abe53a3a224, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6663222818189265489, guid: 499606a742e420642a036abe53a3a224, type: 3}
+      propertyPath: loseMenuLoadButton
+      value: 
+      objectReference: {fileID: 520600876}
     - target: {fileID: 6839922586355217054, guid: 499606a742e420642a036abe53a3a224, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -23.000008

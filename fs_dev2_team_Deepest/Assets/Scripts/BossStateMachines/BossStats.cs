@@ -41,7 +41,7 @@ public class BossStats : MonoBehaviour, IDamage
             TextMesh text = floatText.GetComponent<TextMesh>();
             text.text = amount.ToString();
             Destroy(floatText, 1f);
-            StartCoroutine(GameManager.instance.HitStop(.1f));
+            GameManager.instance.RequestHitStop(.03f);
             StartCoroutine(FadeOut(1));
         }
         else

@@ -15,8 +15,6 @@ public class Projectile : MonoBehaviour
         IDamage dmg = other.GetComponent<IDamage>();
         IExplode exp = other.GetComponent<IExplode>();
 
-        GameObject explosion = Instantiate(explosionPref, other.transform);
-
         
         if (exp != null)
             exp.Explode();
@@ -33,7 +31,6 @@ public class Projectile : MonoBehaviour
         switch (WeaponManager.instance.currentRingEquipped.spellType)
         {
             case SpellType.Fire:
-                Destroy(explosion, 1);
                 if(rb != null && !other.CompareTag("Player"))
                 {
                     rb.AddForce(dir * explodeForce, ForceMode.Impulse);

@@ -8,6 +8,7 @@ public class SwordDamage : MonoBehaviour
     {
         IDamage dmg = other.GetComponent<IDamage>();
         int finalDamage = ComputeFinalDamage();
+
         if (SkillManager.instance != null)
         {
             if (CompareTag("PlayerMelee"))
@@ -20,25 +21,20 @@ public class SwordDamage : MonoBehaviour
             }
         }
 
-        GameObject hit = Instantiate(hitEffect, other.transform);
-        Destroy(hit, 2);
         if (dmg != null && !other.CompareTag("Player"))
             dmg.takeDamage(finalDamage);
 
         IDestructible destruct = other.GetComponent<IDestructible>();
         if (destruct != null)
             destruct.Destruct();
-
-       
     }
 
     int ComputeFinalDamage()
     {
+        if (WeaponManager.instance == null || WeaponManager.instance.currentWeapon == null)
+            return 0;
+
         int finalDamage = WeaponManager.instance.currentWeapon.damage;
-        if (GameManager.instance.playerControllerScript.chargeAttack)
-        {
-            finalDamage *= 2;
-        }
 
         if (CompareTag("PlayerMelee") && SkillManager.instance != null)
         {
@@ -57,3 +53,4 @@ public class SwordDamage : MonoBehaviour
         return finalDamage;
     }
 }
+

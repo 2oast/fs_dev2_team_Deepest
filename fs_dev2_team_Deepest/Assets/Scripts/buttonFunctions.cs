@@ -27,6 +27,8 @@ public class ButtonFunctions : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        GameManager.instance.playerMovementScript.enabled = true;
     }
 
     public void RefuseItem()
@@ -53,6 +55,8 @@ public class ButtonFunctions : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        GameManager.instance.playerMovementScript.enabled = true;
     }
 
     public void Resume()

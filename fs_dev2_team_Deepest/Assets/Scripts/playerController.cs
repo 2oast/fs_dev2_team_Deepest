@@ -16,7 +16,6 @@ public class PlayerController : MonoBehaviour, IDamage
     [Header("Player Stats")]
     public int HP;
     float currentWeight;
-    [Range(0, 1)] public float chargeTimer;
     float staminaRegenTimer;
     int HPOrig;
 
@@ -61,8 +60,6 @@ public class PlayerController : MonoBehaviour, IDamage
     [Header("Flags")]
     public bool IsPoisoned => isPoisoned;
     bool isBlocking;
-    bool isCharging;
-    public bool chargeAttack;
     public bool isKicking;
 
     void Start()
@@ -79,9 +76,10 @@ public class PlayerController : MonoBehaviour, IDamage
         if (GameManager.instance != null && !GameManager.instance.CanPlayerAct())
             return;
 
-        animator.SetBool("SwordEquipped", WeaponManager.instance.currentWeapon != null);
-
-        chargeTimer = Mathf.Clamp01(chargeTimer);
+        if (WeaponManager.instance != null)
+            animator.SetBool("SwordEquipped", WeaponManager.instance.currentWeapon != null);
+        else
+            animator.SetBool("SwordEquipped", false);
 
         UpdateEncumbrance();
 
@@ -178,20 +176,12 @@ public class PlayerController : MonoBehaviour, IDamage
             finalDamage = Mathf.CeilToInt(amount * factor);
             if (finalDamage < 0)
                 finalDamage = 0;
-
-            Debug.Log("[PlayerController] Armor " + currentArmor.itemName +
-                      " (" + pct + "% DR) reduced " + amount + " -> " + finalDamage);
-        }
-        else
-        {
-            Debug.Log("[PlayerController] No armor. Full damage: " + amount);
         }
 
         if (finalDamage <= 0)
             doCameraShake = false;
 
         HP -= finalDamage;
-        Debug.Log("[PlayerController] Took " + finalDamage + " damage. HP now: " + HP);
 
         if (SkillManager.instance != null && finalDamage > 0)
         {
@@ -279,8 +269,7 @@ public class PlayerController : MonoBehaviour, IDamage
 
     public void EquipWeapon(Weapon weapon)
     {
-        if (currentWeaponInstance != null &&
-            WeaponManager.instance.currentWeapon == weapon)
+        if (currentWeaponInstance != null && WeaponManager.instance != null && WeaponManager.instance.currentWeapon == weapon)
         {
             Destroy(currentWeaponInstance);
             currentWeaponInstance = null;
@@ -294,13 +283,10 @@ public class PlayerController : MonoBehaviour, IDamage
             currentWeaponInstance = null;
         }
 
-        currentWeaponInstance = Instantiate(
-            weapon.modelPrefab,
-            armTransform,
-            false
-        );
+        currentWeaponInstance = Instantiate(weapon.modelPrefab, armTransform, false);
 
-        WeaponManager.instance.currentWeapon = weapon;
+        if (WeaponManager.instance != null)
+            WeaponManager.instance.currentWeapon = weapon;
     }
 
     public void EquipArmor(Armor armor)
@@ -347,21 +333,13 @@ public class PlayerController : MonoBehaviour, IDamage
         if (GameManager.instance != null && !GameManager.instance.CanPlayerAct())
             return;
 
-        isCharging = Input.GetButton("Fire1");
-        animator.SetBool("IsChargingSwing", isCharging);
-
-        if (isCharging)
-            chargeTimer += Time.deltaTime / 3f;
-
-        if (UImanager.instance != null)
-            UImanager.instance.FillChargeMeter(chargeTimer);
-
         if (Input.GetButtonDown("Fire1"))
         {
             if (GameManager.instance != null && GameManager.instance.isInteracting)
                 return;
 
             HandleCombo();
+
             if (PlayerAnimatorManager.instance != null)
                 PlayerAnimatorManager.instance.PlayTargetAnimation(animator, nextSwing, 0f);
 
@@ -457,8 +435,6 @@ public class PlayerController : MonoBehaviour, IDamage
         {
             UImanager.instance.HidePoisonUI();
         }
-
-        Debug.Log("Poison cured.");
     }
 
     public void RestorePoisonFromSave(float remainingTime, float interval, int damagePerTick)
@@ -504,8 +480,8 @@ public class PlayerController : MonoBehaviour, IDamage
         }
 
         float weightLimit = playerMovement.baseWeightLimit + staminaLevel * playerMovement.weightPerStaminaLevel;
-
         playerMovement.isEncumbered = currentWeight > weightLimit;
     }
     #endregion
 }
+

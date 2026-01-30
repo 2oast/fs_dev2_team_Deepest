@@ -35,6 +35,7 @@ public class Item : MonoBehaviour, IInteractable
         {
             transform.Rotate(Vector3.up * spinSpeed * Time.deltaTime);
             Camera.main.transform.LookAt(this.transform.position);
+            GameManager.instance.playerMovementScript.enabled = false;
         }
 
         if (isReadyToCollect)

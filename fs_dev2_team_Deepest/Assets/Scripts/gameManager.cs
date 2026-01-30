@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
     public GameObject player;
     public GameObject cam;
     public GameObject radioObj;
+    public PlayerMovement playerMovementScript;
 
     float timeScaleOrig = 1f;
 
@@ -38,6 +39,10 @@ public class GameManager : MonoBehaviour
 
     [Header("Camera Stuff")]
     GameObject currentCam;
+
+    Coroutine hitStopRoutine;
+    float hitStopEndTime;
+    float hitStopPrevScale;
 
     public bool CanPlayerAct()
     {
@@ -69,6 +74,9 @@ public class GameManager : MonoBehaviour
 
         if (cam != null && cameraControllerScript == null)
             cameraControllerScript = cam.GetComponent<PlayerCam>();
+
+        if (player != null && playerMovementScript == null)
+            playerMovementScript = player.GetComponent<PlayerMovement>();
     }
 
     void Update()
@@ -82,7 +90,7 @@ public class GameManager : MonoBehaviour
             {
                 StatePause();
                 menuActive = menuPause;
-                menuActive.SetActive(true);
+                if (menuActive != null) menuActive.SetActive(true);
             }
             else
             {
@@ -196,12 +204,36 @@ public class GameManager : MonoBehaviour
             radioUI.SetActive(false);
     }
 
+    public void RequestHitStop(float duration)
+    {
+        float end = Time.unscaledTime + duration;
+        if (end > hitStopEndTime)
+            hitStopEndTime = end;
+
+        if (hitStopRoutine == null)
+            hitStopRoutine = StartCoroutine(HitStopRoutine());
+    }
+
+    IEnumerator HitStopRoutine()
+    {
+        hitStopPrevScale = Time.timeScale;
+        Time.timeScale = 0f;
+
+        while (Time.unscaledTime < hitStopEndTime)
+            yield return null;
+
+        if (isPaused)
+            Time.timeScale = 0f;
+        else
+            Time.timeScale = hitStopPrevScale;
+
+        hitStopRoutine = null;
+        hitStopEndTime = 0f;
+    }
+
     public IEnumerator HitStop(float duration)
     {
-        float prev = Time.timeScale;
-        Time.timeScale = 0f;
-        yield return new WaitForSecondsRealtime(duration);
-        Time.timeScale = prev;
+        RequestHitStop(duration);
+        yield break;
     }
 }
-

@@ -11,7 +11,6 @@ public class UImanager : MonoBehaviour
     [Header("Player UI")]
     public Image playerHPBar;
     public Image playerStaminaBar;
-    public Image chargeMeter;
     public GameObject playerDamageScreen;
     [SerializeField] GameObject damageFlashScreen;
 
@@ -51,12 +50,9 @@ public class UImanager : MonoBehaviour
     bool isShowingLevelUp = false;
     Coroutine levelUpRoutine;
 
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
         instance = this;
-
 
         if (armorIcon != null)
         {
@@ -76,7 +72,6 @@ public class UImanager : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
     }
@@ -195,16 +190,10 @@ public class UImanager : MonoBehaviour
             poisonPanel.SetActive(false);
     }
 
-    public void FillChargeMeter(float chargeTimer)
-    {
-        chargeMeter.fillAmount = chargeTimer;
-    }
-
     public IEnumerator DamageFlash()
     {
         damageFlashScreen.SetActive(true);
         yield return new WaitForSeconds(.1f);
         damageFlashScreen.SetActive(false);
-
     }
 }

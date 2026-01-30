@@ -9,6 +9,8 @@ public class KickBack : MonoBehaviour
     AudioSource audSource;
     [SerializeField] AudioClip kickSound;
 
+    [SerializeField] float kickDistance = 2f;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -48,12 +50,45 @@ public class KickBack : MonoBehaviour
         rb.isKinematic = false;
         agent.enabled = false;
 
-        rb.AddForce(-dir * kickForce, ForceMode.Impulse);
+        rb.AddForce(dir * kickForce, ForceMode.Impulse);
 
         yield return new WaitForSeconds(2);
 
         rb.isKinematic = true;
         agent.enabled = true;
 
+    }
+
+    public void kickRaycast()
+    {
+        if (GameManager.instance.playerControllerScript.isKicking)
+        {
+            RaycastHit hit;
+            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, kickDistance))
+            {
+                Vector3 dir = (hit.transform.position - GameManager.instance.player.transform.position).normalized;
+                NavMeshAgent agent = hit.collider.GetComponent<NavMeshAgent>();
+                Rigidbody rb = hit.collider.GetComponent<Rigidbody>();
+                if (rb != null)
+                {
+                    if (agent != null)
+                    {
+                        StartCoroutine(KickKinematic(rb, agent, dir));
+                    }
+                    else
+                    {
+                        rb.AddForce(-dir * kickForce, ForceMode.Impulse);
+
+                    }
+
+                    IDestructible destruct = hit.collider.GetComponent<IDestructible>();
+                    if (destruct != null)
+                        destruct.Destruct();
+
+                    audSource.PlayOneShot(kickSound);
+                }
+                Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward, Color.red, kickDistance);
+            }
+        }
     }
 }

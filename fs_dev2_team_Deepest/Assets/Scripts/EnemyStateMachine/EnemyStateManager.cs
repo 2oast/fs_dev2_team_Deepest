@@ -1,7 +1,5 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Audio;
 
 public class EnemyStateManager : MonoBehaviour
 {
@@ -20,7 +18,7 @@ public class EnemyStateManager : MonoBehaviour
     [Header("Navmesh")]
     public NavMeshAgent agent { get; private set; }
     public int FOV;
-    public float faceTargetSpeed;
+    public float faceTargetSpeed = 8f;
 
     [Header("Projectile settings")]
     public float shootTimer;
@@ -34,32 +32,31 @@ public class EnemyStateManager : MonoBehaviour
 
     public enemyAI enemy;
 
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        aimTarget = GameManager.instance.player.transform;
         enemy = GetComponent<enemyAI>();
 
-        currentState = wanderState;
+        if (GameManager.instance != null && GameManager.instance.player != null)
+            aimTarget = GameManager.instance.player.transform;
 
+        if (agent != null)
+            agent.updateRotation = false;
+
+        currentState = wanderState;
         currentState.EnterState(this);
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if (!agent.enabled)
+        if (agent == null || !agent.enabled)
             return;
 
-       if(!enemy.isStunned)
-       {
-            shootTimer += Time.deltaTime;
+        if (enemy != null && enemy.isStunned)
+            return;
 
-            currentState.UpdateState(this);
-       }
-        
+        shootTimer += Time.deltaTime;
+        currentState.UpdateState(this);
     }
 
     public void SwitchState(EnemyBaseState state)
@@ -70,33 +67,42 @@ public class EnemyStateManager : MonoBehaviour
 
     public void shoot()
     {
-        shootTimer = 0;
+        shootTimer = 0f;
+
+        if (bullet == null || shootPos == null)
+            return;
+
+        if (aimTarget == null && GameManager.instance != null && GameManager.instance.player != null)
+            aimTarget = GameManager.instance.player.transform;
+
+        if (aimTarget != null)
+            faceTarget();
 
         GameObject proj = Instantiate(bullet, shootPos.position, Quaternion.identity);
 
-        Vector3 targetPos;
-
-        if (aimTarget != null)
-        {
-            targetPos = aimTarget.position;
-        }
-        else
-        {
-            targetPos = GameManager.instance.player.transform.position;
-        }
-
+        Vector3 targetPos = aimTarget != null ? aimTarget.position : shootPos.position + transform.forward;
         Vector3 dir = (targetPos - shootPos.position).normalized;
 
         Rigidbody rb = proj.GetComponent<Rigidbody>();
         if (rb != null)
-        {
             rb.linearVelocity = dir * projectileSpeed;
-        }
     }
 
     public void faceTarget()
     {
-        Quaternion rot = Quaternion.LookRotation(new Vector3(playerDir.x, transform.position.y, playerDir.z));
-        transform.rotation = Quaternion.Lerp(transform.rotation, rot, Time.deltaTime * faceTargetSpeed);
+        if (aimTarget == null)
+            return;
+
+        Vector3 toPlayer = aimTarget.position - transform.position;
+        toPlayer.y = 0f;
+
+        if (toPlayer.sqrMagnitude < 0.0001f)
+            return;
+
+        playerDir = toPlayer.normalized;
+
+        Quaternion rot = Quaternion.LookRotation(toPlayer);
+        transform.rotation = Quaternion.Slerp(transform.rotation, rot, Time.deltaTime * faceTargetSpeed);
     }
 }
+

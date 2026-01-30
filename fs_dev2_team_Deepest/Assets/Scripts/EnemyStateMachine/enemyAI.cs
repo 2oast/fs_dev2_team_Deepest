@@ -1,8 +1,6 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.AI;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
 using System.Collections.Generic;
 
 public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport, IThrow
@@ -31,75 +29,115 @@ public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport, IThrow
     Color colorOrig;
 
     Rigidbody rb;
-
     Vector3 scaleOrig;
-
     NavMeshAgent agent;
 
     [SerializeField] Transform floatTextTrans;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         scaleOrig = transform.localScale;
-        colorOrig = model.material.color;
+
+        if (model != null)
+            colorOrig = model.material.color;
+
         agent = GetComponent<NavMeshAgent>();
         rb = GetComponent<Rigidbody>();
-        mats = new List<Material>(model.materials);
-        throwCollider = GetComponent<BoxCollider>();
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-      
-    }
+        if (model != null)
+            mats = new List<Material>(model.materials);
+        else
+            mats = new List<Material>();
 
+        if (throwCollider == null)
+            throwCollider = GetComponent<BoxCollider>();
+
+        HP = maxHp;
+    }
 
     public void takeDamage(int amount)
     {
-        PlayerAnimatorManager.instance.PlayTargetAnimation(anim, "enemySquash", .5f);
+        if (anim != null && PlayerAnimatorManager.instance != null)
+            PlayerAnimatorManager.instance.PlayTargetAnimation(anim, "enemySquash", .5f);
 
-        if(HP <= maxHp / 2)
+        if (!isStunned && HP <= maxHp / 2)
         {
-            mats.Add(stunMat);
-            model.materials = mats.ToArray();
+            if (stunMat != null && model != null && !mats.Contains(stunMat))
+            {
+                mats.Add(stunMat);
+                model.materials = mats.ToArray();
+            }
             isStunned = true;
         }
+
         HP -= amount;
-        agent.SetDestination(GameManager.instance.player.transform.position);
-        audioSource.PlayOneShot(hurtSound, .5f);
+
+        if (agent != null && agent.enabled && !isStunned && !isGrabbed && !isThrown)
+        {
+            if (GameManager.instance != null && GameManager.instance.player != null)
+                agent.SetDestination(GameManager.instance.player.transform.position);
+        }
+
+        if (audioSource != null && hurtSound != null)
+            audioSource.PlayOneShot(hurtSound, .5f);
+
         if (HP <= 0)
         {
-            audioSource.pitch = Random.Range(.5f, 1);
-            audioSource.PlayOneShot(hurtSound);
-            GameObject floatText = Instantiate(UImanager.instance.floatingText, floatTextTrans);
-            TextMesh text = floatText.GetComponent<TextMesh>();
-            text.text = amount.ToString();
-            Destroy(floatText, 1f);
-            StartCoroutine(GameManager.instance.HitStop(.03f));
-            StartCoroutine(FadeOut(1));
+            if (audioSource != null && hurtSound != null)
+            {
+                audioSource.pitch = Random.Range(.5f, 1f);
+                audioSource.PlayOneShot(hurtSound);
+            }
+
+            ShowFloatText(amount);
+
+            if (GameManager.instance != null)
+                GameManager.instance.RequestHitStop(.03f);
+
+            StartCoroutine(FadeOut(1f));
         }
         else
         {
-            GameObject floatText = Instantiate(UImanager.instance.floatingText, floatTextTrans);
-            TextMesh text = floatText.GetComponent<TextMesh>();
-            text.text = amount.ToString();
-            floatTextTrans.transform.LookAt(GameManager.instance.player.transform.position);
-            audioSource.pitch = Random.Range(.5f, 1);
-            audioSource.PlayOneShot(hurtSound);
-            Destroy(floatText, 1f);
-            StartCoroutine(flashRed(.5F));
-            StartCoroutine(GameManager.instance.HitStop(.03f));
+            ShowFloatText(amount);
+
+            if (audioSource != null && hurtSound != null)
+            {
+                audioSource.pitch = Random.Range(.5f, 1f);
+                audioSource.PlayOneShot(hurtSound);
+            }
+
+            StartCoroutine(flashRed(.05f));
+
+            if (GameManager.instance != null)
+                StartCoroutine(GameManager.instance.HitStop(.03f));
         }
+    }
+
+    void ShowFloatText(int amount)
+    {
+        if (UImanager.instance == null || UImanager.instance.floatingText == null || floatTextTrans == null)
+            return;
+
+        GameObject floatText = Instantiate(UImanager.instance.floatingText, floatTextTrans);
+        TextMesh text = floatText.GetComponent<TextMesh>();
+        if (text != null)
+            text.text = amount.ToString();
+
+        Destroy(floatText, 1f);
     }
 
     IEnumerator flashRed(float duration)
     {
-        model.material.color = Color.red;
-        yield return new WaitForSeconds(0.05f);
-        model.material.color = colorOrig;
-        
+        if (model != null)
+        {
+            model.material.color = Color.red;
+            yield return new WaitForSeconds(duration);
+            model.material.color = colorOrig;
+        }
+        else
+        {
+            yield return new WaitForSeconds(duration);
+        }
     }
 
     public void Teleport()
@@ -112,8 +150,10 @@ public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport, IThrow
 
         if (agent != null)
             agent.enabled = false;
-        Rigidbody rb = GetComponent<Rigidbody>();
-        rb.isKinematic = false;
+
+        if (rb != null)
+            rb.isKinematic = false;
+
         magicController.objectGrabbed = gameObject;
         magicController.throwObject = GetComponent<IThrow>();
     }
@@ -121,7 +161,15 @@ public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport, IThrow
     IEnumerator FadeOut(float duration)
     {
         isStunned = false;
-        model.material = redMat;
+
+        if (model != null && redMat != null)
+            model.material = redMat;
+
+        if (model == null)
+        {
+            Destroy(gameObject);
+            yield break;
+        }
 
         Material mat = model.material;
 
@@ -129,68 +177,56 @@ public class enemyAI : MonoBehaviour, IDamage, IGrab, ITeleport, IThrow
         float startAlpha = startColor.a;
 
         float t = 0f;
-
         while (t < 1f)
         {
             t += Time.deltaTime / duration;
-
             Color c = startColor;
             c.a = Mathf.Lerp(startAlpha, 0f, t);
             mat.color = c;
-
             yield return null;
         }
 
         Destroy(gameObject);
     }
 
-    IEnumerator Knockback(float duration, float force)
-    {
-        rb.isKinematic = false;
-        agent.enabled = false;
-        Vector3 direction = (transform.position - GameManager.instance.player.transform.position).normalized;
-        direction.y = 0;
-        rb.AddForce(direction * force, ForceMode.Impulse);
-
-        yield return new WaitForSeconds(duration);
-
-        rb.isKinematic = true;
-        agent.enabled = true;
-        
-    }
-
     public void Throw(MagicController magicController)
     {
-        magicController.objectGrabbed.transform.SetParent(null);
+        if (magicController.objectGrabbed != null)
+            magicController.objectGrabbed.transform.SetParent(null);
 
         magicController.objectGrabbed = null;
         magicController.isTelegrabbing = false;
 
-        rb.AddForce(Camera.main.transform.forward * magicController.throwForce, ForceMode.Impulse);
+        if (rb != null)
+            rb.AddForce(Camera.main.transform.forward * magicController.throwForce, ForceMode.Impulse);
 
-        magicController.audSource.PlayOneShot(magicController.throwClip);
-        GameObject effect = Instantiate(magicController.throwPref, magicController.teleGrabLocation);
-        Destroy(effect, 3);
-        magicController.teleGrabPref.SetActive(false);
-        throwCollider.enabled = true;
+        if (magicController.audSource != null && magicController.throwClip != null)
+            magicController.audSource.PlayOneShot(magicController.throwClip);
+
+        if (magicController.throwPref != null)
+        {
+            GameObject effect = Instantiate(magicController.throwPref, magicController.teleGrabLocation);
+            Destroy(effect, 3f);
+        }
+
+        if (magicController.teleGrabPref != null)
+            magicController.teleGrabPref.SetActive(false);
+
+        if (throwCollider != null)
+            throwCollider.enabled = true;
+
         isThrown = true;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if(isThrown)
-        {
-            IDamage dmg = other.GetComponent<IDamage>();
+        if (!isThrown)
+            return;
 
-            if (dmg != null)
-            {
-                dmg.takeDamage(throwDamage);
-                StartCoroutine(FadeOut(2));
-            }
+        IDamage dmg = other.GetComponent<IDamage>();
+        if (dmg != null)
+            dmg.takeDamage(throwDamage);
 
-            StartCoroutine(FadeOut(3));
-        }
-       
-
+        StartCoroutine(FadeOut(2f));
     }
 }

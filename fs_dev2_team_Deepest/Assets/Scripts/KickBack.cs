@@ -18,31 +18,13 @@ public class KickBack : MonoBehaviour
         audSource = GetComponent<AudioSource>();
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void Update()
     {
-        Rigidbody rb = other.GetComponent<Rigidbody>();
-
-        Vector3 dir = (other.transform.position - GameManager.instance.player.transform.position).normalized;
-        NavMeshAgent agent = other.GetComponent<NavMeshAgent>();
-
-        if(rb != null)
+        if(GameManager.instance.playerControllerScript.isKicking)
         {
-            if(agent != null)
-            {
-                StartCoroutine(KickKinematic(rb, agent, dir));
-            }
-            else
-            {
-                rb.AddForce(-dir * kickForce, ForceMode.Impulse);
+            kickRaycast();
 
-            }
         }
-
-        IDestructible destruct = other.GetComponent<IDestructible>();
-        if (destruct != null)
-            destruct.Destruct();
-
-        audSource.PlayOneShot(kickSound);
     }
 
     IEnumerator KickKinematic(Rigidbody rb, NavMeshAgent agent, Vector3 dir)
@@ -61,8 +43,6 @@ public class KickBack : MonoBehaviour
 
     public void kickRaycast()
     {
-        if (GameManager.instance.playerControllerScript.isKicking)
-        {
             RaycastHit hit;
             if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, kickDistance))
             {
@@ -77,18 +57,20 @@ public class KickBack : MonoBehaviour
                     }
                     else
                     {
-                        rb.AddForce(-dir * kickForce, ForceMode.Impulse);
+                        rb.AddForce(dir * kickForce, ForceMode.Impulse);
 
                     }
 
-                    IDestructible destruct = hit.collider.GetComponent<IDestructible>();
-                    if (destruct != null)
-                        destruct.Destruct();
-
-                    audSource.PlayOneShot(kickSound);
+                    
                 }
-                Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward, Color.red, kickDistance);
+
+                IDestructible destruct = hit.collider.GetComponent<IDestructible>();
+                if (destruct != null)
+                    destruct.Destruct();
+
+                audSource.PlayOneShot(kickSound);
+            Debug.Log(hit.collider.name);
             }
-        }
+        
     }
 }

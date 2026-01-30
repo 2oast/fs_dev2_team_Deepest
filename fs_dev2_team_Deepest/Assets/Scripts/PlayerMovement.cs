@@ -8,8 +8,7 @@ public class PlayerMovement : MonoBehaviour
     public Transform orientation; 
     PlayerController playerController;
 
-    [Header("View Bobbing")]
-    public Transform armHolder;
+    
 
     public float bobFrequency = 8f;
     public float bobAmplitude = 0.05f;
@@ -29,6 +28,7 @@ public class PlayerMovement : MonoBehaviour
     public float airTimeMultiplier;
     float jumpBufferTime = 0.15f;
     float jumpBufferCounter;
+    [SerializeField] float gravMult;
 
     [Header("Vectors")]
     Vector3 moveDir;
@@ -98,13 +98,15 @@ public class PlayerMovement : MonoBehaviour
         playerController = GetComponent<PlayerController>();
         rb = GetComponent<Rigidbody>();
         readyToJump = true;
-        if (armHolder != null)
-            armStartLocalPos = armHolder.localPosition;
         originalCamRot = camPos.rotation;
     }
 
     private void Update()
     {
+
+        //GRAV MULT
+        
+
         isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.3f, groundMask);
         if (isGrounded)
         {
@@ -128,13 +130,13 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!GameManager.instance.isPaused)
             movement();
-
+        if(!isGrounded)
+        {
+            rb.AddForce(Vector3.down * gravMult, ForceMode.Force);
+        }
     }
 
-    void MyInput()
-    {
-
-    }
+   
 
     #region Movement
 
@@ -216,16 +218,21 @@ public class PlayerMovement : MonoBehaviour
 
     void sprint()
     {
-        if (Input.GetButtonDown("Sprint") && playerController.stamina > 0f && !isSprinting)
+        if(isGrounded)
         {
-            isSprinting = true;
-            speed *= sprintMod;
+            if (Input.GetButtonDown("Sprint") && playerController.stamina > 0f && !isSprinting)
+            {
+
+                isSprinting = true;
+                speed *= sprintMod;
+            }
+            else if ((Input.GetButtonUp("Sprint") || playerController.stamina <= 0f) && isSprinting)
+            {
+                isSprinting = false;
+                speed /= sprintMod;
+            }
         }
-        else if ((Input.GetButtonUp("Sprint") || playerController.stamina <= 0f) && isSprinting)
-        {
-            isSprinting = false;
-            speed /= sprintMod;
-        }
+        
     }
 
     void Footsteps()

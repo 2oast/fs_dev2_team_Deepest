@@ -5,7 +5,8 @@ public class PlayerCam : MonoBehaviour
 {
     public float sensY;
     public float sensX;
-
+    float mouseX;
+    float mouseY;
     public Transform orientation;
 
     float xRot;
@@ -30,20 +31,23 @@ public class PlayerCam : MonoBehaviour
 
     void Update()
     {
-        float mouseX = Input.GetAxis("Mouse X") * Time.deltaTime * sensX;
-        float mouseY = Input.GetAxis("Mouse Y") * Time.deltaTime * sensY;
+        mouseX = Input.GetAxis("Mouse X") * Time.deltaTime * sensX;
+        mouseY = Input.GetAxis("Mouse Y") * Time.deltaTime * sensY;
 
         yRot += mouseX;
         xRot -= mouseY;
 
         xRot = Mathf.Clamp(xRot, -90f, 90f);
 
+        HandleShake();
+    }
+
+    private void LateUpdate()
+    {
         transform.rotation = Quaternion.Euler(xRot, yRot, 0f);
 
         if (orientation != null)
             orientation.rotation = Quaternion.Euler(0f, yRot, 0f);
-
-        HandleShake();
     }
 
     public void Shake(float duration, float intensity)

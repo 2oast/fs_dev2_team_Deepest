@@ -5,12 +5,13 @@ public class ViewBobbing : MonoBehaviour
     [SerializeField] float frequency;
     [SerializeField] float amount;
     [SerializeField] float smooth;
+    Vector3 originalPos;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        originalPos = transform.localPosition;
     }
 
     // Update is called once per frame
@@ -26,6 +27,10 @@ public class ViewBobbing : MonoBehaviour
         if(inputMagnitude > 0)
         {
             StartHeadBob();
+        }
+        else
+        {
+            transform.localPosition = Vector3.MoveTowards(transform.localPosition, originalPos, smooth * Time.deltaTime);
         }
     }
 

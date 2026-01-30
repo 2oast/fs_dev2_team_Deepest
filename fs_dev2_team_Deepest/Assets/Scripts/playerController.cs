@@ -362,6 +362,7 @@ public class PlayerController : MonoBehaviour, IDamage
             {
                 PlayerAnimatorManager.instance.PlayTargetAnimation(legAnimator, "Kick", .5f);
             }
+
         }
     }
 

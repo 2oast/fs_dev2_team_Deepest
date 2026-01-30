@@ -76,6 +76,9 @@ public class PlayerController : MonoBehaviour, IDamage
 
     void Update()
     {
+        if (GameManager.instance != null && !GameManager.instance.CanPlayerAct())
+            return;
+
         animator.SetBool("SwordEquipped", WeaponManager.instance.currentWeapon != null);
 
         chargeTimer = Mathf.Clamp01(chargeTimer);
@@ -135,7 +138,7 @@ public class PlayerController : MonoBehaviour, IDamage
 
         OnInteract();
 
-        if (WeaponManager.instance.currentWeapon != null)
+        if (WeaponManager.instance != null && WeaponManager.instance.currentWeapon != null)
         {
             Attack(WeaponManager.instance.currentWeapon);
         }
@@ -205,25 +208,35 @@ public class PlayerController : MonoBehaviour, IDamage
 
         if (HP <= 0)
         {
-            GameManager.instance.YouLose();
+            if (GameManager.instance != null)
+                GameManager.instance.YouLose();
         }
     }
 
     public void updatePlayerUI()
     {
-        UImanager.instance.playerHPBar.fillAmount = (float)HP / HPOrig;
+        if (UImanager.instance != null && UImanager.instance.playerHPBar != null)
+            UImanager.instance.playerHPBar.fillAmount = (float)HP / HPOrig;
     }
 
     void updateStaminaUI()
     {
-        UImanager.instance.playerStaminaBar.fillAmount = stamina / maxStamina;
+        if (UImanager.instance != null && UImanager.instance.playerStaminaBar != null)
+            UImanager.instance.playerStaminaBar.fillAmount = stamina / maxStamina;
     }
 
     IEnumerator flashRed()
     {
-        UImanager.instance.playerDamageScreen.SetActive(true);
-        yield return new WaitForSeconds(0.1f);
-        UImanager.instance.playerDamageScreen.SetActive(false);
+        if (UImanager.instance != null && UImanager.instance.playerDamageScreen != null)
+        {
+            UImanager.instance.playerDamageScreen.SetActive(true);
+            yield return new WaitForSeconds(0.1f);
+            UImanager.instance.playerDamageScreen.SetActive(false);
+        }
+        else
+        {
+            yield return new WaitForSeconds(0.1f);
+        }
     }
 
     public int MaxHP
@@ -247,20 +260,18 @@ public class PlayerController : MonoBehaviour, IDamage
     #region WeaponAndInteraction
     void OnInteract()
     {
-        if (!GameManager.instance.isPaused)
-        {
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                RaycastHit hit;
-                if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, interactDistance))
-                {
-                    Debug.Log(hit.collider.name);
+        if (GameManager.instance != null && GameManager.instance.isPaused)
+            return;
 
-                    IInteractable interactable = hit.collider.GetComponent<IInteractable>();
-                    if (interactable != null)
-                    {
-                        interactable.Interact();
-                    }
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            RaycastHit hit;
+            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, interactDistance))
+            {
+                IInteractable interactable = hit.collider.GetComponent<IInteractable>();
+                if (interactable != null)
+                {
+                    interactable.Interact();
                 }
             }
         }
@@ -333,18 +344,26 @@ public class PlayerController : MonoBehaviour, IDamage
 
     void Attack(Weapon weapon)
     {
+        if (GameManager.instance != null && !GameManager.instance.CanPlayerAct())
+            return;
+
         isCharging = Input.GetButton("Fire1");
         animator.SetBool("IsChargingSwing", isCharging);
 
         if (isCharging)
-            chargeTimer += Time.deltaTime / 3;
+            chargeTimer += Time.deltaTime / 3f;
 
-        UImanager.instance.FillChargeMeter(chargeTimer);
+        if (UImanager.instance != null)
+            UImanager.instance.FillChargeMeter(chargeTimer);
 
-        if (Input.GetButtonDown("Fire1") && !GameManager.instance.isInteracting)
+        if (Input.GetButtonDown("Fire1"))
         {
+            if (GameManager.instance != null && GameManager.instance.isInteracting)
+                return;
+
             HandleCombo();
-            PlayerAnimatorManager.instance.PlayTargetAnimation(animator, nextSwing, 0f);
+            if (PlayerAnimatorManager.instance != null)
+                PlayerAnimatorManager.instance.PlayTargetAnimation(animator, nextSwing, 0f);
 
             if (audioSource != null && swordSwing != null)
             {
@@ -356,9 +375,12 @@ public class PlayerController : MonoBehaviour, IDamage
 
     void Kick()
     {
+        if (GameManager.instance != null && !GameManager.instance.CanPlayerAct())
+            return;
+
         if (Input.GetKeyDown(KeyCode.F) && !isKicking)
         {
-            if (legAnimator != null)
+            if (legAnimator != null && PlayerAnimatorManager.instance != null)
             {
                 PlayerAnimatorManager.instance.PlayTargetAnimation(legAnimator, "Kick", .5f);
             }
@@ -367,7 +389,8 @@ public class PlayerController : MonoBehaviour, IDamage
 
     public void EquipRing(MagicRing ring)
     {
-        WeaponManager.instance.currentRingEquipped = ring;
+        if (WeaponManager.instance != null)
+            WeaponManager.instance.currentRingEquipped = ring;
     }
     #endregion
 

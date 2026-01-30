@@ -1,63 +1,131 @@
+using System.Collections;
 using UnityEngine;
 
 public class Door : MonoBehaviour, IInteractable
 {
+    [Header("Door Movement")]
+    [SerializeField] float openHeight = 4f;
+    [SerializeField] float moveSpeed = 2f;
+
     [Header("Key Settings")]
     [SerializeField] bool requiresKey = false;
     [SerializeField] string requiredKeyName;
     [SerializeField] bool consumeKeyOnUse = false;
 
-    [Header("Door Settings")]
-    [SerializeField] GameObject doorObject;
-    [SerializeField] bool disableColliderWhenOpened = true;
+    [Header("State")]
+    [SerializeField] bool startsLocked = false;
+    [SerializeField] bool startsClosed = true;
 
+    Vector3 closedPos;
+    Vector3 openPos;
+
+    bool isLocked;
     bool isOpen;
+    bool isMoving;
 
-    void Awake()
+    Coroutine moveRoutine;
+
+    void Start()
     {
-        if (doorObject == null)
-            doorObject = gameObject;
+        closedPos = transform.position;
+        openPos = closedPos + Vector3.up * openHeight;
+
+        isLocked = startsLocked;
+        isOpen = !startsClosed;
+
+        if (isOpen)
+            transform.position = openPos;
+        else
+            transform.position = closedPos;
     }
 
     public void Interact()
     {
-        if (isOpen)
+        if (isMoving || isOpen)
+            return;
+
+        if (isLocked)
             return;
 
         if (requiresKey)
         {
             if (string.IsNullOrEmpty(requiredKeyName))
-            {
-                Debug.LogWarning("Door on " + name + " requires a key but requiredKeyName is empty.");
                 return;
-            }
 
             if (!PlayerHasKey(requiredKeyName))
-            {
-                Debug.Log("Door: player does not have required key: " + requiredKeyName);
                 return;
-            }
 
             if (consumeKeyOnUse)
                 ConsumeKey(requiredKeyName);
         }
 
-        OpenDoor();
+        Open();
     }
 
-    void OpenDoor()
+    public void Lock()
     {
-        isOpen = true;
+        isLocked = true;
+    }
 
-        if (doorObject != null)
-            doorObject.SetActive(false);
+    public void Unlock()
+    {
+        isLocked = false;
+    }
 
-        if (disableColliderWhenOpened)
+    public void LockAndClose()
+    {
+        isLocked = true;
+        Close();
+    }
+
+    public void UnlockAndOpen()
+    {
+        isLocked = false;
+        Open();
+    }
+
+    public void Open()
+    {
+        if (isOpen || isMoving)
+            return;
+
+        StartMove(openPos, true);
+    }
+
+    public void Close()
+    {
+        if (!isOpen || isMoving)
+            return;
+
+        StartMove(closedPos, false);
+    }
+
+    void StartMove(Vector3 target, bool opening)
+    {
+        if (moveRoutine != null)
+            StopCoroutine(moveRoutine);
+
+        moveRoutine = StartCoroutine(MoveDoor(target, opening));
+    }
+
+    IEnumerator MoveDoor(Vector3 target, bool opening)
+    {
+        isMoving = true;
+
+        Vector3 start = transform.position;
+        float t = 0f;
+
+        while (t < 1f)
         {
-            Collider col = GetComponent<Collider>();
-            if (col != null)
-                col.enabled = false;
+            t += Time.deltaTime * moveSpeed;
+            transform.position = Vector3.Lerp(start, target, t);
+            yield return null;
         }
+
+        transform.position = target;
+        isOpen = opening;
+        isMoving = false;
+        moveRoutine = null;
     }
 
     bool PlayerHasKey(string keyName)

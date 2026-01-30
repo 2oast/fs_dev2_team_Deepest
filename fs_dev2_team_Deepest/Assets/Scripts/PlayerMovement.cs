@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour
     Rigidbody rb;
     public Transform orientation; 
     PlayerController playerController;
+    public ViewBobbing viewBobScript;
 
     
 
@@ -97,6 +98,7 @@ public class PlayerMovement : MonoBehaviour
     {
         playerController = GetComponent<PlayerController>();
         rb = GetComponent<Rigidbody>();
+        viewBobScript = GetComponentInChildren<ViewBobbing>();
         readyToJump = true;
         originalCamRot = camPos.rotation;
     }

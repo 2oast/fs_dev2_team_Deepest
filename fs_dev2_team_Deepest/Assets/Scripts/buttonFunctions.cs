@@ -28,6 +28,7 @@ public class ButtonFunctions : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
+        GameManager.instance.playerMovementScript.viewBobScript.enabled = true;
         GameManager.instance.playerMovementScript.enabled = true;
     }
 
@@ -57,6 +58,7 @@ public class ButtonFunctions : MonoBehaviour
         Cursor.visible = false;
 
         GameManager.instance.playerMovementScript.enabled = true;
+        GameManager.instance.playerMovementScript.viewBobScript.enabled = true;
     }
 
     public void Resume()
@@ -88,41 +90,104 @@ public class ButtonFunctions : MonoBehaviour
         switch (item.itemType)
         {
             case ItemType.Weapon:
-                InventoryManager.instance.weaponImage.sprite = item.itemIcon;
-                item.Use(GameManager.instance.playerControllerScript);
+                if(slot.isEquipped)
+                {
+                    InventoryManager.instance.weaponImage.sprite = slot.originalItemSprite;
+                    slot.isEquipped = false;
+                    item.Use(GameManager.instance.playerControllerScript);
+                }
+                else
+                {
+                    InventoryManager.instance.weaponImage.sprite = item.itemIcon;
+                    item.Use(GameManager.instance.playerControllerScript);
+                    slot.isEquipped = true;
+
+                }
                 break;
 
             case ItemType.ChestPiece:
-                InventoryManager.instance.chestPieceImage.sprite = item.itemIcon;
-                item.Use(GameManager.instance.playerControllerScript);
+                if(slot.isEquipped)
+                {
+                    InventoryManager.instance.chestPieceImage.sprite = slot.originalItemSprite;
+                    slot.isEquipped = false;
+                    item.Use(GameManager.instance.playerControllerScript);
+
+                }
+                else
+                {
+                    InventoryManager.instance.chestPieceImage.sprite = item.itemIcon;
+                    item.Use(GameManager.instance.playerControllerScript);
+                    slot.isEquipped = true;
+                }
                 break;
 
             case ItemType.Leggings:
-                InventoryManager.instance.leggingsPieceImage.sprite = item.itemIcon;
-                item.Use(GameManager.instance.playerControllerScript);
+                if(slot.isEquipped)
+                {
+                    InventoryManager.instance.leggingsPieceImage.sprite = slot.originalItemSprite;
+                    slot.isEquipped = false;
+                    item.Use(GameManager.instance.playerControllerScript);
+
+                }
+                else
+                {
+                    InventoryManager.instance.leggingsPieceImage.sprite = item.itemIcon;
+                    item.Use(GameManager.instance.playerControllerScript);
+                    slot.isEquipped = true;
+                }
+                    
                 break;
 
             case ItemType.Gauntlets:
-                InventoryManager.instance.leftGauntletPieceImage.sprite = item.itemIcon;
-                InventoryManager.instance.rightGauntletPieceImage.sprite = item.itemIcon;
-                item.Use(GameManager.instance.playerControllerScript);
+                if(slot.isEquipped)
+                {
+                    InventoryManager.instance.leftGauntletPieceImage.sprite = slot.originalItemSprite;
+                    InventoryManager.instance.rightGauntletPieceImage.sprite = slot.originalItemSprite;
+                    slot.isEquipped = false;
+                    item.Use(GameManager.instance.playerControllerScript);
+
+                }
+                else
+                {
+                    InventoryManager.instance.leftGauntletPieceImage.sprite = item.itemIcon;
+                    InventoryManager.instance.rightGauntletPieceImage.sprite = item.itemIcon;
+                    item.Use(GameManager.instance.playerControllerScript);
+                    slot.isEquipped = true;
+                }
+
                 break;
 
             case ItemType.Ring:
-                InventoryManager.instance.ringImage.sprite = item.itemIcon;
-                item.Use(GameManager.instance.playerControllerScript);
+                if(slot.isEquipped)
+                {
+                    InventoryManager.instance.ringImage.sprite = slot.originalItemSprite;
+                    slot.isEquipped = false;
+                    item.Use(GameManager.instance.playerControllerScript);
+                }
+                else
+                {
+                    InventoryManager.instance.ringImage.sprite = item.itemIcon;
+                    item.Use(GameManager.instance.playerControllerScript);
+                    slot.isEquipped = true;
+                }
+
                 break;
 
             case ItemType.Consumable:
                 slot.UseItem();
                 break;
+
+            case ItemType.Key:
+                break;
+
         }
 
         InventoryManager.instance.pendingEquipSlot = null;
         InventoryManager.instance.itemDescriptionBox.text = "";
         InventoryManager.instance.selectedSlot = null;
-        InventoryManager.instance.itemImage.sprite = null;
+        InventoryManager.instance.itemImage.sprite = slot.originalItemSprite;
         InventoryManager.instance.YesOrNoPanel.SetActive(false);
+        
     }
 
     public void SaveGame()
@@ -155,7 +220,7 @@ public class ButtonFunctions : MonoBehaviour
     }
 
 
-    public void CloseScreen()
+    public void CloseControlsScreen()
     {
         GameManager.instance.controlsScreen.SetActive(false);
     }
@@ -164,5 +229,12 @@ public class ButtonFunctions : MonoBehaviour
     {
         GameManager.instance.menuActive = GameManager.instance.controlsScreen;
         GameManager.instance.controlsScreen.SetActive(true);
+    }
+
+    public void CloseInventoryScreen()
+    {
+        GameManager.instance.menuActive = null;
+        GameManager.instance.inventoryScreen.SetActive(false);
+        GameManager.instance.StateUnpause();
     }
 }

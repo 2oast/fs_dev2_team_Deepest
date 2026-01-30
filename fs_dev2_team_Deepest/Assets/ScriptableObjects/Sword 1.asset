@@ -19,7 +19,7 @@ MonoBehaviour:
   maxStack: 0
   itemIcon: {fileID: 21300000, guid: cb8358b9049287d4b846f1040d18e225, type: 3}
   modelPrefab: {fileID: 3218188306531829914, guid: 974adf933e72eda4980b234cf06c9bff, type: 3}
-  description: 
+  description: Not too powerful, but it will do the job.
   weaponType: 0
   damage: 3
   weight: 5

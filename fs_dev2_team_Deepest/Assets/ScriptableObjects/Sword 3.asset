@@ -19,7 +19,7 @@ MonoBehaviour:
   maxStack: 0
   itemIcon: {fileID: 21300000, guid: 1c174608f4a544942b937fd69267a739, type: 3}
   modelPrefab: {fileID: 3218188306531829914, guid: 3e414b5a4bda638489c7a87ee93e9b7d, type: 3}
-  description: 
+  description: Great damage.
   weaponType: 0
   damage: 9
   weight: 5

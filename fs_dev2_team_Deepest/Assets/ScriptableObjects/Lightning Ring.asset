@@ -19,7 +19,8 @@ MonoBehaviour:
   maxStack: 1
   itemIcon: {fileID: 21300000, guid: e8655c5066c3c2e478ce2d9dcaa2b4b3, type: 3}
   modelPrefab: {fileID: 0}
-  description: 
+  description: Cast on an enemy to deal damage to it and any enemies surrounding
+    it.
   spellType: 5
   castingCost: 0
   shootDist: 0

@@ -12,6 +12,8 @@ public class UImanager : MonoBehaviour
     public Image playerHPBar;
     public Image playerStaminaBar;
     public GameObject playerDamageScreen;
+    public TextMeshProUGUI interactText;
+    public GameObject interactTextObject;
     [SerializeField] GameObject damageFlashScreen;
 
     [Header("Status")]

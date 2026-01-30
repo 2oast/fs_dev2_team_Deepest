@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.Rendering;
+using Unity.VisualScripting;
 
 public class PlayerController : MonoBehaviour, IDamage
 {
@@ -61,6 +62,7 @@ public class PlayerController : MonoBehaviour, IDamage
     public bool IsPoisoned => isPoisoned;
     bool isBlocking;
     public bool isKicking;
+    bool isHittingObject;
 
     void Start()
     {
@@ -73,6 +75,25 @@ public class PlayerController : MonoBehaviour, IDamage
 
     void Update()
     {
+
+        RaycastHit hit;
+        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, interactDistance))
+        {
+            IInteractable interact = hit.collider.GetComponent<IInteractable>();
+
+            if (interact != null && !GameManager.instance.isInteracting)
+            {
+                UImanager.instance.interactTextObject.SetActive(true);
+                isHittingObject = true;
+            }
+            else
+            {
+                UImanager.instance.interactTextObject.SetActive(false);
+                isHittingObject = false;
+            }
+
+        }
+
         if (GameManager.instance != null && !GameManager.instance.CanPlayerAct())
             return;
 
@@ -269,33 +290,36 @@ public class PlayerController : MonoBehaviour, IDamage
 
     public void EquipWeapon(Weapon weapon)
     {
-        if (currentWeaponInstance != null && WeaponManager.instance != null && WeaponManager.instance.currentWeapon == weapon)
-        {
-            Destroy(currentWeaponInstance);
-            currentWeaponInstance = null;
-            WeaponManager.instance.currentWeapon = null;
-            return;
-        }
-
-        if (currentWeaponInstance != null)
-        {
-            Destroy(currentWeaponInstance);
-            currentWeaponInstance = null;
-        }
-
-        currentWeaponInstance = Instantiate(weapon.modelPrefab, armTransform, false);
-
         if (WeaponManager.instance != null)
-            WeaponManager.instance.currentWeapon = weapon;
+        {
+            if (WeaponManager.instance.currentWeapon == InventoryManager.instance.pendingEquipSlot.itemInSlot)
+            {
+                WeaponManager.instance.currentWeapon = null;
+                Destroy(currentWeaponInstance);
+            }
+            else if(WeaponManager.instance.currentWeapon == null)
+            {
+                WeaponManager.instance.currentWeapon = weapon;
+                currentWeaponInstance = Instantiate(weapon.modelPrefab, armTransform, false);
+            }
+        }
+
     }
 
     public void EquipArmor(Armor armor)
     {
-        currentArmor = armor;
 
         if (ArmorManager.instance != null)
         {
-            ArmorManager.instance.currentArmor = armor;
+            if(ArmorManager.instance.currentArmor == armor)
+            {
+                ArmorManager.instance.currentArmor = null;
+            }
+            else
+            {
+                ArmorManager.instance.currentArmor = armor;
+
+            }
         }
 
         if (armor != null && armorEquipClip != null && audioSource != null)
@@ -303,13 +327,6 @@ public class PlayerController : MonoBehaviour, IDamage
             audioSource.PlayOneShot(armorEquipClip);
         }
 
-        if (UImanager.instance != null)
-        {
-            if (armor != null)
-                UImanager.instance.ShowArmorIcon();
-            else
-                UImanager.instance.HideArmorIcon();
-        }
     }
 
     void HandleCombo()
@@ -369,7 +386,17 @@ public class PlayerController : MonoBehaviour, IDamage
     public void EquipRing(MagicRing ring)
     {
         if (WeaponManager.instance != null)
-            WeaponManager.instance.currentRingEquipped = ring;
+        {
+            if (WeaponManager.instance.currentRingEquipped == ring)
+            {
+                WeaponManager.instance.currentRingEquipped = null;
+            }
+            else
+            {
+                WeaponManager.instance.currentRingEquipped = ring;
+
+            }
+        }
     }
     #endregion
 

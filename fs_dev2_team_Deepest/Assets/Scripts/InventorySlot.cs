@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Unity.VisualScripting;
 
 public class InventorySlot : MonoBehaviour, ISubmitHandler, IPointerClickHandler, ISelectHandler, IPointerEnterHandler, IPointerExitHandler, IDeselectHandler
 {
@@ -14,6 +15,7 @@ public class InventorySlot : MonoBehaviour, ISubmitHandler, IPointerClickHandler
 
     public bool isFilled;
     bool isSelected;
+    public bool isEquipped;
 
     private void Awake()
     {
@@ -62,9 +64,25 @@ public class InventorySlot : MonoBehaviour, ISubmitHandler, IPointerClickHandler
         if (InventoryManager.instance.selectedSlot != this)
         {
             InventoryManager.instance.selectedSlot = this;
-            InventoryManager.instance.YesOrNoPanel.SetActive(true);
-            InventoryManager.instance.itemDescriptionBox.text = "Equip " + itemInSlot.itemName + "?";
-            InventoryManager.instance.pendingEquipSlot = this;
+            InventoryManager.instance.itemImage.sprite = InventoryManager.instance.selectedSlot.itemInSlot.itemIcon;
+            if (itemInSlot.itemType != ItemType.Key)
+            {
+                InventoryManager.instance.YesOrNoPanel.SetActive(true);
+                InventoryManager.instance.pendingEquipSlot = this;
+
+                if (!isEquipped)
+                {
+                    InventoryManager.instance.itemDescriptionBox.text = "Equip " + itemInSlot.itemName + "?";
+                }
+                else
+                {
+                    InventoryManager.instance.itemDescriptionBox.text = "Unequip " + itemInSlot.itemName + "?";
+                }
+            }
+            else
+            {
+                    InventoryManager.instance.itemDescriptionBox.text = itemInSlot.description;
+            }
         }
     }
 
@@ -137,8 +155,9 @@ public class InventorySlot : MonoBehaviour, ISubmitHandler, IPointerClickHandler
         {
             InventoryManager.instance.selectedSlot = null;
             InventoryManager.instance.itemImage.sprite = originalItemSprite;
-            InventoryManager.instance.itemDescriptionBox.text = null;
+            InventoryManager.instance.itemDescriptionBox.text = "";
             InventoryManager.instance.YesOrNoPanel.SetActive(false);
+            InventoryManager.instance.selectedSlot = null;
         }
     }
 }

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Key 2
   m_EditorClassIdentifier: Assembly-CSharp::KeyItem
   itemType: 3
-  itemName: Key2
+  itemName: Key 2
   isStackable: 0
   isRadio: 0
   maxStack: 0

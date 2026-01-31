@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Key 1
   m_EditorClassIdentifier: Assembly-CSharp::KeyItem
   itemType: 3
-  itemName: Key
+  itemName: Key 1
   isStackable: 0
   isRadio: 0
   maxStack: 0
   itemIcon: {fileID: 21300000, guid: 3f5cba41d25af1d4abff3eedb007d2b2, type: 3}
   modelPrefab: {fileID: 2958690757042059995, guid: 6fe1ec59b4532f34cac3716faa1a8167, type: 3}
-  description: Must be used for a door nearby.
+  description: Looks like it fits in some sort of pedestal..
   keyName: 0

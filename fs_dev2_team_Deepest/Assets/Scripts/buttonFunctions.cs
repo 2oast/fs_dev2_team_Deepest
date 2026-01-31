@@ -97,8 +97,8 @@ public class ButtonFunctions : MonoBehaviour
 
     public void Restart()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        GameManager.instance.StateUnpause();
     }
 
     public void Quit()
@@ -229,16 +229,14 @@ public class ButtonFunctions : MonoBehaviour
         {
             if (!SaveManager.instance.HasSave())
             {
-                SaveManager.instance.LoadGame();
+                SaveManager.instance.ShowNoSaveFound();
                 return;
             }
 
             SaveManager.instance.LoadGame();
 
             if (GameManager.instance != null)
-            {
                 GameManager.instance.ResetAfterLoad();
-            }
         }
         else
         {
@@ -259,8 +257,7 @@ public class ButtonFunctions : MonoBehaviour
 
     public void CloseInventoryScreen()
     {
-        GameManager.instance.menuActive = null;
-        GameManager.instance.inventoryScreen.SetActive(false);
-        GameManager.instance.StateUnpause();
+        if (GameManager.instance.menuActive == GameManager.instance.inventoryScreen)
+            GameManager.instance.StateUnpause();
     }
 }

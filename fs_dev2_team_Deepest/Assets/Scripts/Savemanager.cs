@@ -16,6 +16,8 @@ public class SaveManager : MonoBehaviour
 
     string SavePath => Path.Combine(Application.persistentDataPath, "savegame.json");
 
+    Coroutine noSaveRoutine;
+
     void Awake()
     {
         if (instance == null)
@@ -147,8 +149,6 @@ public class SaveManager : MonoBehaviour
         PlayerController pc = GameManager.instance.playerControllerScript;
         InventoryManager inv = InventoryManager.instance;
         SkillManager sm = SkillManager.instance;
-        WeaponManager wm = WeaponManager.instance;
-        ArmorManager am = ArmorManager.instance;
 
         if (pc != null)
         {
@@ -163,19 +163,15 @@ public class SaveManager : MonoBehaviour
             {
                 pc.transform.position = data.playerPosition;
             }
-        }
 
-        pc.HP = data.hp;
-        pc.SetStamina(data.stamina);
-        pc.updatePlayerUI();
+            pc.HP = data.hp;
+            pc.SetStamina(data.stamina);
+            pc.updatePlayerUI();
 
-        if (data.isPoisoned && data.poisonTimeRemaining > 0f)
-        {
-            pc.RestorePoisonFromSave(data.poisonTimeRemaining, 5f, 1);
-        }
-        else
-        {
-            pc.CurePoison();
+            if (data.isPoisoned && data.poisonTimeRemaining > 0f)
+                pc.RestorePoisonFromSave(data.poisonTimeRemaining, 5f, 1);
+            else
+                pc.CurePoison();
         }
 
         if (sm != null)
@@ -191,19 +187,22 @@ public class SaveManager : MonoBehaviour
             sm.toughnessXP = data.toughnessXP;
         }
 
-        inv.ClearInventorySlots();
-
-        foreach (string itemName in data.inventoryItemNames)
+        if (inv != null)
         {
-            ItemData itemData = itemDatabase.GetItemByName(itemName);
-            if (itemData != null)
-                inv.AddItemFromData(itemData);
+            inv.ClearInventorySlots();
+
+            foreach (string itemName in data.inventoryItemNames)
+            {
+                ItemData itemData = itemDatabase.GetItemByName(itemName);
+                if (itemData != null)
+                    inv.AddItemFromData(itemData);
+            }
         }
 
         Debug.Log("Game loaded from: " + SavePath);
     }
 
-    void ShowNoSaveFound()
+    public void ShowNoSaveFound()
     {
         if (noSaveText == null)
             return;
@@ -211,8 +210,10 @@ public class SaveManager : MonoBehaviour
         noSaveText.text = "No save found";
         noSaveText.gameObject.SetActive(true);
 
-        StopAllCoroutines();
-        StartCoroutine(HideNoSaveFound());
+        if (noSaveRoutine != null)
+            StopCoroutine(noSaveRoutine);
+
+        noSaveRoutine = StartCoroutine(HideNoSaveFound());
     }
 
     IEnumerator HideNoSaveFound()
@@ -221,6 +222,9 @@ public class SaveManager : MonoBehaviour
 
         if (noSaveText != null)
             noSaveText.gameObject.SetActive(false);
+
+        noSaveRoutine = null;
     }
 }
+
 
